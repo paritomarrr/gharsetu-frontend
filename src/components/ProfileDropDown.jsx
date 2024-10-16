@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Menu } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleIsOpen } from '../store/slices/SignInSlice';
 
 const ProfileDropDown = () => {
     const [isOpen, setIsOpen] = useState(false)
-    const dropdownRef = useRef(null) 
+    const dropdownRef = useRef(null)
 
+    const dispatch = useDispatch();
     const toggleDropDown = () => {
         setIsOpen(!isOpen)
     }
@@ -16,11 +19,15 @@ const ProfileDropDown = () => {
             }
         }
         document.addEventListener('mousedown', handleClickOutside)
-        
+
         return () => {
             document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [])
+
+    const openSignInModal = () => {
+        dispatch(toggleIsOpen())
+    }
 
     return (
         <div className='relative' ref={dropdownRef}>
@@ -31,7 +38,7 @@ const ProfileDropDown = () => {
             <div className='absolute right-0'>
                 {isOpen && (
                     <div className='py-2 border-[1px] rounded-xl bg-white shadow-custom w-[220px] text-sm'>
-                        <div className='py-[10px] px-4 font-bold cursor-pointer'>
+                        <div onClick={openSignInModal} className='py-[10px] px-4 font-bold cursor-pointer'>
                             Sign Up
                         </div>
                         <div className='py-[10px] px-4'>
