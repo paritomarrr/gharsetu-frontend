@@ -1,102 +1,45 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { toggleIsOpen } from '../../store/slices/SignInSlice';
-import { auth } from '../../utils/firebaseConfig';
-import { signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth';
-import { PinInput, PinInputField, HStack } from '@chakra-ui/react';
-import { PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
-
+import axios from 'axios';
+import { PinInput, PinInputField } from '@chakra-ui/react';
+import { HStack } from '@chakra-ui/react';
+import toast from 'react-hot-toast';
 
 const SignInModal = () => {
     const dispatch = useDispatch();
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [recaptchaToken, setRecaptchaToken] = useState('');
-    const [verificationId, setVerificationId] = useState('');
+    const [reqID, setReqID] = useState('');
     const [otp, setOtp] = useState('');
 
     const closeSignInModal = () => {
         dispatch(toggleIsOpen());
     };
 
-    // useEffect(() => {
-    //     const initializeRecaptcha = async () => {
-    //         if (!window.recaptchaVerifier) {
-    //             try {
-    //                 window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-    //                     size: 'normal',
-    //                     callback: (response) => {
-    //                         setRecaptchaToken(response);
-    //                         console.log('reCAPTCHA solved:', response);
-    //                     },
-    //                     'expired-callback': () => {
-    //                         console.log('reCAPTCHA expired');
-    //                     },
-    //                 });
-    //                 await window.recaptchaVerifier.render();
-    //                 console.log('reCAPTCHA initialized');
-    //             } catch (error) {
-    //                 console.error('Error initializing reCAPTCHA', error);
-    //             }
-    //         }
-    //     };
-    //     initializeRecaptcha();
-
-    //     return () => {
-    //         if (window.recaptchaVerifier) {
-    //             window.recaptchaVerifier.clear();
-    //         }
-    //     };
-    // }, []);
-    const sendOTP = async () => {
-        const phoneNumberWithCode = `+91${phoneNumber}`;
-    
-        if (!phoneNumber) {
-            alert('Please enter a phone number');
+    const sendOtp = async () => {
+        const res = await axios.post('http://localhost:8080/api/v1/auth/sendOTP', {
+            phoneNumber: phoneNumber,
+        })
+        console.log('res', res)
+        if (res.data.success) {
+            setReqID(res.data.details.request_id)
+            toast.success('OTP sent successfully')
             return;
         }
-    
-        if (!window.recaptchaVerifier) {
-            try {
-                window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
-                    size: 'normal',
-                    callback: (response) => {
-                        setRecaptchaToken(response);
-                    },
-                    'expired-callback': () => {
-                        console.log('reCAPTCHA expired');
-                    }
-                }, auth);
-                await window.recaptchaVerifier.render();
-            } catch (error) {
-                console.error('Error initializing reCAPTCHA', error);
-                return;
-            }
-        }
-    
-        const appVerifier = window.recaptchaVerifier;
-    
-        try {
-            const confirmationResult = await signInWithPhoneNumber(auth, phoneNumberWithCode, appVerifier);
-            setVerificationId(confirmationResult.verificationId);
-            console.log('SMS sent. Verification ID:', confirmationResult.verificationId);
-        } catch (error) {
-            console.error('Error during phone number verification', error);
-        }
-    };
-    
+        console.log('Something went wrong')
+    }
 
     const verifyOTP = async () => {
-        if (!verificationId || !otp) {
-            alert('Please enter the OTP');
-            return;
-        }
+        // phone number ko replace kra h reqID se
+        const res = await axios.post('http://localhost:8080/api/v1/auth/verifyOTP', {
+            phoneNumber: phoneNumber, 
+            otp: otp,
+        })
 
-        const credential = PhoneAuthProvider.credential(verificationId, otp);
-        signInWithCredential(auth, credential)
-            .then((user) => console.log('User signed in:', user))
-            .catch((error) => console.error('Error during OTP verification:', error));
-    };
+        console.log('res', res)
+    }
+
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
@@ -110,58 +53,51 @@ const SignInModal = () => {
 
                 <div className="py-8 px-6 flex flex-col gap-6">
                     <div>Welcome to GharSetu</div>
-                    {verificationId ? (
-                        <div className="flex gap-4 flex-col">
-                            <div className="flex flex-col gap-2">
-                                <HStack className="flex justify-center">
-                                    <PinInput otp onChange={(value) => setOtp(value)}>
-                                        <PinInputField />
-                                        <PinInputField />
-                                        <PinInputField />
-                                        <PinInputField />
-                                    </PinInput>
-                                </HStack>
-                                <div className="text-xs text-[#717171]">
-                                    We’ll call or text you to confirm your number. Standard message and data rates apply.{' '}
-                                    <span className="font-semibold underline text-[#222]">Privacy Policy</span>
-                                </div>
-                            </div>
+                    <div className="flex gap-4 flex-col">
+                        <div className="flex flex-col gap-2">
 
-                            <button onClick={verifyOTP} className="bg-primary text-white rounded-lg w-full py-[14px] px-6">
-                                Continue
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="flex gap-4 flex-col">
-                            <div className="flex flex-col gap-2">
-                                <div>
-                                    <input
-                                        type="text"
-                                        placeholder="India (+91)"
-                                        value="India (+91)"
-                                        disabled
-                                        className="w-full border-[1px] rounded-t-lg py-[10px] px-[12px]"
-                                    />
-                                    <input
-                                        onChange={(e) => setPhoneNumber(e.target.value)}
-                                        value={phoneNumber}
-                                        type="tel"
-                                        placeholder="Phone Number"
-                                        className="w-full border-[1px] rounded-b-lg py-[10px] px-[12px]"
-                                    />
-                                </div>
-                                <div className="text-xs text-[#717171]">
-                                    We’ll call or text you to confirm your number. Standard message and data rates apply.{' '}
-                                    <span className="font-semibold underline text-[#222]">Privacy Policy</span>
-                                </div>
-                            </div>
+                            {
+                                reqID ? (
+                                    <div className="flex flex-col gap-2">
+                                        <HStack className="flex justify-center">
+                                            <PinInput otp onChange={(value) => setOtp(value)} autoFocus>
+                                                <PinInputField />
+                                                <PinInputField />
+                                                <PinInputField />
+                                                <PinInputField />
+                                            </PinInput>
+                                        </HStack>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <input
+                                            type="text"
+                                            placeholder="India (+91)"
+                                            value="India (+91)"
+                                            disabled
+                                            className="w-full border-[1px] rounded-t-lg py-[10px] px-[12px]"
+                                        />
+                                        <input
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            value={phoneNumber}
+                                            type="tel"
+                                            placeholder="Phone Number"
+                                            className="w-full border-[1px] rounded-b-lg py-[10px] px-[12px]"
+                                        />
+                                    </div>
+                                )
+                            }
 
-                            <button onClick={sendOTP} className="bg-primary text-white rounded-lg w-full py-[14px] px-6">
-                                Continue
-                            </button>
+                            <div className="text-xs text-[#717171]">
+                                We’ll call or text you to confirm your number. Standard message and data rates apply.{' '}
+                                <span className="font-semibold underline text-[#222]">Privacy Policy</span>
+                            </div>
                         </div>
-                    )}
-                    <div id="recaptcha-container"></div>
+
+                        <button onClick={reqID ? verifyOTP : sendOtp} className="bg-primary text-white rounded-lg w-full py-[14px] px-6">
+                            Continue
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -169,3 +105,5 @@ const SignInModal = () => {
 };
 
 export default SignInModal;
+
+

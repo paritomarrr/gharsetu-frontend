@@ -4,6 +4,7 @@ import Home from './screens/Home'
 import Navbar from './components/common/Navbar'
 import PropertyView from './screens/PropertyView'
 import Footer from './components/common/Footer'
+import { Toaster } from 'react-hot-toast'
 
 
 function App() {
@@ -11,7 +12,9 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <Toaster/>
       <Routes>
+        
         <Route path="/" element={<Home />} />
         <Route path="/property/:mode" element={<PropertyView />} />
       </Routes>
