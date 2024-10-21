@@ -14,7 +14,6 @@ function App() {
       <Navbar />
       <Toaster/>
       <Routes>
-        
         <Route path="/" element={<Home />} />
         <Route path="/property/:mode" element={<PropertyView />} />
       </Routes>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useDispatch } from 'react-redux';
-import { toggleIsOpen } from '../../store/slices/SignInSlice';
+import { toggleIsNewUserModalOpen, toggleIsSignInOpen } from '../../store/slices/SignInSlice';
 import axios from 'axios';
 import { PinInput, PinInputField } from '@chakra-ui/react';
 import { HStack } from '@chakra-ui/react';
@@ -14,7 +14,7 @@ const SignInModal = () => {
     const [otp, setOtp] = useState('');
 
     const closeSignInModal = () => {
-        dispatch(toggleIsOpen());
+        dispatch(toggleIsSignInOpen());
     };
 
     const sendOtp = async () => {
@@ -35,9 +35,15 @@ const SignInModal = () => {
         const res = await axios.post('http://localhost:8080/api/v1/auth/verifyOTP', {
             phoneNumber: phoneNumber, 
             otp: otp,
+            reqID: reqID
         })
 
-        console.log('res', res)
+        if(res.data.success){
+            toast.success('OTP verified successfully')
+            dispatch(toggleIsSignInOpen())
+            dispatch(toggleIsNewUserModalOpen())
+            return;
+        }
     }
 
 

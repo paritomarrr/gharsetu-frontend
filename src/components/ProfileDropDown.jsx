@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Menu } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { toggleIsOpen } from '../store/slices/SignInSlice';
+import { useDispatch } from 'react-redux';
+import { toggleIsSignInOpen } from '../store/slices/SignInSlice';
 
 const ProfileDropDown = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -26,7 +26,7 @@ const ProfileDropDown = () => {
     }, [])
 
     const openSignInModal = () => {
-        dispatch(toggleIsOpen())
+        dispatch(toggleIsSignInOpen())
     }
 
     return (
@@ -46,10 +46,7 @@ const ProfileDropDown = () => {
                         </div>
                         <div className='w-full h-[1px] bg-[#DDD]'> </div>
                         <div className='py-[10px] px-4'>
-                            Sign Up
-                        </div>
-                        <div className='py-[10px] px-4'>
-                            Log In
+                            Know More
                         </div>
                     </div>
                 )}

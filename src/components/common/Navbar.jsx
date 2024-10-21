@@ -7,9 +7,13 @@ import SignInModal from '../signIn/SignInModal';
 
 
 const Navbar = () => {
-  const isSignInOpen = useSelector((state) => state.signInModal.isOpen);
+  const isSignInOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
+  const isNewUserDetailsModalOpen = useSelector((state) => state.signInModal.isNewUserModalOpen);
 
-  console.log('isSignInOpen', isSignInOpen)
+  console.log({
+    isSignInOpen,
+    isNewUserDetailsModalOpen
+  });
 
   return (
     <>
