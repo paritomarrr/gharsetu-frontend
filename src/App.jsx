@@ -10,15 +10,15 @@ import { Toaster } from 'react-hot-toast'
 function App() {
 
   return (
-    <BrowserRouter>
+    <>
       <Navbar />
-      <Toaster/>
+      <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/property/:mode" element={<PropertyView />} />
       </Routes>
       <Footer />
-    </BrowserRouter>
+    </>
   )
 }
 

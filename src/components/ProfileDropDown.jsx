@@ -2,57 +2,71 @@ import { useState, useEffect, useRef } from 'react'
 import { Menu } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { toggleIsSignInOpen } from '../store/slices/SignInSlice';
+import { useContext } from 'react';
+import { UserContext } from '../context/userContext';
 
-const ProfileDropDown = () => {
-    const [isOpen, setIsOpen] = useState(false)
-    const dropdownRef = useRef(null)
+const ProfileDropDown = ({ user }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
+    const { logOut } = useContext(UserContext); 
 
     const dispatch = useDispatch();
     const toggleDropDown = () => {
-        setIsOpen(!isOpen)
-    }
+        setIsOpen(!isOpen);
+    };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false)
+                setIsOpen(false);
             }
-        }
-        document.addEventListener('mousedown', handleClickOutside)
+        };
+        document.addEventListener('mousedown', handleClickOutside);
 
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [])
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const openSignInModal = () => {
-        dispatch(toggleIsSignInOpen())
-    }
+        dispatch(toggleIsSignInOpen());
+    };
 
     return (
         <div className='relative' ref={dropdownRef}>
             <div onClick={toggleDropDown} className='flex items-center gap-[14px] py-2 px-3 border-[1px] rounded-full cursor-pointer'>
                 <Menu size={20} />
-                <div className='bg-primary text-white flex justify-center items-center rounded-full py-1 px-[10px]'> K </div>
+                <div className='bg-primary text-white flex justify-center items-center rounded-full py-1 px-[10px]'>K</div>
             </div>
-            <div className='absolute right-0'>
-                {isOpen && (
-                    <div className='py-2 border-[1px] rounded-xl bg-white shadow-custom w-[220px] text-sm'>
-                        <div onClick={openSignInModal} className='py-[10px] px-4 font-bold cursor-pointer'>
-                            Sign Up
-                        </div>
-                        <div className='py-[10px] px-4'>
-                            Log In
-                        </div>
-                        <div className='w-full h-[1px] bg-[#DDD]'> </div>
-                        <div className='py-[10px] px-4'>
-                            Know More
-                        </div>
+            {isOpen && (
+                <div className='absolute right-0 py-2 border-[1px] rounded-xl bg-white shadow-custom w-[220px] text-sm'>
+                    {user ? (
+                        <>
+                            <div onClick={openSignInModal} className='py-[10px] px-4 font-bold cursor-pointer'>
+                                Hi, {user.firstName}
+                            </div>
+                            <div className='py-[10px] px-4 cursor-pointer'>
+                                Profile
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div onClick={openSignInModal} className='py-[10px] px-4 font-bold cursor-pointer'>
+                                Sign Up
+                            </div>
+                            <div className='py-[10px] px-4 cursor-pointer'>
+                                Log In
+                            </div>
+                        </>
+                    )}
+                    <div className='w-full h-[1px] bg-[#DDD]'></div>
+                    <div onClick={logOut} className='py-[10px] px-4 cursor-pointer'>
+                        Log Out
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
-    )
-}
+    );
+};
 
-export default ProfileDropDown
+export default ProfileDropDown;

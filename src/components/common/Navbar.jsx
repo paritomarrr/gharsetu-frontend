@@ -4,16 +4,25 @@ import { Bell } from 'lucide-react';
 import ProfileDropDown from '../ProfileDropDown';
 import { useSelector } from 'react-redux';
 import SignInModal from '../signIn/SignInModal';
+import NewUserDetails from '../signIn/NewUserDetails';
+import { useContext, useEffect } from 'react';
+import { UserContext } from '../../context/userContext';
+import { useDispatch } from 'react-redux';
+import { toggleIsNewUserModalOpen } from '../../store/slices/SignInSlice';
 
 
 const Navbar = () => {
+  const { user } = useContext(UserContext); 
+  const dispatch = useDispatch();
   const isSignInOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
   const isNewUserDetailsModalOpen = useSelector((state) => state.signInModal.isNewUserModalOpen);
+  
+  useEffect(()=>{
+    if( user && !user.firstName){
+      dispatch(toggleIsNewUserModalOpen())
+    }
+  },[dispatch, user])
 
-  console.log({
-    isSignInOpen,
-    isNewUserDetailsModalOpen
-  });
 
   return (
     <>
@@ -34,13 +43,19 @@ const Navbar = () => {
 
         <div className='flex gap-4 items-center'>
           <Bell size={20} />
-          <ProfileDropDown />
+          <ProfileDropDown user={user}/>
         </div>
       </div>
 
       {
         isSignInOpen && (
           <SignInModal />
+        )
+      }
+
+      {
+        isNewUserDetailsModalOpen && (
+          <NewUserDetails user={user}/>
         )
       }
 

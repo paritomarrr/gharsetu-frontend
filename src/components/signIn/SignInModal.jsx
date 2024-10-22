@@ -6,8 +6,9 @@ import axios from 'axios';
 import { PinInput, PinInputField } from '@chakra-ui/react';
 import { HStack } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
-const SignInModal = () => {
+const   SignInModal = () => {
     const dispatch = useDispatch();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [reqID, setReqID] = useState('');
@@ -16,6 +17,13 @@ const SignInModal = () => {
     const closeSignInModal = () => {
         dispatch(toggleIsSignInOpen());
     };
+
+    const isSignInModalOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
+    const isNewUserModalOpen = useSelector((state) => state.signInModal.isNewUserModalOpen);
+    console.log({
+        isSignInModalOpen,
+        isNewUserModalOpen
+    })
 
     const sendOtp = async () => {
         const res = await axios.post('http://localhost:8080/api/v1/auth/sendOTP', {
@@ -42,6 +50,8 @@ const SignInModal = () => {
             toast.success('OTP verified successfully')
             dispatch(toggleIsSignInOpen())
             dispatch(toggleIsNewUserModalOpen())
+
+            window.localStorage.setItem('token', res.data.token)
             return;
         }
     }
