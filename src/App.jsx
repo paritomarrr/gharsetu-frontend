@@ -5,6 +5,7 @@ import Navbar from './components/common/Navbar'
 import PropertyView from './screens/PropertyView'
 import Footer from './components/common/Footer'
 import { Toaster } from 'react-hot-toast'
+import PropertyPage from './screens/PropertyPage'
 
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
       <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/property/:mode" element={<PropertyView />} />
+        <Route path="/properties/:mode" element={<PropertyView />} />
+        <Route path='/property/:id' element={<PropertyPage/>}/>
       </Routes>
       <Footer />
     </>

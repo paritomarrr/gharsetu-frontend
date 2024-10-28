@@ -12,7 +12,7 @@ const NewUserDetails = ({ user }) => {
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [birthDate, setBirthDate] = useState(user?.birthDate || '');
-  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || '');
+  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber);
   const [email, setEmail] = useState(user?.email || '');
   const [password, setPassword] = useState('');
 

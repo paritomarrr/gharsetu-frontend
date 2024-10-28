@@ -8,7 +8,7 @@ import { HStack } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 
-const   SignInModal = () => {
+const SignInModal = () => {
     const dispatch = useDispatch();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [reqID, setReqID] = useState('');
@@ -39,18 +39,25 @@ const   SignInModal = () => {
     }
 
     const verifyOTP = async () => {
-        // phone number ko replace kra h reqID se
         const res = await axios.post('http://localhost:8080/api/v1/auth/verifyOTP', {
-            phoneNumber: phoneNumber, 
+            phoneNumber: phoneNumber,
             otp: otp,
             reqID: reqID
         })
 
-        if(res.data.success){
+        console.log(res)
+
+        if (res.data.status === 200) {
             toast.success('OTP verified successfully')
+            window.localStorage.setItem('token', res.data.token)
             dispatch(toggleIsSignInOpen())
             dispatch(toggleIsNewUserModalOpen())
+            return;
+        }
 
+        if (res.data.status === 202) {
+            toast.error('User Logged in successfully')
+            dispatch(toggleIsSignInOpen())
             window.localStorage.setItem('token', res.data.token)
             return;
         }
@@ -67,7 +74,7 @@ const   SignInModal = () => {
 
                 <div id="recaptcha-container" className="justify-center flex"></div>
 
-                <div className="py-8 px-6 flex flex-col gap-6">
+                <div className="py-8 px-6 flex flex-col gap-3">
                     <div>Welcome to GharSetu</div>
                     <div className="flex gap-4 flex-col">
                         <div className="flex flex-col gap-2">
@@ -113,6 +120,21 @@ const   SignInModal = () => {
                         <button onClick={reqID ? verifyOTP : sendOtp} className="bg-primary text-white rounded-lg w-full py-[14px] px-6">
                             Continue
                         </button>
+                    </div>
+
+                    <div className='flex items-center'>
+                        <div className='w-full h-[1px] bg-[#DDD]'></div>
+                        <div className='px-5 text-xs'>or</div>
+                        <div className='w-full h-[1px] bg-[#DDD]'></div>
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <div className='border-[1px] font-semibold cursor-pointer border-black rounded-md py-2 text-sm text-center'>
+                            Continue with Google
+                        </div>
+
+                        <div className='border-[1px] font-semibold cursor-pointer border-black rounded-md py-2 text-sm text-center'>
+                            Continue with email
+                        </div>
                     </div>
                 </div>
             </div>

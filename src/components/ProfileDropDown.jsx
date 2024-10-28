@@ -8,7 +8,7 @@ import { UserContext } from '../context/userContext';
 const ProfileDropDown = ({ user }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const { logOut } = useContext(UserContext); 
+    const { logOut } = useContext(UserContext);
 
     const dispatch = useDispatch();
     const toggleDropDown = () => {
@@ -48,6 +48,11 @@ const ProfileDropDown = ({ user }) => {
                             <div className='py-[10px] px-4 cursor-pointer'>
                                 Profile
                             </div>
+                            <div className='w-full h-[1px] bg-[#DDD]'></div>
+
+                            <div onClick={logOut} className='py-[10px] px-4 cursor-pointer'>
+                                Log Out
+                            </div>
                         </>
                     ) : (
                         <>
@@ -56,13 +61,10 @@ const ProfileDropDown = ({ user }) => {
                             </div>
                             <div className='py-[10px] px-4 cursor-pointer'>
                                 Log In
-                            </div>
+                            </div>                        
                         </>
                     )}
-                    <div className='w-full h-[1px] bg-[#DDD]'></div>
-                    <div onClick={logOut} className='py-[10px] px-4 cursor-pointer'>
-                        Log Out
-                    </div>
+
                 </div>
             )}
         </div>

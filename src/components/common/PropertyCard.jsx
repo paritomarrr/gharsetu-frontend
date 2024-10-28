@@ -10,7 +10,7 @@ const PropertyCard = () => {
           <div className='bg-white py-1 px-2 rounded-full text-xs'> Guest favourite </div>
           <UnLiked />
         </div>
-        <img className="h-[255px] rounded-lg z-0" src='https://s3-alpha-sig.figma.com/img/53a5/3145/feb2184851666f7851298fda9131f8f1?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=fDoQdTa8R8vMgB6QKvyAlhu0gHysyAiPdokniUgzZ7D~TAtkSRVu44ZF8BHSRaWK9Tmgt9LRkIB06h~XArBTM01v6WslkD5t978EfsGmYy5OFH6OI9S38IysL2kOdNcZoVrW1n5QcpUUuniRKsAu0gstck5upSCVfCs4LdBfSeTcopiHFNRUml~VjMTir1B~DCxmXpLUsNerc9MwumP1T7gmWepa0Q36JVvzJ5MaUYH5QTnrbSSNUPBbT8AHDSuvLw7kG8BPkNi1NTYkppMR3bX9MrZUZmWsSOQqEP9ZXh07hBL051fBe61KIVdrx8wFJAVPYWUDb8el1b5aCxTc-w__' alt='err' />
+        <img className="h-[255px] rounded-lg z-0" src='https://res.cloudinary.com/dzqgyl0wf/image/upload/v1729887606/wsaua8yjrxhll6bwrqag.png' alt='err' />
       </div>
       <div className="">
         <div className="flex justify-between">

@@ -19,6 +19,7 @@ const Navbar = () => {
   
   useEffect(()=>{
     if( user && !user.firstName){
+      console.log('user', user)
       dispatch(toggleIsNewUserModalOpen())
     }
   },[dispatch, user])
@@ -33,12 +34,12 @@ const Navbar = () => {
         </Link>
 
         <div className='flex text-[#6A6A6A] items-center'>
-          <div className='p-3'> Buy </div>
+          <Link to={'/property/buy'} className='p-3 cursor-pointer'> Buy </Link>
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
-          <div className='p-3'> Rent </div>
+          <Link to={'/property/rent'} className='p-3 cursor-pointer'> Rent </Link>
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
-          <div className='p-3'> Post Property </div>
-          <div className='bg-gradient-to-r from-[#1D4CBE] to-[#6398FF] text-white text-xs  py-1 px-2 rounded-full'> New </div>
+          <div className='p-3 cursor-pointer'> Post Property </div>
+          <div className='bg-gradient-to-r from-[#1D4CBE] to-[#6398FF] cursor-pointer text-white text-xs  py-1 px-2 rounded-full'> New </div>
         </div>
 
         <div className='flex gap-4 items-center'>
