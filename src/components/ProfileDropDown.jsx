@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { Menu } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { toggleIsSignInOpen } from '../store/slices/SignInSlice';
 import { useContext } from 'react';
 import { UserContext } from '../context/userContext';
+import { Link } from 'react-router-dom';
 
 const ProfileDropDown = ({ user }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -36,24 +37,26 @@ const ProfileDropDown = ({ user }) => {
         <div className='relative' ref={dropdownRef}>
             <div onClick={toggleDropDown} className='flex items-center gap-[14px] py-2 px-3 border-[1px] rounded-full cursor-pointer'>
                 <Menu size={20} />
-                <div className='bg-primary text-white flex justify-center items-center rounded-full py-1 px-[10px]'>K</div>
+                <div className='bg-primary text-white flex justify-center items-center rounded-full py-1 px-[10px]'>
+                {user ? user?.firstName[0].toUpperCase() : <User size={16} />}
+                </div>
             </div>
             {isOpen && (
                 <div className='absolute right-0 py-2 border-[1px] rounded-xl bg-white shadow-custom w-[220px] text-sm'>
                     {user ? (
-                        <>
-                            <div onClick={openSignInModal} className='py-[10px] px-4 font-bold cursor-pointer'>
+                        <div className='flex flex-col gap-1'>
+                            <div className='py-[10px] px-4 font-bold cursor-pointer'>
                                 Hi, {user.firstName}
                             </div>
-                            <div className='py-[10px] px-4 cursor-pointer'>
+                            <Link to={'/profile'} className='py-[10px] px-4 cursor-pointer'>
                                 Profile
-                            </div>
+                            </Link>
                             <div className='w-full h-[1px] bg-[#DDD]'></div>
 
                             <div onClick={logOut} className='py-[10px] px-4 cursor-pointer'>
                                 Log Out
                             </div>
-                        </>
+                        </div>
                     ) : (
                         <>
                             <div onClick={openSignInModal} className='py-[10px] px-4 font-bold cursor-pointer'>

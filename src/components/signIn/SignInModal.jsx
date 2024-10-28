@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { X } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { toggleIsNewUserModalOpen, toggleIsSignInOpen } from '../../store/slices/SignInSlice';
@@ -7,12 +7,14 @@ import { PinInput, PinInputField } from '@chakra-ui/react';
 import { HStack } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
+import { UserContext } from '../../context/userContext';
 
 const SignInModal = () => {
     const dispatch = useDispatch();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [reqID, setReqID] = useState('');
     const [otp, setOtp] = useState('');
+    const {setNewUserId} = useContext(UserContext)
 
     const closeSignInModal = () => {
         dispatch(toggleIsSignInOpen());
@@ -43,25 +45,18 @@ const SignInModal = () => {
             phoneNumber: phoneNumber,
             otp: otp,
             reqID: reqID
-        })
-
-        console.log(res)
-
-        if (res.data.status === 200) {
-            toast.success('OTP verified successfully')
-            window.localStorage.setItem('token', res.data.token)
-            dispatch(toggleIsSignInOpen())
-            dispatch(toggleIsNewUserModalOpen())
+        });
+    
+        if (res.data.success) {
+            toast.success('OTP verified successfully');
+            window.localStorage.setItem('token', res.data.token);
+            dispatch(toggleIsSignInOpen());            
+            // Reload to ensure updated user state across app
+            window.location.reload(); 
             return;
         }
-
-        if (res.data.status === 202) {
-            toast.error('User Logged in successfully')
-            dispatch(toggleIsSignInOpen())
-            window.localStorage.setItem('token', res.data.token)
-            return;
-        }
-    }
+        console.log('Verification failed');
+    };
 
 
     return (

@@ -12,17 +12,19 @@ import { toggleIsNewUserModalOpen } from '../../store/slices/SignInSlice';
 
 
 const Navbar = () => {
-  const { user } = useContext(UserContext); 
+  const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const isSignInOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
   const isNewUserDetailsModalOpen = useSelector((state) => state.signInModal.isNewUserModalOpen);
-  
-  useEffect(()=>{
-    if( user && !user.firstName){
+
+  useEffect(() => {
+    if (user && !user.firstName) {
       console.log('user', user)
       dispatch(toggleIsNewUserModalOpen())
     }
-  },[dispatch, user])
+  }, [dispatch, user])
+
+  console.log('user', user)
 
 
   return (
@@ -38,13 +40,14 @@ const Navbar = () => {
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
           <Link to={'/property/rent'} className='p-3 cursor-pointer'> Rent </Link>
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
-          <div className='p-3 cursor-pointer'> Post Property </div>
-          <div className='bg-gradient-to-r from-[#1D4CBE] to-[#6398FF] cursor-pointer text-white text-xs  py-1 px-2 rounded-full'> New </div>
+          <Link to={'/postProperty'} className='flex items-center'>
+            <div className='p-3 cursor-pointer'> Post Property </div>
+            <div className='bg-gradient-to-r h-fit from-[#1D4CBE] to-[#6398FF] cursor-pointer text-white text-xs  py-1 px-2 rounded-full'> New </div></Link>
         </div>
 
         <div className='flex gap-4 items-center'>
           <Bell size={20} />
-          <ProfileDropDown user={user}/>
+          <ProfileDropDown user={user} />
         </div>
       </div>
 
@@ -56,7 +59,7 @@ const Navbar = () => {
 
       {
         isNewUserDetailsModalOpen && (
-          <NewUserDetails user={user}/>
+          <NewUserDetails user={user} />
         )
       }
 

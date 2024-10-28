@@ -1,10 +1,11 @@
 import { Star } from 'lucide-react';
 import UnLiked from '../../assets/icons/UnLiked';
+import { Link } from 'react-router-dom';
 
 
 const PropertyCard = () => {
   return (
-    <div className="flex gap-[10px] flex-col cursor-pointer">
+    <Link to={'/property/gg'} className="flex gap-[10px] flex-col cursor-pointer">
       <div className='relative'>
         <div className="absolute p-[14px] cursor-pointer flex justify-between w-full">
           <div className='bg-white py-1 px-2 rounded-full text-xs'> Guest favourite </div>
@@ -21,7 +22,7 @@ const PropertyCard = () => {
         <div className="text-sm">1200 sq.ft</div>
       </div>
 
-    </div>
+    </Link>
   )
 }
 

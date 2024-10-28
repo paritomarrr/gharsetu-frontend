@@ -8,9 +8,12 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setuser] = useState(null);
   const navigate = useNavigate(); // Hook for navigation
+  const [formStep, setFormStep] = useState(1)
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+
+    console.log('Token from Context', token)
 
     const getUser = async () => {
       if (token) {
@@ -34,7 +37,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, setuser, logOut }}>
+    <UserContext.Provider value={{ user, setuser, logOut, formStep, setFormStep }}>
       {children}
     </UserContext.Provider>
   );
