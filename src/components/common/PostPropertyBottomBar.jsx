@@ -42,7 +42,7 @@ const PostPropertyBottomBar = () => {
     <div className={`bottom-0 px-20 items-center py-4 border-t-2 flex ${formStep == 1 ? 'justify-end' : 'justify-between'}`}>
       {
         formStep !== 1 && (
-          <div className="font-semibold underline" onClick={prevStep}> Back </div>
+          <div className="font-semibold underline cursor-pointer" onClick={prevStep}> Back </div>
         )
       }
       {

@@ -1,5 +1,5 @@
 import MainIcon from '../../assets/icons/MainIcon'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Bell } from 'lucide-react';
 import ProfileDropDown from '../ProfileDropDown';
 import { useSelector } from 'react-redux';
@@ -9,11 +9,13 @@ import { useContext, useEffect } from 'react';
 import { UserContext } from '../../context/userContext';
 import { useDispatch } from 'react-redux';
 import { toggleIsNewUserModalOpen } from '../../store/slices/SignInSlice';
+import { toggleIsSignInOpen } from '../../store/slices/SignInSlice';
 
 
 const Navbar = () => {
-  const { user } = useContext(UserContext);
+  const { user, setFormStep } = useContext(UserContext);
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const isSignInOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
   const isNewUserDetailsModalOpen = useSelector((state) => state.signInModal.isNewUserModalOpen);
 
@@ -24,7 +26,14 @@ const Navbar = () => {
     }
   }, [dispatch, user])
 
-  console.log('user', user)
+  const navigateToPostProperty = () => {
+    if (!user && !user.firstName) {
+      dispatch(toggleIsSignInOpen());
+    } else {
+      setFormStep(0)
+      navigate('/postProperty')
+    }
+  }
 
 
   return (
@@ -40,9 +49,10 @@ const Navbar = () => {
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
           <Link to={'/property/rent'} className='p-3 cursor-pointer'> Rent </Link>
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
-          <Link to={'/postProperty'} className='flex items-center'>
+          <div onClick={navigateToPostProperty} className='flex items-center'>
             <div className='p-3 cursor-pointer'> Post Property </div>
-            <div className='bg-gradient-to-r h-fit from-[#1D4CBE] to-[#6398FF] cursor-pointer text-white text-xs  py-1 px-2 rounded-full'> New </div></Link>
+            <div className='bg-gradient-to-r h-fit from-[#1D4CBE] to-[#6398FF] cursor-pointer text-white text-xs  py-1 px-2 rounded-full'> New </div>
+          </div>
         </div>
 
         <div className='flex gap-4 items-center'>

@@ -1,55 +1,100 @@
-import { Button, Input } from '@chakra-ui/react'
+import { Button, Input, Box, Text, VStack, HStack } from '@chakra-ui/react';
 
-const PersonalInfo = () => {
-  
+const PersonalInfo = ({ propertyForm, setPropertyForm }) => {
+
+  const userTypes = ['Owner', 'Builder', 'Agent', 'Flatmate'];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPropertyForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
-    <div className='h-[calc(100vh-158px)] px-20 py-6 flex flex-col gap-9 overflow-scroll'>
-      <div>
-        <div className="font-bold text-3xl">
-          1. Personal Information
-        </div>
-        <div className='text-2xl'>Let’s get started with the basics.</div>
-      </div>
+    <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
+      <VStack spacing={9} align="start">
+        <Box>
+          <Text fontWeight="bold" fontSize="3xl">1. Personal Information</Text>
+          <Text fontSize="2xl">Let’s get started with the basics.</Text>
+        </Box>
 
-      <div className='flex flex-col gap-6'>
-        <div className='text-xl'>
-          Who’s listing this property?
-        </div>
-        <div className='flex gap-8'>
-          <div className='text-sm min-w-28 border-[1px] py-3 flex items-center justify-center rounded-xl font-semibold cursor-pointer'> Owner </div>
-          <div className='text-sm min-w-28 border-[1px] py-3 flex items-center justify-center rounded-xl font-semibold cursor-pointer'> Builder </div>
-          <div className='text-sm min-w-28 border-[1px] py-3 flex items-center justify-center rounded-xl font-semibold cursor-pointer'> Agent </div>
-          <div className='text-sm min-w-28 border-[1px] py-3 flex items-center justify-center rounded-xl font-semibold cursor-pointer'> Flatmate </div>
-        </div>
-      </div>
-      <div className='flex flex-col'>
-        <input type='text' className='border-[1px] px-3 py-[10px] rounded-t-lg' placeholder='First Name' />
-        <input type='text' className='border-[1px] px-3 py-[10px] rounded-b-lg' placeholder='Last Name' />
-        <div className='text-[#717171] text-xs py-2'>
-          Make sure it matches the name on your government ID.
-        </div>
-      </div>
-      <div>
-        <input type='text' className='border-[1px] px-3 py-[10px] rounded-lg w-full' placeholder='Phone Number' />
-      </div>
+        <VStack align="start" spacing={6}>
+          <Text fontSize="xl">Who’s listing this property?</Text>
+          <HStack spacing={8}>
+            {userTypes.map((type) => (
+              <Button
+                key={type}
+                size="sm"
+                variant="outline"
+                fontWeight="semibold"
+                borderRadius="xl"
+                onClick={() => {
+                  setPropertyForm((prev) => ({
+                    ...prev,
+                    listedBy: type,
+                  }));
+                }}
+                colorScheme={propertyForm?.listedBy === type ? 'teal' : 'gray'}
+              >
+                {type}
+              </Button>
+            ))}
 
-      <div className='flex flex-col'>
-        <input type='text' className='border-[1px] px-3 py-[10px] rounded-lg' placeholder='Email' />
-        <div className='text-[#717171] text-xs py-2'>
-          We’ll send you important updates and notifications.
-        </div>
-      </div>
+          </HStack>
+        </VStack>
 
-      <div className='flex flex-col'>
-        <input type='text' className='border-[1px] px-3 py-[10px] rounded-lg' placeholder='City' />
-        <div className='text-[#717171] text-xs py-2'>
-          This helps us display your listing to the right audience based on location.
-        </div>
-      </div>
+        <VStack spacing={1} align="start" className='w-full'>
+          <Input
+            name="firstName"
+            variant="outline"
+            placeholder="First Name"
+            value={propertyForm?.firstName}
+            onChange={handleInputChange}
+          />
+          <Input
+            name="lastName"
+            variant="outline"
+            placeholder="Last Name"
+            value={propertyForm?.lastName}
+            onChange={handleInputChange}
+          />
+          <Text color="gray.500" fontSize="xs">Make sure it matches the name on your government ID.</Text>
+        </VStack>
 
+        <Input
+          name="phoneNumber"
+          variant="outline"
+          placeholder="Phone Number"
+          value={propertyForm?.phoneNumber}
+          onChange={handleInputChange}
+        />
 
-    </div>
-  )
+        <VStack spacing={1} align="start" className='w-full'>
+          <Input
+            name="email"
+            variant="outline"
+            placeholder="Email"
+            value={propertyForm?.email}
+            onChange={handleInputChange}
+          />
+          <Text color="gray.500" fontSize="xs">We’ll send you important updates and notifications.</Text>
+        </VStack>
+
+        <VStack spacing={1} align="start" className='w-full'>
+          <Input
+            name="firmName"
+            variant="outline"
+            placeholder="Firm Name"
+            value={propertyForm?.firmName}
+            onChange={handleInputChange}
+          />
+          <Text color="gray.500" fontSize="xs">Name of the firm you are associated with.</Text>
+        </VStack>
+      </VStack>
+    </Box>
+  );
 }
 
-export default PersonalInfo
+export default PersonalInfo;
