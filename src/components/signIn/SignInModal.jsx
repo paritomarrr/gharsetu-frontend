@@ -22,10 +22,10 @@ const SignInModal = () => {
 
     const isSignInModalOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
     const isNewUserModalOpen = useSelector((state) => state.signInModal.isNewUserModalOpen);
-    console.log({
-        isSignInModalOpen,
-        isNewUserModalOpen
-    })
+    // console.log({
+    //     isSignInModalOpen,
+    //     isNewUserModalOpen
+    // })
 
     const sendOtp = async () => {
         const res = await axios.post('http://localhost:8080/api/v1/auth/sendOTP', {

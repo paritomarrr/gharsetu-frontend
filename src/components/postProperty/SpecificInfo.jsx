@@ -2,6 +2,7 @@ import { Box, Text, VStack, HStack, Button, Input } from '@chakra-ui/react';
 import Separator from '../../components/Separator';
 import { useState } from 'react';
 import { Cable, Cctv, CircleParking, Dumbbell, Fence, HandPlatter, Phone, SquareChevronUp, Trash2, Volleyball, WashingMachine, Waves, Webcam, Wifi } from 'lucide-react';
+import DropZone from '../DropZone';
 
 const SpecificInfo = ({ propertyForm, setPropertyForm }) => {
   const [selectedSubType, setSelectedSubType] = useState('');
@@ -13,6 +14,7 @@ const SpecificInfo = ({ propertyForm, setPropertyForm }) => {
   const furnishTypes = ['Fully furnished', 'Semi-furnished', 'Unfurnished'];
   const bhkOptions = ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
   const constructionTypes = ['Ready to Move', 'Under Construction'];
+
 
 
   const flatFurnishings = [
@@ -181,13 +183,26 @@ const SpecificInfo = ({ propertyForm, setPropertyForm }) => {
           </HStack>
         </VStack>
 
-        {/* Price Input */}
+        {/* Building / Project / Society Input */}
         <VStack align="start" spacing={1}>
           <Input
             variant="outline"
             placeholder="Building / Project / Society"
             value={price}
-            // onChange={handlePriceChange}
+          // onChange={handlePriceChange}
+          />
+          <Text color="gray.500" fontSize="xs">
+            This helps us display your listing to the right audience based on location.
+          </Text>
+        </VStack>
+
+        {/* Locality Input */}
+        <VStack align="start" spacing={1}>
+          <Input
+            variant="outline"
+            placeholder="Locality"
+            value={price}
+          // onChange={handlePriceChange}
           />
           <Text color="gray.500" fontSize="xs">
             This helps us display your listing to the right audience based on location.
@@ -238,6 +253,34 @@ const SpecificInfo = ({ propertyForm, setPropertyForm }) => {
           />
           <Text color="gray.500" fontSize="xs">
             Enter the asking price for your property in your local currency. Make sure to set a competitive price to attract potential buyers or renters.
+          </Text>
+        </VStack>
+
+        {/* Construction Type  */}
+        <VStack align="start" spacing={4}>
+          <Text fontSize="xl" fontWeight="semibold">Construction Type :</Text>
+          <HStack spacing={8}>
+            {constructionTypes.map((subType) => (
+              <Button
+                key={subType}
+                size="sm"
+                variant="outline"
+                fontWeight="semibold"
+                borderRadius="xl"
+                onClick={() => setPropertyForm((prev) => ({ ...prev, propertySubType: subType }))}
+                colorScheme={propertyForm.propertySubType === subType ? 'teal' : 'gray'}
+              >
+                {subType}
+              </Button>
+            ))}
+          </HStack>
+        </VStack>
+
+        <DropZone />
+
+        <VStack align='start' spacing={4}>
+          <Text fontSize="xl" fontWeight="semibold">
+            Pin Your Property Location :
           </Text>
         </VStack>
       </VStack>
