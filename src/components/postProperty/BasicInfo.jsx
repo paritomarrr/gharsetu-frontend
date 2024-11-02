@@ -1,30 +1,35 @@
 import { Box, Text, VStack, HStack, Button, Input } from '@chakra-ui/react';
 import Separator from '../../components/Separator';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updatePropertyForm } from '../../store/slices/PropertyFormSlice';
 
-const BasicInfo = ({ propertyForm, setPropertyForm }) => {
+const BasicInfo = () => {
+  const dispatch = useDispatch();
+  const propertyForm = useSelector((state) => state.propertyForm);
 
   const propertyTypes = ['Residential', 'Commercial'];
   const lookingToOptions = ['Rent', 'Sell', 'Co-Living Space'];
 
   const handlePropertyTypeChange = (type) => {
-    setPropertyForm((prev) => ({
-      ...prev,
-      propertyType: type, // Update propertyType in propertyForm
-    }));
+    dispatch(updatePropertyForm({ propertyType: type })); // Update propertyType in propertyForm
   };
 
   const handleLookingToChange = (option) => {
-    setPropertyForm((prev) => ({
-      ...prev,
-      availableFor: option, // Update availableFor in propertyForm
+    dispatch(updatePropertyForm({ availableFor: option })); // Update availableFor in propertyForm
+  };
+
+  const handleCityChange = (e) => {
+    dispatch(updatePropertyForm({
+      address: {
+        ...propertyForm.address,
+        city: e.target.value, // Update city in propertyForm
+      },
     }));
   };
 
   return (
     <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
       <VStack spacing={9} align="start">
-        
         <Box>
           <Text fontWeight="bold" fontSize="3xl">2. Basic Property Details</Text>
           <Text fontSize="2xl">Tell us about your property so we can help you find the right buyers or tenants faster.</Text>
@@ -42,7 +47,7 @@ const BasicInfo = ({ propertyForm, setPropertyForm }) => {
                 fontWeight="semibold"
                 borderRadius="xl"
                 onClick={() => handlePropertyTypeChange(type)}
-                colorScheme={propertyForm?.propertyType === type ? 'teal' : 'gray'}
+                colorScheme={propertyForm.propertyType === type ? 'teal' : 'gray'}
               >
                 {type}
               </Button>
@@ -61,7 +66,7 @@ const BasicInfo = ({ propertyForm, setPropertyForm }) => {
                 fontWeight="semibold"
                 borderRadius="xl"
                 onClick={() => handleLookingToChange(option)}
-                colorScheme={propertyForm?.availableFor === option ? 'teal' : 'gray'}
+                colorScheme={propertyForm.availableFor === option ? 'teal' : 'gray'}
               >
                 {option}
               </Button>
@@ -73,22 +78,13 @@ const BasicInfo = ({ propertyForm, setPropertyForm }) => {
           <Input 
             variant="outline" 
             placeholder="City of the Property" 
-            value={propertyForm?.address.city} // Bind to propertyForm
-            onChange={(e) => 
-              setPropertyForm((prev) => ({
-                ...prev,
-                address: {
-                  ...prev.address,
-                  city: e.target.value, // Update city in propertyForm
-                },
-              }))
-            }
+            value={propertyForm.address.city} // Bind to propertyForm
+            onChange={handleCityChange} // Use the handler for city change
           />
           <Text color="gray.500" fontSize="xs">
             This helps us display your listing to the right audience based on location.
           </Text>
         </VStack>
-
       </VStack>
     </Box>
   );

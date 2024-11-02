@@ -1,12 +1,14 @@
 import { useContext, useEffect } from "react"
 import { UserContext } from "../../context/userContext"
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 const PostPropertyBottomBar = () => {
   const { formStep, setFormStep, user } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const propertyForm = useSelector((state) => state.propertyForm);
 
   const nextStep = () => {
     if (!user) {
@@ -31,6 +33,7 @@ const PostPropertyBottomBar = () => {
 
 
   const saveProperty = () => {
+    console.log('propertyForm', propertyForm)
     setFormStep(4)
   }
 

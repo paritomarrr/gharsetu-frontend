@@ -1,16 +1,19 @@
 import { Button, Input, Box, Text, VStack, HStack } from '@chakra-ui/react';
+import { useDispatch } from 'react-redux';
+import { updatePropertyForm } from '../../store/slices/PropertyFormSlice';
+import { useSelector } from 'react-redux';
 
-const PersonalInfo = ({ propertyForm, setPropertyForm }) => {
-
+const PersonalInfo = () => {
+  const dispatch = useDispatch();
+  const propertyForm = useSelector((state) => state.propertyForm);
   const userTypes = ['Owner', 'Builder', 'Agent', 'Flatmate'];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setPropertyForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    dispatch(updatePropertyForm({ [name]: value }));
   };
+
+  console.log('propertyForm',propertyForm)
 
   return (
     <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
@@ -31,17 +34,13 @@ const PersonalInfo = ({ propertyForm, setPropertyForm }) => {
                 fontWeight="semibold"
                 borderRadius="xl"
                 onClick={() => {
-                  setPropertyForm((prev) => ({
-                    ...prev,
-                    listedBy: type,
-                  }));
+                  dispatch(updatePropertyForm({ listedBy: type })); // Update the listedBy field
                 }}
                 colorScheme={propertyForm?.listedBy === type ? 'teal' : 'gray'}
               >
                 {type}
               </Button>
             ))}
-
           </HStack>
         </VStack>
 

@@ -16,7 +16,7 @@ const PropertyFromSlice = createSlice({
         area: '',
         address: {
             houseNumber: '',
-            street: '',
+            buildingProjectSociety: '',
             state: '',
             pincode: '',
             city: '',
@@ -24,17 +24,19 @@ const PropertyFromSlice = createSlice({
         },
         plotSize: {
             plotLength: '',
-            plotWidth: ''
+            plotWidth: '',
+            plotArea: ''
         },
         furnishType: '',
-        flatAmenities: [],
-        propertyAmenities: [],
+        flatFurnishings: [],
+        societyAmenities: [],
         askedPrice: '',
         propertyStatus: '',
         coordinates: {
             latitude: '',
             longitude: ''
-        }
+        },
+        images: [],
     },
     reducers: {
         toggleIsPropertyFormOpen: (state) => {
@@ -43,8 +45,14 @@ const PropertyFromSlice = createSlice({
         setPropertyId: (state, action) => {
             state.propertyId = action.payload;
         },
+        updatePropertyForm: (state, action) => {
+            return {
+                ...state,
+                ...action.payload, 
+            };
+        },
     },
 })
 
-export const { toggleIsPropertyFormOpen, setPropertyId } = PropertyFromSlice.actions;
+export const { toggleIsPropertyFormOpen, setPropertyId, updatePropertyForm } = PropertyFromSlice.actions;
 export default PropertyFromSlice.reducer;

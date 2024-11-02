@@ -37,8 +37,8 @@ const ProfileDropDown = ({ user }) => {
         <div className='relative' ref={dropdownRef}>
             <div onClick={toggleDropDown} className='flex items-center gap-[14px] py-2 px-3 border-[1px] rounded-full cursor-pointer'>
                 <Menu size={20} />
-                <div className='bg-primary text-white flex justify-center items-center rounded-full py-1 px-[10px]'>
-                {user ? user?.firstName[0].toUpperCase() : <User size={16} />}
+                <div className=' flex justify-center items-center  '>
+                    {user && user.firstName ? (<div className='bg-primary text-white px-[10px] py-[5px] rounded-full'> {user.firstName[0].toUpperCase()} </div>) : (<div className='bg-primary text-white p-[10px] rounded-full'> <User size={20} /> </div>)}
                 </div>
             </div>
             {isOpen && (
@@ -64,7 +64,7 @@ const ProfileDropDown = ({ user }) => {
                             </div>
                             <div className='py-[10px] px-4 cursor-pointer'>
                                 Log In
-                            </div>                        
+                            </div>
                         </>
                     )}
 
