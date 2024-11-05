@@ -74,7 +74,7 @@ const BasicInfo = () => {
           </HStack>
         </VStack>
 
-        <VStack align="start" spacing={1}>
+        {/* <VStack align="start" spacing={1}>
           <Input 
             variant="outline" 
             placeholder="City of the Property" 
@@ -84,7 +84,7 @@ const BasicInfo = () => {
           <Text color="gray.500" fontSize="xs">
             This helps us display your listing to the right audience based on location.
           </Text>
-        </VStack>
+        </VStack> */}
       </VStack>
     </Box>
   );

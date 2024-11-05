@@ -126,29 +126,47 @@ const SpecificInfo = () => {
     },
   ];
 
-  useEffect(()=>{
+  useEffect(() => {
     const reverseGeocode = async () => {
-     
-      const res = await fetch(` https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=pk.eyJ1IjoicGFyaXRvbWFyciIsImEiOiJjbTJ5Zmw1aXYwMDl3MmxzaG91bWRnNXgxIn0.ukF28kdk13Vf2y1EOKQFWg`);
+      const res = await fetch(
+        `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=pk.eyJ1IjoicGFyaXRvbWFyciIsImEiOiJjbTJ5Zmw1aXYwMDl3MmxzaG91bWRnNXgxIn0.ukF28kdk13Vf2y1EOKQFWg`
+      );
       const data = await res.json();
 
-      const state = data?.features[5]?.properties?.name
-      const city = data?.features[4]?.properties?.name
-      const locality = data?.features[3]?.properties?.name
-
-      console.log('data', data) 
+      const locality = data.features.find(
+        (feature) => feature.properties.feature_type === "locality"
+      )?.properties.name;
+      const city = data.features.find(
+        (feature) => feature.properties.feature_type === "place"
+      )?.properties.name;
+      const state = data.features.find(
+        (feature) => feature.properties.feature_type === "region"
+      )?.properties.name;
+      const pincode = data.features.find(
+        (feature) => feature.properties.feature_type === "postcode"
+      )?.properties.name;
 
       console.log({
-        state : state,
-        city : city,
-        locality : locality
-      })
-      const address = data.localityInfo.administrative[3].name;
-      // dispatch(updatePropertyForm({ address: { locality: address } }));
-    }
+        locality,
+        city,
+        state,
+        pincode,
+      });
 
+      dispatch(
+        updatePropertyForm({
+          address: {
+            ...propertyForm.address,
+            city: city,
+            state: state,
+            locality: locality,
+            pincode: pincode,
+          },
+        })
+      );
+    };
     reverseGeocode();
-  },[latitude, longitude])
+  }, [latitude, longitude, dispatch]);
 
   const handlePriceChange = (e) => {
     const newPrice = e.target.value;
@@ -426,6 +444,12 @@ const SpecificInfo = () => {
           <Text fontSize="xl" fontWeight="semibold">
             Pin Your Property Location:
           </Text>
+          <HStack className="flex">
+          <Input disabled value={propertyForm.address.locality} placeholder="Locality" />
+          <Input disabled value={propertyForm.address.city} placeholder="City" />
+          <Input disabled value={propertyForm.address.state} placeholder="State" />
+          <Input disabled value={propertyForm.address.pincode} placeholder="Pin Code" />
+        </HStack>
           <div className="h-96 w-full max-w-[190vh]">
             <PostPropertyMap
               setLatitude={setLatitude}
