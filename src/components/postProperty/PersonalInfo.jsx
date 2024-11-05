@@ -1,25 +1,25 @@
-import { Button, Input, Box, Text, VStack, HStack } from '@chakra-ui/react';
-import { useDispatch } from 'react-redux';
-import { updatePropertyForm } from '../../store/slices/PropertyFormSlice';
-import { useSelector } from 'react-redux';
+import { Button, Input, Box, Text, VStack, HStack } from "@chakra-ui/react";
+import { useDispatch } from "react-redux";
+import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
+import { useSelector } from "react-redux";
 
 const PersonalInfo = () => {
   const dispatch = useDispatch();
   const propertyForm = useSelector((state) => state.propertyForm);
-  const userTypes = ['Owner', 'Builder', 'Agent', 'Flatmate'];
+  const userTypes = ["Owner", "Builder", "Agent", "Flatmate"];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatch(updatePropertyForm({ [name]: value }));
   };
 
-  console.log('propertyForm',propertyForm)
-
   return (
     <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
       <VStack spacing={9} align="start">
         <Box>
-          <Text fontWeight="bold" fontSize="3xl">1. Personal Information</Text>
+          <Text fontWeight="bold" fontSize="3xl">
+            1. Personal Information
+          </Text>
           <Text fontSize="2xl">Let’s get started with the basics.</Text>
         </Box>
 
@@ -36,7 +36,7 @@ const PersonalInfo = () => {
                 onClick={() => {
                   dispatch(updatePropertyForm({ listedBy: type })); // Update the listedBy field
                 }}
-                colorScheme={propertyForm?.listedBy === type ? 'teal' : 'gray'}
+                colorScheme={propertyForm?.listedBy === type ? "teal" : "gray"}
               >
                 {type}
               </Button>
@@ -44,7 +44,7 @@ const PersonalInfo = () => {
           </HStack>
         </VStack>
 
-        <VStack spacing={1} align="start" className='w-full'>
+        <VStack spacing={1} align="start" className="w-full">
           <Input
             name="firstName"
             variant="outline"
@@ -52,6 +52,9 @@ const PersonalInfo = () => {
             value={propertyForm?.firstName}
             onChange={handleInputChange}
           />
+          <Text color="gray.500" fontSize="xs">
+            Make sure it matches the name on your government ID.
+          </Text>
           <Input
             name="lastName"
             variant="outline"
@@ -59,7 +62,9 @@ const PersonalInfo = () => {
             value={propertyForm?.lastName}
             onChange={handleInputChange}
           />
-          <Text color="gray.500" fontSize="xs">Make sure it matches the name on your government ID.</Text>
+          <Text color="gray.500" fontSize="xs">
+            Make sure it matches the name on your government ID.
+          </Text>
         </VStack>
 
         <Input
@@ -70,7 +75,7 @@ const PersonalInfo = () => {
           onChange={handleInputChange}
         />
 
-        <VStack spacing={1} align="start" className='w-full'>
+        <VStack spacing={1} align="start" className="w-full">
           <Input
             name="email"
             variant="outline"
@@ -78,10 +83,12 @@ const PersonalInfo = () => {
             value={propertyForm?.email}
             onChange={handleInputChange}
           />
-          <Text color="gray.500" fontSize="xs">We’ll send you important updates and notifications.</Text>
+          <Text color="gray.500" fontSize="xs">
+            We’ll send you important updates and notifications.
+          </Text>
         </VStack>
 
-        <VStack spacing={1} align="start" className='w-full'>
+        <VStack spacing={1} align="start" className="w-full">
           <Input
             name="firmName"
             variant="outline"
@@ -89,11 +96,13 @@ const PersonalInfo = () => {
             value={propertyForm?.firmName}
             onChange={handleInputChange}
           />
-          <Text color="gray.500" fontSize="xs">Name of the firm you are associated with.</Text>
+          <Text color="gray.500" fontSize="xs">
+            Name of the firm you are associated with.
+          </Text>
         </VStack>
       </VStack>
     </Box>
   );
-}
+};
 
 export default PersonalInfo;

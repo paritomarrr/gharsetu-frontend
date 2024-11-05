@@ -31,13 +31,11 @@ const SignInModal = () => {
         const res = await axios.post('http://localhost:8080/api/v1/auth/sendOTP', {
             phoneNumber: phoneNumber,
         })
-        console.log('res', res)
         if (res.data.success) {
             setReqID(res.data.details.request_id)
             toast.success('OTP sent successfully')
             return;
         }
-        console.log('Something went wrong')
     }
 
     const verifyOTP = async () => {

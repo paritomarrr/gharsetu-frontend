@@ -36,7 +36,7 @@ const PostPropertyMap = ({ setLatitude, setLongitude }) => {
     mapRef.current.on('click', (event) => {
       const { lng, lat } = event.lngLat;
       markerRef.current.setLngLat([lng, lat]);
-      console.log(`Marker moved to Longitude: ${lng}, Latitude: ${lat}`);
+      console.log(`Longitude: ${lng}, Latitude: ${lat}`);
       // Set the latitude and longitude
       setLongitude(lng);
       setLatitude(lat);

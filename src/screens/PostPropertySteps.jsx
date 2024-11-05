@@ -11,8 +11,6 @@ const PostPropertySteps = () => {
         return null
     }
 
-    // console.log("Property Form : ", propertyForm)
-
     return (
         <div>
             {formStep === 1 && <PersonalInfo />}

@@ -51,9 +51,9 @@ console.log('isNewUserDetailsModalOpen', isNewUserDetailsModalOpen)
         </Link>
 
         <div className='flex text-[#6A6A6A] items-center'>
-          <Link to={'/property/buy'} className='p-3 cursor-pointer'> Buy </Link>
+          <Link to={'/properties/buy'} className='p-3 cursor-pointer'> Buy </Link>
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
-          <Link to={'/property/rent'} className='p-3 cursor-pointer'> Rent </Link>
+          <Link to={'/properties/rent'} className='p-3 cursor-pointer'> Rent </Link>
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
           <div onClick={navigateToPostProperty} className='flex items-center'>
             <div className='p-3 cursor-pointer'> Post Property </div>
