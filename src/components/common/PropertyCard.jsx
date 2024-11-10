@@ -7,8 +7,7 @@ import { convertPriceToWords } from '../../helperFunctions/basicHelpers';
 
 
 const PropertyCard = ({property}) => {
-
-  console.log('property Card', property)
+  
   return (
     <Link to={`/property/${property?._id}`} className="flex gap-[10px] flex-col cursor-pointer">
       <div className='relative'>
@@ -16,7 +15,7 @@ const PropertyCard = ({property}) => {
           <div className='bg-white py-1 px-2 rounded-full text-xs'> Guest favourite </div>
           <UnLiked />
         </div>
-        <img className="h-[250px] rounded-lg z-0" src={property?.images[0]?.cloudinaryUrl || 
+        <img className="h-[250px] w-full rounded-lg z-0" src={property?.images[0]?.cloudinaryUrl || 
           "https://res.cloudinary.com/dzqgyl0wf/image/upload/v1729887606/wsaua8yjrxhll6bwrqag.png"
         } alt='err' />
       </div>

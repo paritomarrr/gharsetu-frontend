@@ -5,7 +5,7 @@ const PropertyInfo = ({ address, propertyStatus, propertySubType }) => {
   return (
     <div className="flex flex-col gap-[5px]">
       <div className="text-[#222] flex items-center gap-1">
-        <div className="font-semibold text-xl">Serene Heights Residency</div>
+        <div className="font-semibold text-xl">{address?.locality}, {address?.city}</div>
         <Verified size={16} />
       </div>
       <div className="text-sm">

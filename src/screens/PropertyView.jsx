@@ -44,7 +44,7 @@ const PropertyView = () => {
           <div className="w-full h-[1px] bg-[#d6d9df]"></div>
 
           {/* Scrollable PropertyCard grid */}
-          <div className="h-[calc(100vh-200px)]">
+          <div className="h-[calc(100vh-200px)] overflow-scroll">
             {propertiesToShow.length > 0 ? (
               <div className="grid grid-cols-2 gap-9 py-3 overflow-y-auto">
                 {propertiesToShow.map((property) => (

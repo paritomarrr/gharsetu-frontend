@@ -37,6 +37,7 @@ const PropertyFromSlice = createSlice({
             longitude: ''
         },
         images: [],
+        description :''
     },
     reducers: {
         toggleIsPropertyFormOpen: (state) => {

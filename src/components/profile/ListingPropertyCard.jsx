@@ -6,12 +6,12 @@ import { use } from "framer-motion/client";
 import { useEffect } from "react";
 import { convertPriceToWords } from "../../helperFunctions/basicHelpers";
 
-const ListingPropertyCard = () => {
+const ListingPropertyCard = ({property}) => {
   return (
     <div className="p-4 shadow-md border-[#F7F7F7] w-fit border-[1px] rounded-md">
       <div>
         <img
-          src="https://res.cloudinary.com/dzqgyl0wf/image/upload/v1729887606/wsaua8yjrxhll6bwrqag.png"
+          src={property?.images[0]?.cloudinaryUrl}
           alt="property"
           className="h-60 w-60 object-cover rounded-lg"
         />
@@ -19,18 +19,18 @@ const ListingPropertyCard = () => {
 
       <div className="flex gap-[5px] flex-col">
         <div className="font-semibold">Cozy Apartment</div>
-        <div className="text-[#6A6A6A] text-xs">Connaught Place, New Delhi</div>
+        <div className="text-[#6A6A6A] text-xs">{property?.address?.locality}, {property?.address?.state}</div>
         <div className="flex justify-between items-center">
           <div className="bg-[#EEF5F0] flex w-fit gap-[6px] px-2 py-1 rounded-full items-center">
             <div className="bg-[#589E67] w-[7px] h-[7px] rounded-full"></div>
             <div className="text-[10px] text-[#589E67]">Available</div>
           </div>
-          <div className="text-sm font-bold">₹75 Lakhs</div>
+          <div className="text-sm font-bold">₹{convertPriceToWords(property?.askedPrice)}</div>
         </div>
         <div className="flex justify-between text-xs font-semibold">
           <div className="bg-[#F9F9F9] rounded-md py-1 px-2">150 views</div>
-          <div className="bg-[#F9F9F9] rounded-md py-1 px-2">150 views</div>
-          <div className="bg-[#F9F9F9] rounded-md py-1 px-2">150 views</div>
+          {/* <div className="bg-[#F9F9F9] rounded-md py-1 px-2">150 views</div>
+          <div className="bg-[#F9F9F9] rounded-md py-1 px-2">150 views</div> */}
         </div>
         <div className="flex justify-between text-xs">
           <div className="flex gap-1 items-center border border-black p-1 rounded-md cursor-pointer">

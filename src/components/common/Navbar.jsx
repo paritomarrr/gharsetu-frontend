@@ -19,10 +19,7 @@ const Navbar = () => {
   const isSignInOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
   const isNewUserDetailsModalOpen = useSelector((state) => state.signInModal.isNewUserModalOpen);
 
-console.log('isNewUserDetailsModalOpen', isNewUserDetailsModalOpen)
-
   useEffect(() => {
-    console.log('here', user)
     if (user && user.isNewUser) {
       console.log('her2')
       if(!isNewUserDetailsModalOpen) {

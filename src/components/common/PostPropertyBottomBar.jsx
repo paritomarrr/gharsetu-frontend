@@ -50,6 +50,7 @@ const PostPropertyBottomBar = () => {
         availableFor: propertyForm.availableFor,
         project: propertyForm.project,
         area: propertyForm.area,
+        description: propertyForm.description,
         address: {
           houseNumber: propertyForm.address.houseNumber,
           buildingProjectSociety: propertyForm.address.buildingProjectSociety,

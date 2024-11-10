@@ -205,6 +205,10 @@ const SpecificInfo = () => {
     dispatch(updatePropertyForm({ [category]: newItems }));
   };
 
+  const handleAreaChange = (e) => {
+    dispatch(updatePropertyForm({ area: e.target.value }));
+  }
+
   return (
     <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
       <VStack spacing={9} align="start">
@@ -275,7 +279,6 @@ const SpecificInfo = () => {
           </Text>
         </VStack>
 
-        
         {/* Locality */}
         <VStack align="start" spacing={1}>
           <Input
@@ -317,6 +320,19 @@ const SpecificInfo = () => {
           </VStack>
         ) : (
           <>
+            {/* Property Area */}
+            <VStack align="start" spacing={1}>
+              <Input
+                variant="outline"
+                placeholder="Property Area"
+                value={propertyForm.area}
+                onChange={handleAreaChange}
+              />
+              <Text color="gray.500" fontSize="xs">
+                Enter the area of your property in square feet.
+              </Text>
+            </VStack>
+
             <VStack align="start" spacing={4}>
               <Text fontSize="xl" fontWeight="semibold">
                 Furnish Type:
@@ -415,8 +431,6 @@ const SpecificInfo = () => {
           </div>
         </VStack>
 
-        
-
         {/* Construction Type */}
         <VStack align="start" spacing={4}>
           <Text fontSize="xl" fontWeight="semibold">
@@ -450,11 +464,27 @@ const SpecificInfo = () => {
             Pin Your Property Location:
           </Text>
           <HStack className="flex">
-          <Input disabled value={propertyForm.address.locality} placeholder="Locality" />
-          <Input disabled value={propertyForm.address.city} placeholder="City" />
-          <Input disabled value={propertyForm.address.state} placeholder="State" />
-          <Input disabled value={propertyForm.address.pincode} placeholder="Pin Code" />
-        </HStack>
+            <Input
+              disabled
+              value={propertyForm.address.locality}
+              placeholder="Locality"
+            />
+            <Input
+              disabled
+              value={propertyForm.address.city}
+              placeholder="City"
+            />
+            <Input
+              disabled
+              value={propertyForm.address.state}
+              placeholder="State"
+            />
+            <Input
+              disabled
+              value={propertyForm.address.pincode}
+              placeholder="Pin Code"
+            />
+          </HStack>
           <div className="h-96 w-full max-w-[190vh]">
             <PostPropertyMap
               setLatitude={setLatitude}

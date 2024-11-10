@@ -1,11 +1,26 @@
 import { Input } from "@chakra-ui/react";
 import { Plus } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { SlidersHorizontal } from "lucide-react";
 import ListingPropertyCard from "../../components/profile/ListingPropertyCard";
+import { useContext } from "react";
+import { UserContext } from "../../context/userContext";
+import { getUserProperties } from "../../helperFunctions/profileHelpers/getUserProperties";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const MyListing = () => {
+  const {user} = useContext(UserContext)
+  const [properties, setProperties] = useState([])
+
+  useEffect(()=>{
+    const getUserProp = async () =>{
+      const res = await getUserProperties(user?._id)
+      setProperties(res)
+    }
+    getUserProp()
+  },[])
   return (
     <div className="flex flex-col gap-[26px]">
       <div className="flex justify-between items-center">
@@ -18,10 +33,10 @@ const MyListing = () => {
           </div>
         </div>
 
-        <div className="flex gap-2 bg-[#1D4CBE] py-3 px-6 rounded-md text-white">
+        <Link to={'/postProperty'} className="flex gap-2 bg-[#1D4CBE] py-3 px-6 rounded-md text-white">
           <Plus />
           <div>Add New Listing</div>
-        </div>
+        </Link>
       </div>
 
       <div className="flex gap-3">
@@ -55,12 +70,11 @@ const MyListing = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-y-5">
-        <ListingPropertyCard />
-        <ListingPropertyCard />
-        <ListingPropertyCard />
-        <ListingPropertyCard />
-        <ListingPropertyCard />
-        <ListingPropertyCard />
+       {
+          properties.map((property)=>(
+            <ListingPropertyCard key={property._id} property={property} />
+          ))
+       }
       </div>
     </div>
   );

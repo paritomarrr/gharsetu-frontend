@@ -32,6 +32,7 @@ import PropertyInfo from "../components/propertyPage/PropertyInfo";
 const PropertyPage = () => {
   const { id } = useParams();
   const [property, setProperty] = useState({});
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   useEffect(() => {
     const getSingleProperty = async () => {
@@ -67,8 +68,11 @@ const PropertyPage = () => {
           <ImageGallery property={property} />
           <div className="flex justify-between w-full">
             <div className="w-[580px]">
-
-              <PropertyInfo address={property?.address} propertyStatus={property?.propertyStatus} propertySubType={property?.propertySubType}/>
+              <PropertyInfo
+                address={property?.address}
+                propertyStatus={property?.propertyStatus}
+                propertySubType={property?.propertySubType}
+              />
 
               <Separator />
 
@@ -124,29 +128,25 @@ const PropertyPage = () => {
 
               <div className="text-sm">
                 <div>
-                  <div>
-                    Come and stay in this beautiful 3BHK duplex in the heart of
-                    South Delhi. Spacious and full of natural light, this home
-                    is nestled in a well-maintained building with modern
-                    interiors. You’ll enjoy the vibrancy of the neighborhood,
-                    with its proximity to local markets, cafes, and parks.
-                    Conveniently located near metro stations and major bus
-                    routes, this property provides easy access to all parts of
-                    the city, making it perfect for families or professionals
-                    seeking a blend of comfort and connectivity.
-                  </div>
-                  <div>.....</div>
+                  {showFullDescription
+                    ? property?.description
+                    : property?.description?.slice(0, 400)}
+                  {!showFullDescription && <div> ....... </div>}
                 </div>
 
-                <div className="flex gap-1 items-center font-semibold underline cursor-pointer">
-                  {" "}
-                  Show More <ChevronRight size={14} />{" "}
-                </div>
+                {property?.description?.length > 400 && (
+                  <div
+                    className="text-[#1D4CBE] cursor-pointer"
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                  >
+                    {showFullDescription ? "Show less" : "Show more"}
+                  </div>
+                )}
               </div>
 
               <Separator />
 
-             <Amenities/>
+              <Amenities data={property.societyAmenities} />
 
               <Separator />
 
@@ -156,28 +156,6 @@ const PropertyPage = () => {
                 {property.coordinates && (
                   <PropertyPageMap coordinates={property?.coordinates} />
                 )}
-
-                <div className="flex flex-col gap-4">
-                  <div className="text-[18px] font-medium">
-                    {" "}
-                    Green Park, South Delhi, India{" "}
-                  </div>
-                  <div className="text-base">
-                    Located in the prime area of South Delhi, this property
-                    offers the perfect blend of convenience and tranquility.
-                    Situated near popular markets like Sarojini Nagar and Lajpat
-                    Nagar, and within easy reach of top schools, hospitals, and
-                    parks, it provides everything you need just a short distance
-                    away. With excellent connectivity through the nearby metro
-                    station and public transport routes, you'll have seamless
-                    access to major business hubs and leisure spots across the
-                    city.
-                  </div>
-                  <div className="text-sm flex gap-1 items-center underline cursor-pointer">
-                    {" "}
-                    Show more <ChevronRight size={14} />{" "}
-                  </div>
-                </div>
               </div>
 
               <Separator />
@@ -202,10 +180,11 @@ const PropertyPage = () => {
               </div>
             </div>
 
-
             <div className="w-1/3 flex flex-col gap-[21px]">
               <div className="p-[21px] rounded-lg border-[1px] border-[#E5E7EB] flex gap-[14px] flex-col shadow-lg">
-                <div className="text-3xl font-medium">₹{addCommaToNumber(property?.askedPrice)}</div>
+                <div className="text-3xl font-medium">
+                  ₹{addCommaToNumber(property?.askedPrice)}
+                </div>
                 <div className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer">
                   Seller Details
                 </div>

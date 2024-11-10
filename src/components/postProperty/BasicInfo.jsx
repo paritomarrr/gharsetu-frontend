@@ -37,6 +37,11 @@ const BasicInfo = () => {
     );
   };
 
+  const hanleDescriptionChange = (e) => {
+    dispatch(updatePropertyForm({ description: e.target.value }));
+  }
+  
+
   return (
     <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
       <VStack spacing={9} align="start">
@@ -95,7 +100,7 @@ const BasicInfo = () => {
 
         <VStack align="start" spacing={4} className="w-full">
           <Text fontSize="xl">Property Desctiption:</Text>
-          <Textarea placeholder="Provide a description to the property" />
+          <Textarea onChange={hanleDescriptionChange} value={propertyForm.description} placeholder="Provide a description to the property" />
         </VStack>
       </VStack>
     </Box>
