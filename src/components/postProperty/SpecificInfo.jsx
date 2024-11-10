@@ -259,6 +259,7 @@ const SpecificInfo = () => {
           </Text>
         </VStack>
 
+        {/* Building / Project / Society */}
         <VStack align="start" spacing={1}>
           <Input
             variant="outline"
@@ -274,6 +275,8 @@ const SpecificInfo = () => {
           </Text>
         </VStack>
 
+        
+        {/* Locality */}
         <VStack align="start" spacing={1}>
           <Input
             variant="outline"
@@ -284,6 +287,19 @@ const SpecificInfo = () => {
           <Text color="gray.500" fontSize="xs">
             This helps us display your listing to the right audience based on
             location.
+          </Text>
+        </VStack>
+
+        {/* Price Input */}
+        <VStack align="start" spacing={1}>
+          <Input
+            variant="outline"
+            placeholder="Price"
+            value={price}
+            onChange={handlePriceChange}
+          />
+          <Text color="gray.500" fontSize="xs">
+            Enter the asking price for your property in your local currency.
           </Text>
         </VStack>
 
@@ -399,18 +415,7 @@ const SpecificInfo = () => {
           </div>
         </VStack>
 
-        {/* Price Input */}
-        <VStack align="start" spacing={1}>
-          <Input
-            variant="outline"
-            placeholder="Price"
-            value={price}
-            onChange={handlePriceChange}
-          />
-          <Text color="gray.500" fontSize="xs">
-            Enter the asking price for your property in your local currency.
-          </Text>
-        </VStack>
+        
 
         {/* Construction Type */}
         <VStack align="start" spacing={4}>

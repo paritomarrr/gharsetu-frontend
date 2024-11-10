@@ -1,33 +1,126 @@
-import { Input } from '@chakra-ui/react'
-import { ChevronDown } from 'lucide-react';
+import { Input } from "@chakra-ui/react";
+import { ChevronDown, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuDivider,
+} from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
+import { useNavigate, useParams } from "react-router-dom";
 
+const OptionsBar = ({mode}) => {
+  const [selectedMode, setSelectedMode] = useState("buy");
+  const navigate = useNavigate();
 
-const OptionsBar = () => {
-    return (
-        <div className='p-5 border-b-[1px] flex gap-4'>
-            <Input placeholder="Search address, Pin Code" size="lg" />
-            <div className='p-4 items-center flex gap-2 border-[1px] rounded-lg'>
-                <ChevronDown size={16} />
-                <div className='whitespace-nowrap text-xs font-semibold'>Price Range</div>
+  useEffect(() => {
+    setSelectedMode(mode);
+  }, [mode]);
+
+  const handleSearch = () => {
+    navigate(`/properties/${selectedMode}`);
+  };
+
+  return (
+    <div className="px-5 py-3 border-b-[1px] flex gap-4">
+      <div className="flex w-full">
+        <Menu>
+          <MenuButton>
+            <div className="flex border-[1px] border-gray-300 py-[8px] rounded-l-md px-2 items-center text-sm">
+              <span className="whitespace-nowrap">
+                {selectedMode === "rent" ? "Rent" : "Buy"}
+              </span>
+              <ChevronDown size={20} />
             </div>
-            <div className='p-4 items-center flex gap-2 border-[1px] rounded-lg'>
-                <ChevronDown size={16} />
-                <div className='whitespace-nowrap text-xs font-semibold'>Property Type</div>
-            </div>
-            <div className='p-4 items-center flex gap-2 border-[1px] rounded-lg'>
-                <ChevronDown size={16} />
-                <div className='whitespace-nowrap text-xs font-semibold'>Age of Property</div>
-            </div>
-            <div className='p-4 items-center flex gap-2 border-[1px] rounded-lg'>
-                <ChevronDown size={16} />
-                <div className='whitespace-nowrap text-xs font-semibold'>Amenities</div>
-            </div>
-            <div className='p-4 items-center flex gap-2 border-[1px] rounded-lg'>
-                <ChevronDown size={16} />
-                <div className='whitespace-nowrap text-xs font-semibold'>Bed & Bathroom</div>
-            </div>
+          </MenuButton>
+          <MenuList className="text-sm">
+            <MenuItem onClick={()=>setSelectedMode('buy')}>Buy</MenuItem>
+            <MenuItem onClick={()=>setSelectedMode('rent')}>Rent</MenuItem>
+          </MenuList>
+        </Menu>
+        <input
+          type="text"
+          className="flex-grow border-[1px] focus:outline-none border-gray-300 py-2  px-2 text-sm"
+          placeholder="Search for properties"
+        />
+        <div className="py-2 border-[1px] border-gray-300 rounded-r-md px-3 cursor-pointer" onClick={handleSearch}>
+          <Search size={20} className="text-gray-500" />
         </div>
-    )
-}
+      </div>
 
-export default OptionsBar
+      {/* Property Type */}
+      <Menu>
+        <MenuButton>
+          <div className="flex border-[1px] border-gray-300 py-2 rounded-md px-2 items-center text-sm">
+            <span className="whitespace-nowrap">Price Range </span>{" "}
+            <ChevronDown size={20} />
+          </div>
+        </MenuButton>
+        <MenuList className="text-sm">
+          <MenuItem>Independent House</MenuItem>
+          <MenuItem>Flat</MenuItem>
+          <MenuItem>Independent Floor</MenuItem>
+          <MenuItem>Floor</MenuItem>
+          <MenuItem>Agricultural Land</MenuItem>
+          <MenuItem>Cultural Land</MenuItem>
+        </MenuList>
+      </Menu>
+
+      {/* No. Of Bedrooms */}
+      <Menu>
+        <MenuButton>
+          <div className="flex border-[1px] border-gray-300 py-2 rounded-md px-2 items-center text-sm">
+            <span className="whitespace-nowrap"> No. of Bedrooms </span>{" "}
+            <ChevronDown size={20} />
+          </div>
+        </MenuButton>
+        <MenuList className="text-sm">
+          <MenuItem> 1 BHK </MenuItem>
+          <MenuItem> 2 BHK</MenuItem>
+          <MenuItem> 3 BHK</MenuItem>
+          <MenuItem> 4 BHK</MenuItem>
+          <MenuItem> 5+ BHK</MenuItem>
+        </MenuList>
+      </Menu>
+
+      {/* Age of property */}
+      <Menu>
+        <MenuButton>
+          <div className="flex border-[1px] border-gray-300 py-2 rounded-md px-2 items-center text-sm">
+            <span className="whitespace-nowrap"> Property Age </span>{" "}
+            <ChevronDown size={20} />
+          </div>
+        </MenuButton>
+        <MenuList className="text-sm">
+          <MenuItem>Newly Constructed</MenuItem>
+          <MenuItem>Coming Soon</MenuItem>
+          <MenuItem>3+ Years</MenuItem>
+          <MenuItem>5+ Years</MenuItem>
+          <MenuItem>10+ Years</MenuItem>
+        </MenuList>
+      </Menu>
+
+      {/* Posted By */}
+      <Menu>
+        <MenuButton>
+          <div className="flex border-[1px] border-gray-300 py-2 rounded-md px-2 items-center text-sm">
+            <span className="whitespace-nowrap"> Posted By </span>{" "}
+            <ChevronDown size={20} />
+          </div>
+        </MenuButton>
+        <MenuList className="text-sm">
+          <MenuItem> Owner </MenuItem>
+          <MenuItem> Builder </MenuItem>
+          <MenuItem> Dealer </MenuItem>
+        </MenuList>
+      </Menu>
+    </div>
+  );
+};
+
+export default OptionsBar;
