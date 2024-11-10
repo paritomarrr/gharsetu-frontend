@@ -1,35 +1,80 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
-import './App.css'
-import Home from './screens/Home'
-import Navbar from './components/common/Navbar'
-import PostPropertyNavbar from './components/common/PostPropertyNavbar'
-import PropertyView from './screens/PropertyView'
-import Footer from './components/common/Footer'
-import { Toaster } from 'react-hot-toast'
-import PropertyPage from './screens/PropertyPage'
-import PostProperty from './screens/PostProperty'
-import PostPropertyBottomBar from './components/common/PostPropertyBottomBar'
-import PostPropertySteps from './screens/PostPropertySteps'
-import Profile from './screens/Profile'
+// ProfileLayout.jsx
+import React from "react";
+import ProfileSidebar from "./components/ProfileSidebar";
+import { Outlet } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
+import "./App.css";
+import Home from "./screens/Home";
+import Navbar from "./components/common/Navbar";
+import PostPropertyNavbar from "./components/common/PostPropertyNavbar";
+import PropertyView from "./screens/PropertyView";
+import Footer from "./components/common/Footer";
+import { Toaster } from "react-hot-toast";
+import PropertyPage from "./screens/PropertyPage";
+import PostProperty from "./screens/PostProperty";
+import PostPropertyBottomBar from "./components/common/PostPropertyBottomBar";
+import PostPropertySteps from "./screens/PostPropertySteps";
+import Profile from "./screens/Profile";
+import Dashboard from "./screens/profile/Dashboard";
+import MyListing from "./screens/profile/MyListing";
+import Leads from "./screens/profile/Leads";
+import AccountSettings from "./screens/profile/AccountSettings";
+import HelpCentre from "./screens/profile/HelpCentre";
+import HomeFooter from "./components/common/HomeFooter";
+
+const ProfileLayout = () => {
+  return (
+    <div className="flex px-12 gap-7 py-8">
+      <ProfileSidebar />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+    </div>
+  );
+};
 
 function App() {
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <>
-      {location.pathname.includes('/postProperty') ? <PostPropertyNavbar /> : <Navbar />}
+      {location.pathname.includes("/postProperty") ? (
+        <PostPropertyNavbar />
+      ) : (
+        <Navbar />
+      )}
       <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile/>}/>
         <Route path="/properties/:mode" element={<PropertyView />} />
         <Route path="/property/:id" element={<PropertyPage />} />
         <Route path="/postProperty" element={<PostProperty />} />
         <Route path="/postProperty/add" element={<PostPropertySteps />} />
+
+        {/* Profile Routes */}
+        <Route path="/profile" element={<Profile />} />
+
+        {/* Nested routes with ProfileLayout */}
+        <Route element={<ProfileLayout />}>
+          <Route path="/profile/dashboard" element={<Dashboard />} />
+          <Route path="/profile/my-listing" element={<MyListing />} />
+          <Route path="/profile/leads" element={<Leads />} />
+          <Route
+            path="/profile/account-settings"
+            element={<AccountSettings />}
+          />
+          <Route path="/profile/help-centre" element={<HelpCentre />} />
+        </Route>
       </Routes>
-      {location.pathname.includes('/postProperty') ? <PostPropertyBottomBar /> : <Footer/>}
+      {location.pathname === "/" ? (
+        <HomeFooter />
+      ) : location.pathname.includes("/postProperty") ? (
+        <PostPropertyBottomBar />
+      ) : (
+        <Footer />
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;

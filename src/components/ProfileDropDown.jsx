@@ -48,7 +48,7 @@ const ProfileDropDown = ({ user }) => {
                             <div className='py-[10px] px-4 font-bold cursor-pointer'>
                                 Hi, {user.firstName}
                             </div>
-                            <Link to={'/profile'} className='py-[10px] px-4 cursor-pointer'>
+                            <Link to={'/profile/dashboard'} className='py-[10px] px-4 cursor-pointer'>
                                 Profile
                             </Link>
                             <div className='w-full h-[1px] bg-[#DDD]'></div>
