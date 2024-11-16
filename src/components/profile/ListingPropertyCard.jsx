@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChartArea, PenLine, Star, Trash2 } from "lucide-react";
 import UnLiked from "../../assets/icons/UnLiked";
 import { Link } from "react-router-dom";
 import { use } from "framer-motion/client";
 import { useEffect } from "react";
 import { convertPriceToWords } from "../../helperFunctions/basicHelpers";
+import DeleteConfirmation from "./DeleteConfirmation";
 
-const ListingPropertyCard = ({property}) => {
+const ListingPropertyCard = ({ property, deletePropertyModel, setDeletePropertyModel }) => {
+
   return (
     <div className="p-4 shadow-md border-[#F7F7F7] w-fit border-[1px] rounded-md">
       <div>
@@ -38,19 +40,25 @@ const ListingPropertyCard = ({property}) => {
             <div>Edit</div>
           </div>
           <div className="flex gap-1 items-center border border-black p-1 rounded-md cursor-pointer">
-            <ChartArea size={12}/>
+            <ChartArea size={12} />
             <div>Analytics</div>
           </div>
-          <div className="flex gap-1 items-center border border-red-600 p-1 rounded-md text-red-600 cursor-pointer">
-            <Trash2 size={12}/>
+          <div onClick={() => setDeletePropertyModel(true)} className="flex gap-1 items-center border border-red-600 p-1 rounded-md text-red-600 cursor-pointer">
+            <Trash2 size={12} />
             <div>Delete</div>
           </div>
         </div>
       </div>
+
+      {
+        deletePropertyModel && (
+          <div>
+            <DeleteConfirmation setDeletePropertyModel={setDeletePropertyModel} propertyId={property._id} />
+          </div>
+        )
+      }
     </div>
   );
 };
 
 export default ListingPropertyCard;
-
-//

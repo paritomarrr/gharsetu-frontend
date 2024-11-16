@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import SubmissionBadge from '../../assets/icons/SubmissionBadge'
+import { Link } from 'react-router-dom'
 
 const PropertyPostSuccess = () => {
   return (
@@ -14,11 +15,11 @@ const PropertyPostSuccess = () => {
         <div className='text-5xl font-bold text-center'>
           Thank you for providing your property details. Your listing is now under review.
         </div>
-        <div className='flex justify-center'>
+        <Link to={'/profile/my-listing'} className='flex justify-center'>
           <div className='flex items-center gap-2 bg-[#1D4CBE] w-fit px-32 py-3 font-medium text-white rounded-xl'>
-          View listed property <ArrowRight size={16}/>
+            View listed property <ArrowRight size={16} />
           </div>
-        </div>
+        </Link>
       </div>
     </div>
   )

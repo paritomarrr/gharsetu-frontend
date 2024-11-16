@@ -1,21 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import StatBox from "../../components/profile/StatBox";
-import {
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-} from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { SlidersHorizontal } from "lucide-react";
 import DashboardTable from "../../components/profile/DashboardTable";
+import { getUserProperties } from "../../helperFunctions/profileHelpers/getUserProperties";
+import { useContext } from "react";
+import { UserContext } from "../../context/userContext";
 
 const Dashboard = () => {
+  const {user} = useContext(UserContext)
+  const [totalListings, setTotalListings] = useState(0);
+
+  useEffect(() => {
+    const getUserProp = async () => {
+      const res = await getUserProperties(user?._id);
+      setTotalListings(res.length);
+    };
+    getUserProp();
+  }, []);
   return (
     <div className="flex flex-col gap-[26px]">
       <div className="text-3xl font-bold"> Welcome, Keshav</div>
 
       <div className="flex gap-5">
-        <StatBox title="Total Listings" value="12" />
+        <StatBox title="Total Listings" value={totalListings} />
         <StatBox title="Total Impressions" value="5432" />
         <StatBox title="Total Views" value="1234" />
         <StatBox title="Total Generated" value="56" />

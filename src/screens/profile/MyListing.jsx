@@ -11,16 +11,19 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const MyListing = () => {
-  const {user} = useContext(UserContext)
+  const { user } = useContext(UserContext)
   const [properties, setProperties] = useState([])
+  const [deletePropertyModel, setDeletePropertyModel] = useState(false)
 
-  useEffect(()=>{
-    const getUserProp = async () =>{
+
+  useEffect(() => {
+    const getUserProp = async () => {
       const res = await getUserProperties(user?._id)
       setProperties(res)
     }
     getUserProp()
-  },[])
+  }, [deletePropertyModel])
+  
   return (
     <div className="flex flex-col gap-[26px]">
       <div className="flex justify-between items-center">
@@ -70,11 +73,11 @@ const MyListing = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-y-5">
-       {
-          properties.map((property)=>(
-            <ListingPropertyCard key={property._id} property={property} />
+        {
+          properties.map((property) => (
+            <ListingPropertyCard key={property._id} property={property} deletePropertyModel={deletePropertyModel} setDeletePropertyModel={setDeletePropertyModel} />
           ))
-       }
+        }
       </div>
     </div>
   );
