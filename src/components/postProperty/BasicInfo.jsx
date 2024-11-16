@@ -75,6 +75,11 @@ const BasicInfo = () => {
               </Button>
             ))}
           </HStack>
+          {propertyForm.showError && propertyForm.propertyType === '' && (
+            <Text color="red.500" fontSize="sm">
+              Property type is required
+            </Text>
+          )}
         </VStack>
 
         <VStack align="start" spacing={4}>
@@ -96,11 +101,21 @@ const BasicInfo = () => {
               </Button>
             ))}
           </HStack>
+          {propertyForm.showError && propertyForm.availableFor === '' && (
+            <Text color="red.500" fontSize="sm">
+              Looking to is required
+            </Text>
+          )}
         </VStack>
 
         <VStack align="start" spacing={4} className="w-full">
           <Text fontSize="xl">Property Desctiption:</Text>
           <Textarea onChange={hanleDescriptionChange} value={propertyForm.description} placeholder="Provide a description to the property" />
+          {propertyForm.showError && propertyForm.description === '' && (
+            <Text color="red.500" fontSize="sm">
+              Property description is required
+            </Text>
+          )}
         </VStack>
       </VStack>
     </Box>

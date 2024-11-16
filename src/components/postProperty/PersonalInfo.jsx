@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
 import { useSelector } from "react-redux";
 
-const PersonalInfo = () => {
+const PersonalInfo = ({ showError }) => {
   const dispatch = useDispatch();
   const propertyForm = useSelector((state) => state.propertyForm);
   const userTypes = ["Owner", "Builder", "Agent", "Flatmate"];
@@ -34,7 +34,7 @@ const PersonalInfo = () => {
                 fontWeight="semibold"
                 borderRadius="xl"
                 onClick={() => {
-                  dispatch(updatePropertyForm({ listedBy: type })); // Update the listedBy field
+                  dispatch(updatePropertyForm({ listedBy: type })); 
                 }}
                 colorScheme={propertyForm?.listedBy === type ? "teal" : "gray"}
               >
@@ -42,7 +42,13 @@ const PersonalInfo = () => {
               </Button>
             ))}
           </HStack>
+          {propertyForm.showError && propertyForm.listedBy === '' && (
+            <Text color="red.500" fontSize="sm">
+              Please select a user type
+            </Text>
+          )}
         </VStack>
+
 
         <VStack spacing={1} align="start" className="w-full">
           <Input
@@ -52,6 +58,11 @@ const PersonalInfo = () => {
             value={propertyForm?.firstName}
             onChange={handleInputChange}
           />
+          {propertyForm.showError && propertyForm.firstName === '' && (
+            <Text color="red.500" fontSize="sm">
+              Please Enter First Name
+            </Text>
+          )}
           <Text color="gray.500" fontSize="xs">
             Make sure it matches the name on your government ID.
           </Text>
@@ -62,18 +73,31 @@ const PersonalInfo = () => {
             value={propertyForm?.lastName}
             onChange={handleInputChange}
           />
+          {propertyForm.showError && propertyForm.lastName === '' && (
+            <Text color="red.500" fontSize="sm">
+              Please Enter Last Name
+            </Text>
+          )}
           <Text color="gray.500" fontSize="xs">
             Make sure it matches the name on your government ID.
           </Text>
         </VStack>
 
-        <Input
-          name="phoneNumber"
-          variant="outline"
-          placeholder="Phone Number"
-          value={propertyForm?.phoneNumber}
-          onChange={handleInputChange}
-        />
+        <div>
+          <Input
+            name="phoneNumber"
+            variant="outline"
+            placeholder="Phone Number"
+            value={propertyForm?.phoneNumber}
+            onChange={handleInputChange}
+          />
+          {propertyForm.showError && propertyForm.phoneNumber === '' && (
+            <Text color="red.500" fontSize="sm">
+              Please Enter Phone Number
+            </Text>
+          )}
+        </div>
+
 
         <VStack spacing={1} align="start" className="w-full">
           <Input
@@ -83,6 +107,11 @@ const PersonalInfo = () => {
             value={propertyForm?.email}
             onChange={handleInputChange}
           />
+          {propertyForm.showError && propertyForm.email === '' && (
+            <Text color="red.500" fontSize="sm">
+              Please Enter Email
+            </Text>
+          )}
           <Text color="gray.500" fontSize="xs">
             We’ll send you important updates and notifications.
           </Text>

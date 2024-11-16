@@ -247,6 +247,11 @@ const SpecificInfo = () => {
               </Button>
             ))}
           </HStack>
+          {propertyForm.showError && propertyForm.propertySubType === '' && (
+            <Text color="red.500" fontSize="sm">
+              Property subType is required
+            </Text>
+          )}
         </VStack>
 
         {/* Address Fields */}
@@ -257,6 +262,11 @@ const SpecificInfo = () => {
             value={propertyForm.address.houseNumber}
             onChange={(e) => handleAddressChange("houseNumber", e.target.value)}
           />
+          {propertyForm.showError && propertyForm.address.houseNumber === '' && (
+            <Text color="red.500" fontSize="sm">
+              House / Apartment No. is required
+            </Text>
+          )}
           <Text color="gray.500" fontSize="xs">
             This helps us display your listing to the right audience based on
             location.
@@ -273,6 +283,11 @@ const SpecificInfo = () => {
               handleAddressChange("buildingProjectSociety", e.target.value)
             }
           />
+          {propertyForm.showError && propertyForm.address.buildingProjectSociety === '' && (
+            <Text color="red.500" fontSize="sm">
+              Building / Project / Society is required
+            </Text>
+          )}
           <Text color="gray.500" fontSize="xs">
             This helps us display your listing to the right audience based on
             location.
@@ -287,6 +302,11 @@ const SpecificInfo = () => {
             value={propertyForm.address.locality}
             onChange={(e) => handleAddressChange("locality", e.target.value)}
           />
+          {propertyForm.showError && propertyForm.address.locality === '' && (
+            <Text color="red.500" fontSize="sm">
+              Locality is required
+            </Text>
+          )}
           <Text color="gray.500" fontSize="xs">
             This helps us display your listing to the right audience based on
             location.
@@ -301,6 +321,11 @@ const SpecificInfo = () => {
             value={price}
             onChange={handlePriceChange}
           />
+          {propertyForm.showError && propertyForm.askedPrice === '' && (
+            <Text color="red.500" fontSize="sm">
+              Price is required
+            </Text>
+          )}
           <Text color="gray.500" fontSize="xs">
             Enter the asking price for your property in your local currency.
           </Text>
@@ -314,6 +339,11 @@ const SpecificInfo = () => {
               value={propertyForm.plotSize.plotArea}
               onChange={(e) => handlePlotSizeChange("plotArea", e.target.value)}
             />
+            {propertyForm.showError && propertyForm.plotSize.plotArea === '' && (
+              <Text color="red.500" fontSize="sm">
+                Plot area is required
+              </Text>
+            )}
             <Text color="gray.500" fontSize="xs">
               Mention the area to give buyers an idea of the space
             </Text>
@@ -328,6 +358,11 @@ const SpecificInfo = () => {
                 value={propertyForm.area}
                 onChange={handleAreaChange}
               />
+              {propertyForm.showError && propertyForm.area === '' && (
+                <Text color="red.500" fontSize="sm">
+                  Property area is required
+                </Text>
+              )}
               <Text color="gray.500" fontSize="xs">
                 Enter the area of your property in square feet.
               </Text>
@@ -356,6 +391,11 @@ const SpecificInfo = () => {
                   </Button>
                 ))}
               </HStack>
+              {propertyForm.showError && propertyForm.furnishType === '' && (
+                <Text color="red.500" fontSize="sm">
+                  Property furnish type is required
+                </Text>
+              )}
             </VStack>
 
             <VStack align="start" spacing={4}>
@@ -381,6 +421,11 @@ const SpecificInfo = () => {
                   </Button>
                 ))}
               </HStack>
+              {propertyForm.showError && propertyForm.bhkConfig === '' && (
+                <Text color="red.500" fontSize="sm">
+                  BHK configuration is required
+                </Text>
+              )}
             </VStack>
           </>
         )}
@@ -394,11 +439,10 @@ const SpecificInfo = () => {
             {flatFurnishings.map((item) => (
               <div
                 key={item.value}
-                className={`w-24 h-24 border-[1px] border-[#DDD] cursor-pointer rounded-md flex flex-col items-center justify-center gap-2 ${
-                  propertyForm.flatFurnishings?.includes(item.value)
+                className={`w-24 h-24 border-[1px] border-[#DDD] cursor-pointer rounded-md flex flex-col items-center justify-center gap-2 ${propertyForm.flatFurnishings?.includes(item.value)
                     ? "bg-teal-200"
                     : ""
-                }`}
+                  }`}
                 onClick={() => toggleSelection(item, "flatFurnishings")}
               >
                 {item.icon}
@@ -406,6 +450,11 @@ const SpecificInfo = () => {
               </div>
             ))}
           </div>
+          {/* {propertyForm.showError && propertyForm.propertySubType === '' && (
+            <Text color="red.500" fontSize="sm">
+              Flat furnishings are required
+            </Text>
+          )} */}
         </VStack>
 
         {/* Society Amenities */}
@@ -417,11 +466,10 @@ const SpecificInfo = () => {
             {societyAmenities.map((item) => (
               <div
                 key={item.value}
-                className={`w-24 h-24 border-[1px] border-[#DDD] cursor-pointer rounded-md flex flex-col items-center justify-center gap-2 ${
-                  propertyForm.societyAmenities?.includes(item.value)
+                className={`w-24 h-24 border-[1px] border-[#DDD] cursor-pointer rounded-md flex flex-col items-center justify-center gap-2 ${propertyForm.societyAmenities?.includes(item.value)
                     ? "bg-teal-200"
                     : ""
-                }`}
+                  }`}
                 onClick={() => toggleSelection(item, "societyAmenities")}
               >
                 {item.icon}
@@ -429,6 +477,11 @@ const SpecificInfo = () => {
               </div>
             ))}
           </div>
+          {/* {propertyForm.showError && propertyForm.propertySubType === '' && (
+            <Text color="red.500" fontSize="sm">
+              Property description is required
+            </Text>
+          )} */}
         </VStack>
 
         {/* Construction Type */}
@@ -455,6 +508,11 @@ const SpecificInfo = () => {
               </Button>
             ))}
           </HStack>
+          {propertyForm.showError && propertyForm.propertyStatus === '' && (
+            <Text color="red.500" fontSize="sm">
+              Property status is required
+            </Text>
+          )}
         </VStack>
 
         <DropZone setImages={setImages} images={images} />

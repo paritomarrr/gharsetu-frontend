@@ -37,7 +37,9 @@ const PropertyFromSlice = createSlice({
             longitude: ''
         },
         images: [],
-        description :''
+        description: '',
+        showError: false, // Error state for validation
+        isPropertyFormOpen: false, // Added missing state
     },
     reducers: {
         toggleIsPropertyFormOpen: (state) => {
@@ -49,11 +51,14 @@ const PropertyFromSlice = createSlice({
         updatePropertyForm: (state, action) => {
             return {
                 ...state,
-                ...action.payload, 
+                ...action.payload,
             };
         },
+        toggleError: (state, action) => {
+            state.showError = action.payload;
+        }
     },
 })
 
-export const { toggleIsPropertyFormOpen, setPropertyId, updatePropertyForm } = PropertyFromSlice.actions;
+export const { toggleIsPropertyFormOpen, setPropertyId, updatePropertyForm, toggleError } = PropertyFromSlice.actions;
 export default PropertyFromSlice.reducer;
