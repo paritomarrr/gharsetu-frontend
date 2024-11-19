@@ -23,7 +23,7 @@ const MyListing = () => {
     }
     getUserProp()
   }, [deletePropertyModel])
-  
+
   return (
     <div className="flex flex-col gap-[26px]">
       <div className="flex justify-between items-center">
@@ -73,11 +73,13 @@ const MyListing = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-y-5">
-        {
-          properties.map((property) => (
-            <ListingPropertyCard key={property._id} property={property} deletePropertyModel={deletePropertyModel} setDeletePropertyModel={setDeletePropertyModel} />
-          ))
-        }
+      {properties.map((property) => (
+          <ListingPropertyCard
+            key={property._id}
+            property={property}
+            setDeletePropertyModel={setDeletePropertyModel}
+          />
+        ))}
       </div>
     </div>
   );

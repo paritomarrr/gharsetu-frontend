@@ -28,26 +28,55 @@ import PropertyPageMap from "../components/propertyPage/PropertyPageMap";
 import Amenities from "../components/propertyPage/Amenities";
 import { addCommaToNumber } from "../helperFunctions/basicHelpers";
 import PropertyInfo from "../components/propertyPage/PropertyInfo";
+import SellerProfile from "../components/propertyPage/SellerProfile";
 
 const PropertyPage = () => {
   const { id } = useParams();
   const [property, setProperty] = useState({});
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [ownerData, setOwnerData] = useState()
+
 
   useEffect(() => {
     const getSingleProperty = async () => {
-      const res = await axios.post(
-        `http://localhost:8080/api/v1/properties/getSingleProperty`,
-        {
-          propertyId: id,
+      try {
+        const res = await axios.post(
+          `http://localhost:8080/api/v1/properties/getSingleProperty`,
+          {
+            propertyId: id,
+          }
+        );
+        if (res.data.success) {
+          setProperty(res.data.property);
         }
-      );
-      if (res.data.success) {
-        setProperty(res.data.property);
+      } catch (error) {
+        console.error("Error fetching single property:", error);
       }
     };
+
     getSingleProperty();
-  }, []);
+  }, [id]);
+
+  useEffect(() => {
+    if (property?._id) {
+      const getSellerProfile = async () => {
+        try {
+          const res = await axios.post(
+            'http://localhost:8080/api/v1/properties/sellerProfile',
+            {
+              propertyId: property._id,
+            }
+          );
+          console.log('res', res);
+          setOwnerData(res.data.ownerData);
+        } catch (error) {
+          console.error("Error fetching seller profile:", error);
+        }
+      };
+
+      getSellerProfile();
+    }
+  }, [property]);
 
   console.log("property", property);
 
@@ -76,7 +105,7 @@ const PropertyPage = () => {
 
               <Separator />
 
-              <div>Profile</div>
+              <SellerProfile property={property} ownerData={ownerData}/>
 
               <Separator />
 
@@ -131,7 +160,7 @@ const PropertyPage = () => {
                   {showFullDescription
                     ? property?.description
                     : property?.description?.slice(0, 400)}
-                  {!showFullDescription && <div> ....... </div>}
+                  {!showFullDescription && property?.description > 400 && <div> ....... </div>}
                 </div>
 
                 {property?.description?.length > 400 && (
