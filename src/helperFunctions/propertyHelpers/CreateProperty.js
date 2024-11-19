@@ -87,7 +87,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
         propertyStatus: propertyForm.propertyStatus,
         coordinates: {
           latitude: propertyForm.coordinates.latitude,
-          longitude: propertyForm.coordinates.latitude,
+          longitude: propertyForm.coordinates.longitude,
         },
         images: propertyForm.images,
       }

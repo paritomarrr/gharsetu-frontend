@@ -178,9 +178,10 @@ const PropertyPage = () => {
               <Amenities data={property.societyAmenities} />
 
               <Separator />
+              {console.log('corr', property?.coordinates)}
 
               <div className="flex flex-col gap-6">
-                <div className="text-xl font-medium"> Where you’ll be </div>
+                <div className="text-xl font-medium"> Property Location </div>
 
                 {property.coordinates && (
                   <PropertyPageMap coordinates={property?.coordinates} />

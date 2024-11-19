@@ -51,6 +51,9 @@ const ProfileDropDown = ({ user }) => {
                             <Link to={'/profile/dashboard'} className='py-[10px] px-4 cursor-pointer'>
                                 Profile
                             </Link>
+                            <Link to={'/bookmarks'} className='py-[10px] px-4 cursor-pointer'>
+                                Bookmarks
+                            </Link>
                             <div className='w-full h-[1px] bg-[#DDD]'></div>
 
                             <div onClick={logOut} className='py-[10px] px-4 cursor-pointer'>

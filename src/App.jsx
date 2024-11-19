@@ -21,6 +21,8 @@ import Leads from "./screens/profile/Leads";
 import AccountSettings from "./screens/profile/AccountSettings";
 import HelpCentre from "./screens/profile/HelpCentre";
 import HomeFooter from "./components/common/HomeFooter";
+import Error from "./screens/Error";
+import Bookmarks from "./screens/Bookmarks";
 
 const ProfileLayout = () => {
   return (
@@ -50,6 +52,8 @@ function App() {
         <Route path="/property/:id" element={<PropertyPage />} />
         <Route path="/postProperty" element={<PostProperty />} />
         <Route path="/postProperty/add" element={<PostPropertySteps />} />
+        <Route path="/bookmarks" element={<Bookmarks/>}/>
+        <Route path="/*" element={<Error/>}/>
 
         {/* Profile Routes */}
         <Route path="/profile" element={<Profile />} />

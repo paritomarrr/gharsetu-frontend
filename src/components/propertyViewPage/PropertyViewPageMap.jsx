@@ -17,20 +17,14 @@ const PropertyViewPageMap = ({ propertiesToShow = [] }) => {
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
       center: [77.279713, 28.639965],
-      zoom: 3,
+      zoom: 18,
+      pitch: 45,
     });
     
     mapRef.current = map;
 
     // Add navigation controls
     map.addControl(new mapboxgl.NavigationControl());
-
-    // Add markers for properties
-    markersRef.current = new mapboxgl.Marker({ draggable: true })
-    .setLngLat([77.279713, 28.639965])
-    .setPopup(new mapboxgl.Popup().setHTML("<h1>TO be Removed baad me</h1>"))
-    .addTo(mapRef.current);
-
 
     propertiesToShow.forEach((property) => {
       try {
@@ -60,7 +54,7 @@ const PropertyViewPageMap = ({ propertiesToShow = [] }) => {
 
         // Create and add the marker
         const marker = new mapboxgl.Marker(el)
-          .setLngLat([coordinates.latitude, coordinates.longitude])
+          .setLngLat([coordinates.longitude, coordinates.latitude])
           .addTo(map);
 
         // Add popup with property info

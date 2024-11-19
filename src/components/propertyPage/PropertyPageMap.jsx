@@ -1,69 +1,136 @@
 import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
-const PropertyPageMap = ({ coordinates }) => {
+const PropertyPageMap = ({
+  coordinates,
+  mapboxToken = "pk.eyJ1IjoicGFyaXRvbWFyciIsImEiOiJjbTJ5Zmw1aXYwMDl3MmxzaG91bWRnNXgxIn0.ukF28kdk13Vf2y1EOKQFWg",
+  initialZoom = 17,
+  style = "mapbox://styles/mapbox/streets-v12"
+}) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
 
+  // Initialize map
   useEffect(() => {
-    // Validate coordinates
     if (!coordinates?.latitude || !coordinates?.longitude) {
       console.warn('Invalid coordinates provided to PropertyPageMap');
       return;
     }
 
-    // Initialize map
-    mapboxgl.accessToken = 'pk.eyJ1IjoicGFyaXRvbWFyciIsImEiOiJjbTJ5Zmw1aXYwMDl3MmxzaG91bWRnNXgxIn0.ukF28kdk13Vf2y1EOKQFWg';
-
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [coordinates.longitude, coordinates.latitude],
-      zoom: 9
-    });
-
-    // Save map instance
-    mapRef.current = map;
-
-    // Add marker
-    const marker = new mapboxgl.Marker()
-      .setLngLat([coordinates.longitude, coordinates.latitude])
-      .addTo(map);
-
-    // Save marker instance
-    markerRef.current = marker;
-
-    // Cleanup function
-    return () => {
-      if (markerRef.current) {
-        markerRef.current.remove();
-      }
-      if (mapRef.current) {
-        mapRef.current.remove();
-      }
-    };
-  }, [coordinates?.latitude, coordinates?.longitude]);
-
-  // Update marker position when coordinates change
-  useEffect(() => {
-    if (markerRef.current && coordinates?.latitude && coordinates?.longitude) {
-      markerRef.current.setLngLat([coordinates.longitude, coordinates.latitude]);
+    if (!mapboxToken) {
+      console.error('Mapbox access token is required');
+      return;
     }
-    
-    if (mapRef.current && coordinates?.latitude && coordinates?.longitude) {
-      mapRef.current.flyTo({
+
+    mapboxgl.accessToken = mapboxToken;
+
+    try {
+      const map = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style,
         center: [coordinates.longitude, coordinates.latitude],
-        zoom: 9
+        zoom: initialZoom,
+        antialias: true,
+        pitch: 45,
       });
+
+      mapRef.current = map;
+
+      // Add marker
+      const marker = new mapboxgl.Marker({
+        color: "#FF0000",
+        draggable: false
+      })
+        .setLngLat([coordinates.longitude, coordinates.latitude])
+        .addTo(map);
+
+      markerRef.current = marker;
+
+      // Add navigation controls
+      map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      map.on('load', () => {
+        const layers = map.getStyle().layers;
+        const labelLayerId = layers.find(
+          (layer) => layer.type === 'symbol' && layer.layout['text-field']
+        )?.id;
+
+        if (labelLayerId) {
+          map.addLayer(
+            {
+              id: 'add-3d-buildings',
+              source: 'composite',
+              'source-layer': 'building',
+              filter: ['==', 'extrude', 'true'],
+              type: 'fill-extrusion',
+              minzoom: 15,
+              paint: {
+                'fill-extrusion-color': '#aaa',
+                'fill-extrusion-height': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  15,
+                  0,
+                  15.05,
+                  ['get', 'height']
+                ],
+                'fill-extrusion-base': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  15,
+                  0,
+                  15.05,
+                  ['get', 'min_height']
+                ],
+                'fill-extrusion-opacity': 0.6
+              }
+            },
+            labelLayerId
+          );
+        }
+      });
+
+      // Error handling
+      map.on('error', (e) => {
+        console.error('Mapbox error:', e);
+      });
+
+    } catch (error) {
+      console.error('Error initializing map:', error);
     }
-  }, [coordinates?.latitude, coordinates?.longitude]);
+
+    return () => {
+      markerRef.current?.remove();
+      mapRef.current?.remove();
+    };
+  }, [coordinates?.latitude, coordinates?.longitude, style, initialZoom, mapboxToken]);
+
+  useEffect(() => {
+    if (!coordinates?.latitude || !coordinates?.longitude) return;
+
+    markerRef.current?.setLngLat([coordinates.longitude, coordinates.latitude]);
+
+    mapRef.current?.flyTo({
+      center: [coordinates.longitude, coordinates.latitude],
+      zoom: initialZoom,
+      duration: 2000,
+      essential: true
+    });
+  }, [coordinates?.latitude, coordinates?.longitude, initialZoom]);
 
   return (
-    <div 
-      ref={mapContainerRef} 
-      className="w-full h-full min-h-[400px]"
-    />
+    <div className="relative w-full h-full min-h-[400px] rounded-lg overflow-hidden">
+      <div
+        ref={mapContainerRef}
+        className="absolute inset-0"
+        aria-label="Map showing property location"
+        role="region"
+      />
+    </div>
   );
 };
 

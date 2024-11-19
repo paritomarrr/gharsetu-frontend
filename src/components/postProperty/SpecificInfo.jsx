@@ -544,6 +544,10 @@ const SpecificInfo = () => {
             />
           </HStack>
           <div className="h-96 w-full max-w-[190vh]">
+          {console.log({
+            latitude, 
+            longitude
+          })}
             <PostPropertyMap
               setLatitude={setLatitude}
               setLongitude={setLongitude}
