@@ -10,6 +10,7 @@ const FeatutedProperties = () => {
   useEffect(()=>{
     const getData = async () => {
       const res = await getRecentproperties()
+      console.log('res', res)
       setProperties(res)
     }
     getData()

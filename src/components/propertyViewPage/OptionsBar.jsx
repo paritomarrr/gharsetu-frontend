@@ -6,24 +6,31 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
 } from "@chakra-ui/react";
-import { Button } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import PropertySearchBar from "./PropertySearchBar";
 
-const OptionsBar = ({mode}) => {
+const OptionsBar = ({ mode }) => {
   const [selectedMode, setSelectedMode] = useState("buy");
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const search = searchParams.get('search');
+  const minPrice = searchParams.get('minPrice');
+  const maxPrice = searchParams.get('maxPrice');
+
+  const [searchQuery, setSearchQuery] = useState(search ? search : '');
 
   useEffect(() => {
     setSelectedMode(mode);
   }, [mode]);
 
   const handleSearch = () => {
-    navigate(`/properties/${selectedMode}`);
+    console.log({
+      selectedMode, 
+      searchQuery
+    })
+    navigate(`/properties/${selectedMode}?search=${searchQuery}`);
   };
 
   return (
@@ -39,15 +46,13 @@ const OptionsBar = ({mode}) => {
             </div>
           </MenuButton>
           <MenuList className="text-sm">
-            <MenuItem onClick={()=>setSelectedMode('buy')}>Buy</MenuItem>
-            <MenuItem onClick={()=>setSelectedMode('rent')}>Rent</MenuItem>
+            <MenuItem onClick={() => setSelectedMode('buy')}>Buy</MenuItem>
+            <MenuItem onClick={() => setSelectedMode('rent')}>Rent</MenuItem>
           </MenuList>
         </Menu>
-        <input
-          type="text"
-          className="flex-grow border-[1px] focus:outline-none border-gray-300 py-2  px-2 text-sm"
-          placeholder="Search for properties"
-        />
+
+        <PropertySearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} selectedMode={selectedMode}/>
+
         <div className="py-2 border-[1px] border-gray-300 rounded-r-md px-3 cursor-pointer" onClick={handleSearch}>
           <Search size={20} className="text-gray-500" />
         </div>
