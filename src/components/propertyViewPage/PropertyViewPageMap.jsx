@@ -17,7 +17,7 @@ const PropertyViewPageMap = ({ propertiesToShow = [] }) => {
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v11",
       center: [77.279713, 28.639965], // Default to a central location
-      zoom: 15,
+      zoom: 20,
       pitch: 45,
       bearing: -17.6,
     });

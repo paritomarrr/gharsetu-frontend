@@ -26,7 +26,7 @@ import axios from "axios";
 import ImageGallery from "../components/propertyPage/ImageGallery";
 import PropertyPageMap from "../components/propertyPage/PropertyPageMap";
 import Amenities from "../components/propertyPage/Amenities";
-import { addCommaToNumber } from "../helperFunctions/basicHelpers";
+import { convertPriceToWords } from "../helperFunctions/basicHelpers";
 import PropertyInfo from "../components/propertyPage/PropertyInfo";
 import SellerProfile from "../components/propertyPage/SellerProfile";
 
@@ -213,7 +213,7 @@ const PropertyPage = () => {
             <div className="w-1/3 flex flex-col gap-[21px]">
               <div className="p-[21px] rounded-lg border-[1px] border-[#E5E7EB] flex gap-[14px] flex-col shadow-lg">
                 <div className="text-3xl font-medium">
-                  ₹{addCommaToNumber(property?.askedPrice)}
+                  ₹{convertPriceToWords(property?.askedPrice)}
                 </div>
                 <div className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer">
                   Seller Details

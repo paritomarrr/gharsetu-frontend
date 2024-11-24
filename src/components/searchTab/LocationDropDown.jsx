@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Search, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
-    const navigate = useNavigate()
+const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
+    const navigate = useNavigate();
     const [searchFocused, setSearchFocused] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState({
         locations: [],
         success: false,
-        count: 0
+        count: 0,
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -37,9 +38,8 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         const timeoutId = setTimeout(dropdownFetch, 300);
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
-    
+
     const handleNavigation = (location) => {
-        console.log('location', location);
         const searchComponents = [
           location.localities?.[0]?.replace(/\s+/g, ''),
           location.city?.replace(/\s+/g, ''),
@@ -47,8 +47,7 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         ].filter(Boolean);
         
         const searchString = searchComponents.join('+');
-        console.log('searchString', searchString);
-        navigate(`/properties/${selectedMode}?search=${searchString}`);
+        navigate(`/properties/buy?search=${searchString}`);
       };
 
     const renderLocationItem = (location) => {
@@ -58,22 +57,18 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         return (
             <div
                 key={`${location.city}-${locality}`}
-                className="px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                className="px-4 py-2 hover:bg-gray-100 rounded-md cursor-pointer transition-colors duration-150"
                 onClick={() => {
-                    handleNavigation(location)
+                    setSearchLocation(location);
                     setSearchQuery(locality);
                     setSearchFocused(false);
                 }}
             >
                 <div className="flex items-start">
-                    <MapPin className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                    <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
                     <div className="ml-3">
-                        <div className="text-sm font-medium text-gray-900">
-                            {locality}
-                        </div>
-                        <div className="text-xs text-gray-500 mt-0.5">
-                            {location.city}, {location.state}
-                        </div>
+                        <div className="text-sm font-medium text-gray-900">{locality || location.city}</div>
+                        <div className="text-xs text-gray-500 mt-0.5">{fullAddress}</div>
                     </div>
                 </div>
             </div>
@@ -81,38 +76,47 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
     };
 
     return (
-        <div className="relative w-full max-w-2xl">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <div className="relative">
+            <div
+                className={`
+                    transition-all duration-500 ease-in-out
+                    ${searchFocused ? 'w-[300px]' : 'w-[200px]'}
+                `}
+            >
+                <div className="text-xs font-semibold">Where</div>
                 <input
                     type="text"
-                    className="w-full border border-gray-300 py-2 pl-10 px-2 text-sm focus:outline-none shadow-sm rounded-md"
-                    placeholder="Search for Localities"
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={(e) => {
+                        // Keep dropdown open when interacting with results
+                        setTimeout(() => setSearchFocused(false), 200);
+                    }}
+                    placeholder="Find your dream home"
+                    className="text-sm focus:outline-none w-full "
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => setSearchFocused(true)}
-                    onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
                 />
             </div>
-            {searchFocused && (
-                <div className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-80 overflow-y-auto">
-                    {isLoading ? (
-                        <div className="px-4 py-3 text-center text-gray-500">
-                            Loading...
-                        </div>
-                    ) : searchResults.success && searchResults.locations.length > 0 ? (
-                        <div className="py-2">
-                            {searchResults.locations.map(renderLocationItem)}
-                        </div>
-                    ) : (
-                        <div className="px-4 py-6 text-center text-gray-500">
-                            Start typing to search for localities
-                        </div>
-                    )}
-                </div>
-            )}
+
+            <div
+                className={`
+                    absolute top-14 left-0 rounded-lg bg-white w-full shadow-md
+                    transition-all duration-500 ease-in-out overflow-hidden z-10
+                    ${searchFocused ? 'max-h-[200px] opacity-100 p-2' : 'max-h-0 opacity-0 p-0'}
+                `}
+            >
+                {isLoading ? (
+                    <div className="px-4 text-center text-gray-500">Loading...</div>
+                ) : searchResults.success && searchResults.locations.length > 0 ? (
+                    <div className="flex flex-col gap-1">{searchResults.locations.map(renderLocationItem)}</div>
+                ) : (
+                    <div className="px-4 py-2 text-center text-gray-500">
+                        Start typing...
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
 
-export default PropertySearchBar;
+export default LocationDropDown;
