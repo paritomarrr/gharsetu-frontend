@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { CloudUpload, Loader2 } from 'lucide-react';
+import { CloudUpload, Loader2, X } from 'lucide-react';
 
 const DropZone = ({ setImages, images }) => {
     const [uploading, setUploading] = useState(false);
@@ -11,7 +11,7 @@ const DropZone = ({ setImages, images }) => {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', 'GharSetu2'); // Replace with your upload preset
-            
+
             const response = await fetch(
                 `https://api.cloudinary.com/v1_1/dzqgyl0wf/image/upload`, // Replace with your cloud name
                 {
@@ -46,7 +46,7 @@ const DropZone = ({ setImages, images }) => {
             });
 
             const uploadedFiles = await Promise.all(uploadPromises);
-            
+
             setImages((prevImages) => [
                 ...prevImages,
                 ...uploadedFiles.map(({ originalFile, cloudinaryUrl }) => ({
@@ -70,12 +70,16 @@ const DropZone = ({ setImages, images }) => {
         multiple: true,
     });
 
+    const removeImage = (index) => {
+        setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    }
+
     return (
         <div className="flex flex-col w-full gap-4">
             {error && (
                 window.alert(error)
             )}
-            
+
             <div
                 {...getRootProps()}
                 className={`w-full border-dashed border-2 rounded-md flex justify-center items-center cursor-pointer p-4 
@@ -90,7 +94,7 @@ const DropZone = ({ setImages, images }) => {
                     )}
                     <div className="flex flex-col">
                         <div>
-                            {uploading 
+                            {uploading
                                 ? 'Uploading...'
                                 : 'Select a file or drag and drop here (Minimum 5 images)'}
                         </div>
@@ -105,7 +109,8 @@ const DropZone = ({ setImages, images }) => {
                 <strong>Selected Images:</strong>
                 <div className="flex flex-wrap gap-2 mt-2">
                     {images?.map((file, index) => (
-                        <div key={index} className="flex flex-col items-center">
+                        <div key={index} className="relative flex flex-col items-center">
+                            <div className='absolute top-0 right-0'> <X size={20} onClick={() => removeImage(index)} className='text-white cursor-pointer p-[0.2px] rounded-full bg-red-500' /> </div>
                             <img
                                 src={file.preview || file.cloudinaryUrl}
                                 alt={file.name}
