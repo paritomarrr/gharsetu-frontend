@@ -46,10 +46,10 @@ const BasicInfo = () => {
     <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
       <VStack spacing={9} align="start">
         <Box>
-          <Text fontWeight="bold" fontSize="3xl">
+          <Text fontWeight="bold" fontSize="2xl">
             2. Basic Property Details
           </Text>
-          <Text fontSize="2xl">
+          <Text fontSize="xl">
             Tell us about your property so we can help you find the right buyers
             or tenants faster.
           </Text>

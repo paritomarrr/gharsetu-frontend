@@ -17,10 +17,10 @@ const PersonalInfo = ({ showError }) => {
     <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
       <VStack spacing={9} align="start">
         <Box>
-          <Text fontWeight="bold" fontSize="3xl">
+          <Text fontWeight="bold" fontSize="2xl">
             1. Personal Information
           </Text>
-          <Text fontSize="2xl">Let’s get started with the basics.</Text>
+          <Text fontSize="xl">Let’s get started with the basics.</Text>
         </Box>
 
         <VStack align="start" spacing={6}>

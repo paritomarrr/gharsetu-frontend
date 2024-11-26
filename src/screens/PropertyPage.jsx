@@ -29,12 +29,43 @@ import Amenities from "../components/propertyPage/Amenities";
 import { convertPriceToWords } from "../helperFunctions/basicHelpers";
 import PropertyInfo from "../components/propertyPage/PropertyInfo";
 import SellerProfile from "../components/propertyPage/SellerProfile";
+import { useToast, Box } from "@chakra-ui/react";
 
 const PropertyPage = () => {
   const { id } = useParams();
   const [property, setProperty] = useState({});
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [ownerData, setOwnerData] = useState()
+  const toast = useToast();
+
+  const handleShare = () => {
+    const url = window.location.href; // Get the current page URL
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        // Show a toast message
+        toast({
+          title: "Link copied!",
+          description: "The URL has been copied to your clipboard.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      })
+      .catch((err) => {
+        // Handle errors
+        toast({
+          title: "Error",
+          description: "Failed to copy the URL. Please try again.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        console.error("Failed to copy: ", err);
+      });
+  };
+
 
 
   useEffect(() => {
@@ -85,7 +116,9 @@ const PropertyPage = () => {
       {property && (
         <div className="px-36 py-5 flex flex-col gap-4">
           <div className="flex justify-end gap-4 cursor-pointer">
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center"
+            onClick={handleShare}
+            >
               <Share size={16} />
               <div className="text-sm"> Share </div>
             </div>

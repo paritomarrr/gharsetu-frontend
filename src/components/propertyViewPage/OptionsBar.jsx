@@ -42,6 +42,7 @@ const OptionsBar = ({ mode }) => {
 
   const clearFilters = () => {
     navigate(`/properties/${selectedMode}`);
+    setSearchQuery('')
   }
 
   return (
@@ -70,10 +71,7 @@ const OptionsBar = ({ mode }) => {
       </div>
 
 
-      {/* Clear all Filters */}
-        <div onClick={clearFilters} className="text-sm font-semibold cursor-pointer text-red-600 flex items-center">
-          Clear <X size={16} />
-        </div>
+     
 
       {/* Price Range */}
       <PriceRange />
@@ -127,6 +125,12 @@ const OptionsBar = ({ mode }) => {
           <MenuItem> Dealer </MenuItem>
         </MenuList>
       </Menu>
+
+       {/* Clear all Filters */}
+       <div onClick={clearFilters} className="text-sm border rounded-md border-red-300 px-4 font-semibold cursor-pointer text-red-600 flex items-center hover:bg-red-500 hover:text-white hover:duration-200">
+          Reset 
+          {/* <X size={16} /> */}
+        </div>
     </div>
   );
 };

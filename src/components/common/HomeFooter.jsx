@@ -31,17 +31,17 @@ const HomeFooter = () => {
           <div className='flex gap-48 text-[#E0E0E0]'>
             <div className='flex flex-col gap-3'>
               <Link to={'/'}>About us</Link>
-              <Link to={'/'}>Careers</Link>
-              <Link to={'/'}>Blogs</Link>
-              <Link to={'/'}>List with us</Link>
+              {/* <Link to={'/'}>Careers</Link> */}
+              <Link to={'/'}>Articles</Link>
+              <Link to={'/postProperty'} target='_blank'>List with us</Link>
               <Link to={'/'}>Contact Us</Link>
             </div>
 
             <div className='flex flex-col gap-3'>
-              <Link to={'/'}>Linkedin</Link>
-              <Link to={'/'}>Twitter</Link>
-              <Link to={'/'}>Facebook</Link>
-              <Link to={'/'}>Instagram</Link>
+              <Link to={'https://www.linkedin.com/company/gharsetu/'} target='_blank'>Linkedin</Link>
+              <Link to={'https://x.com/gharsetu'} target='_blank'>X / Twitter</Link>
+              <Link to={'https://www.facebook.com/profile.php?id=61563651175703'} target='_blank'>Facebook</Link>
+              <Link to={'https://www.instagram.com/gharsetu/'} target='_blank'>Instagram</Link>
             </div>
           </div>
         </div>

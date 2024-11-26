@@ -110,7 +110,7 @@ const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
                 ) : searchResults.success && searchResults.locations.length > 0 ? (
                     <div className="flex flex-col gap-1">{searchResults.locations.map(renderLocationItem)}</div>
                 ) : (
-                    <div className="px-4 py-2 text-center text-gray-500">
+                    <div className="px-4 py-2 text-left text-gray-500">
                         Start typing...
                     </div>
                 )}
