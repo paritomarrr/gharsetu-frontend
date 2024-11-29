@@ -30,6 +30,7 @@ export const UserProvider = ({ children }) => {
   const logOut = () => {
     toast.success("Logged out successfully");
     localStorage.removeItem("token"); 
+    setFormStep(0)
     setuser(null); 
   };
 

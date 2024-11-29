@@ -1,14 +1,35 @@
+import axios from 'axios';
 import { Dot } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
 
-const SellerProfile = ({ property, ownerData }) => {
+const SellerProfile = ({ property }) => {
+
+    const [ownerData, setOwnerData] = useState()
+
+    useEffect(() => {
+        if (property?.ownerId) {
+            const getSellerName = async () => {
+                try {
+                    const res = await axios.post('http://localhost:8080/api/v1/users/getSellerName', {
+                        sellerId: property.ownerId,
+                    });
+                    console.log('res', res);
+                    setOwnerData(res.data.seller);
+                } catch (error) {
+                    console.error('Error fetching seller data:', error);
+                }
+            };
+            getSellerName();
+        }
+    }, [property]);
+    
     const createdOn = property?.createdAt;
 
-    // Function to calculate time difference
     const timeElapsed = (date) => {
         const now = new Date();
         const createdDate = new Date(date);
-        const diff = now - createdDate; // Difference in milliseconds
+        const diff = now - createdDate;
 
         const seconds = Math.floor(diff / 1000);
         const minutes = Math.floor(seconds / 60);
@@ -25,8 +46,10 @@ const SellerProfile = ({ property, ownerData }) => {
         return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
     };
 
+    console.log('property from DF', property)
+
     return (
-        <div className='flex gap-5 items-center'>
+        <Link to={`/seller/${property.ownerId}`} target='_blank' className='flex gap-5 items-center'>
             <img
                 className='w-10 h-10 rounded-full'
                 src='https://media.licdn.com/dms/image/v2/D5603AQEvhR-oclWlDw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725570376005?e=1736380800&v=beta&t=8AvIwEEfanwKjsvLwfbM7bSN55COnJaSmpyDrPOw0tQ'
@@ -42,7 +65,7 @@ const SellerProfile = ({ property, ownerData }) => {
                     <div>{timeElapsed(createdOn)}</div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 

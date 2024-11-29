@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { Menu, User } from 'lucide-react';
 import { useDispatch } from 'react-redux';
-import { toggleIsSignInOpen } from '../store/slices/SignInSlice';
+import { toggleIsSignInOpen, setSignInModalTitle } from '../store/slices/SignInSlice';
 import { useContext } from 'react';
 import { UserContext } from '../context/userContext';
 import { Link } from 'react-router-dom';
 
-const ProfileDropDown = ({ user }) => {
+const ProfileDropDown = ({ user, loginModalOpen, setLoginModalOpen }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const { logOut } = useContext(UserContext);
@@ -31,7 +31,14 @@ const ProfileDropDown = ({ user }) => {
 
     const openSignInModal = () => {
         dispatch(toggleIsSignInOpen());
+        setIsOpen(false);
     };
+
+    const openLoginModal = () => {
+        setLoginModalOpen(!loginModalOpen);
+        dispatch(setSignInModalTitle('Log In'));
+        setIsOpen(false);
+    }
 
     return (
         <div className='relative' ref={dropdownRef}>
@@ -65,7 +72,7 @@ const ProfileDropDown = ({ user }) => {
                             <div onClick={openSignInModal} className='py-[10px] px-4 font-bold cursor-pointer'>
                                 Sign Up
                             </div>
-                            <div className='py-[10px] px-4 cursor-pointer'>
+                            <div onClick={openLoginModal} className='py-[10px] px-4 cursor-pointer'>
                                 Log In
                             </div>
                         </>

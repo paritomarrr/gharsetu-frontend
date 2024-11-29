@@ -31,7 +31,7 @@ const Dashboard = () => {
 
       <div className="bg-[#DDD] h-[0.8px] w-full"></div>
 
-      <div className="flex flex-col gap-6">
+      {/* <div className="flex flex-col gap-6">
         <div className="flex justify-between">
           <div className="text-3xl font-semibold">Your Lisitings</div>
 
@@ -69,7 +69,7 @@ const Dashboard = () => {
         <div className="p-4 shadow-md border rounded-md">
           <DashboardTable />
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-[#DDD] h-[0.8px] w-full"></div>
 

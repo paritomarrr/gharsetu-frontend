@@ -12,7 +12,7 @@ const PostPropertySteps = () => {
     const propertyForm = useSelector((state) => state.propertyForm);
     const showError = propertyForm.showError;
 
-    console.log('showError from selector', showError)
+    console.log('formStep', formStep)
 
     if (!user) {
         return null

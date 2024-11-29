@@ -109,7 +109,20 @@ const PropertyPage = () => {
     }
   }, [property]);
 
-  console.log("property", property);
+  const generateWhatsAppLink = () => {
+    const phoneNumber = "9717252292";
+    const propertyAddress = property?.address || "the listed property";
+    const price = convertPriceToWords(property?.askedPrice);
+    const pageLink = window.location.href
+    const message = encodeURIComponent(
+      `Hello, I saw this property on your website and would like to know more about it. Details:\n\n` +
+      `Address: ${propertyAddress.locality}, ${propertyAddress.city}\n` +
+      `Price: ₹${price}\n\n` +
+      `Here is the link to the property: ${pageLink}\n\n` +
+      `Please provide more information.`
+    );
+    return `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
+  };
 
   return (
     <div>
@@ -138,7 +151,7 @@ const PropertyPage = () => {
 
               <Separator />
 
-              <SellerProfile property={property} ownerData={ownerData}/>
+              <SellerProfile property={property}/>
 
               <Separator />
 
@@ -251,9 +264,14 @@ const PropertyPage = () => {
                 <div className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer">
                   Seller Details
                 </div>
-                <div className="rounded-lg py-3 px-4 text-sm font-medium text-center cursor-pointer text-[#1D4CBE] border-[#1D4CBE] border-[1px]">
+                <a
+                  href={generateWhatsAppLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg py-3 px-4 text-sm font-medium text-center cursor-pointer text-[#1D4CBE] border-[#1D4CBE] border-[1px]"
+                >
                   Chat on WhatsApp
-                </div>
+                </a>
               </div>
 
               <div className="flex gap-2 text-xs underline justify-center items-center cursor-pointer">

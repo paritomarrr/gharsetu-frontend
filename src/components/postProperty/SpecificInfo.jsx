@@ -448,8 +448,8 @@ const SpecificInfo = () => {
               <div
                 key={item.value}
                 className={`w-24 h-24 border-[1px] border-[#DDD] cursor-pointer rounded-md flex flex-col items-center justify-center gap-2 ${propertyForm.flatFurnishings?.includes(item.value)
-                    ? "bg-teal-200"
-                    : ""
+                  ? "bg-teal-200"
+                  : ""
                   }`}
                 onClick={() => toggleSelection(item, "flatFurnishings")}
               >
@@ -475,8 +475,8 @@ const SpecificInfo = () => {
               <div
                 key={item.value}
                 className={`w-24 h-24 border-[1px] border-[#DDD] cursor-pointer rounded-md flex flex-col items-center justify-center gap-2 ${propertyForm.societyAmenities?.includes(item.value)
-                    ? "bg-teal-200"
-                    : ""
+                  ? "bg-teal-200"
+                  : ""
                   }`}
                 onClick={() => toggleSelection(item, "societyAmenities")}
               >
@@ -493,35 +493,39 @@ const SpecificInfo = () => {
         </VStack>
 
         {/* Construction Type */}
-        <VStack align="start" spacing={4}>
-          <Text fontSize="xl" fontWeight="semibold">
-            Construction Type:
-          </Text>
-          <HStack spacing={8}>
-            {constructionTypes.map((type) => (
-              <Button
-                key={type}
-                size="sm"
-                variant="outline"
-                fontWeight="semibold"
-                borderRadius="xl"
-                onClick={() =>
-                  dispatch(updatePropertyForm({ propertyStatus: type }))
-                }
-                colorScheme={
-                  propertyForm.propertyStatus === type ? "teal" : "gray"
-                }
-              >
-                {type}
-              </Button>
-            ))}
-          </HStack>
-          {propertyForm.showError && propertyForm.propertyStatus === '' && (
-            <Text color="red.500" fontSize="sm">
-              Property status is required
-            </Text>
-          )}
-        </VStack>
+        {
+          propertyForm.propertySubType !== "Rent" && (
+            <VStack align="start" spacing={4}>
+              <Text fontSize="xl" fontWeight="semibold">
+                Construction Type:
+              </Text>
+              <HStack spacing={8}>
+                {constructionTypes.map((type) => (
+                  <Button
+                    key={type}
+                    size="sm"
+                    variant="outline"
+                    fontWeight="semibold"
+                    borderRadius="xl"
+                    onClick={() =>
+                      dispatch(updatePropertyForm({ propertyStatus: type }))
+                    }
+                    colorScheme={
+                      propertyForm.propertyStatus === type ? "teal" : "gray"
+                    }
+                  >
+                    {type}
+                  </Button>
+                ))}
+              </HStack>
+              {propertyForm.showError && propertyForm.propertyStatus === '' && (
+                <Text color="red.500" fontSize="sm">
+                  Property status is required
+                </Text>
+              )}
+            </VStack>
+          )
+        }
 
         <DropZone setImages={setImages} images={images} />
 
@@ -552,10 +556,10 @@ const SpecificInfo = () => {
             />
           </HStack>
           <div className="h-96 w-full max-w-[190vh]">
-          {console.log({
-            latitude, 
-            longitude
-          })}
+            {console.log({
+              latitude,
+              longitude
+            })}
             <PostPropertyMap
               setLatitude={setLatitude}
               setLongitude={setLongitude}

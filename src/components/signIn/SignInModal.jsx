@@ -9,14 +9,18 @@ import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { UserContext } from '../../context/userContext';
 
-const SignInModal = () => {
+const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
     const dispatch = useDispatch();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [reqID, setReqID] = useState('');
     const [otp, setOtp] = useState('');
-    const {setNewUserId} = useContext(UserContext)
+    const { setNewUserId } = useContext(UserContext)
+    const SignInModalTitle = useSelector((state) => state.signInModal.SignInModalTitle);
 
     const closeSignInModal = () => {
+        if(loginModalOpen) {
+            setLoginModalOpen(false);
+        }
         dispatch(toggleIsSignInOpen());
     };
 
@@ -44,13 +48,13 @@ const SignInModal = () => {
             otp: otp,
             reqID: reqID
         });
-    
+
         if (res.data.success) {
             toast.success('OTP verified successfully');
             window.localStorage.setItem('token', res.data.token);
-            dispatch(toggleIsSignInOpen());            
+            dispatch(toggleIsSignInOpen());
             // Reload to ensure updated user state across app
-            window.location.reload(); 
+            window.location.reload();
             return;
         }
         console.log('Verification failed');
@@ -62,7 +66,7 @@ const SignInModal = () => {
             <div className="bg-white rounded-lg shadow-lg w-full max-w-[568px]">
                 <div className="py-[22px] px-6 border-b-[1px] flex justify-between w-full items-center">
                     <X onClick={closeSignInModal} size={16} className="cursor-pointer" />
-                    <div className="text-center flex-1">Sign Up</div>
+                    <div className="text-center flex-1"> {SignInModalTitle} </div>
                 </div>
 
                 <div id="recaptcha-container" className="justify-center flex"></div>

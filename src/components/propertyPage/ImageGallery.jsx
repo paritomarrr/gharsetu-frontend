@@ -2,6 +2,7 @@ import React from "react";
 import { Grip } from "lucide-react";
 
 const ImageGallery = ({ property }) => {
+  
   const placeholderImages = [
     "/api/placeholder/800/600",
     "/api/placeholder/400/300",
