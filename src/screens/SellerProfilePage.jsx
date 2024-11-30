@@ -35,7 +35,8 @@ const SellerProfile = () => {
         <div className='flex gap-5 items-center'>
           <img
             className='w-32 h-32 rounded-full'
-            src='https://media.licdn.com/dms/image/v2/D5603AQEvhR-oclWlDw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725570376005?e=1736380800&v=beta&t=8AvIwEEfanwKjsvLwfbM7bSN55COnJaSmpyDrPOw0tQ'
+            // src='https://media.licdn.com/dms/image/v2/D5603AQEvhR-oclWlDw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725570376005?e=1736380800&v=beta&t=8AvIwEEfanwKjsvLwfbM7bSN55COnJaSmpyDrPOw0tQ'
+            src='/logo.png'
             alt='Seller profile'
           />
           <div className='flex flex-col gap-3'>

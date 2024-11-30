@@ -14,7 +14,8 @@ const PersonalInfo = () => {
             <div className="flex gap-5 relative">
               <div className="flex-shrink-0">
                 <img
-                  src="https://media.licdn.com/dms/image/v2/D5603AQEvhR-oclWlDw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725570376005?e=1736380800&v=beta&t=8AvIwEEfanwKjsvLwfbM7bSN55COnJaSmpyDrPOw0tQ"
+                  // src="https://media.licdn.com/dms/image/v2/D5603AQEvhR-oclWlDw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725570376005?e=1736380800&v=beta&t=8AvIwEEfanwKjsvLwfbM7bSN55COnJaSmpyDrPOw0tQ"
+                  src='/logo.png'
                   alt="Profile"
                   className="w-28 h-28 rounded-full object-cover"
                 />
