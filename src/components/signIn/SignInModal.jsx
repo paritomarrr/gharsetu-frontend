@@ -32,7 +32,7 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
     // })
 
     const sendOtp = async () => {
-        const res = await axios.post('http://localhost:8080/api/v1/auth/sendOTP', {
+        const res = await axios.post('https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/auth/sendOTP', {
             phoneNumber: phoneNumber,
         })
         if (res.data.success) {
@@ -43,7 +43,7 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
     }
 
     const verifyOTP = async () => {
-        const res = await axios.post('http://localhost:8080/api/v1/auth/verifyOTP', {
+        const res = await axios.post('https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/auth/verifyOTP', {
             phoneNumber: phoneNumber,
             otp: otp,
             reqID: reqID

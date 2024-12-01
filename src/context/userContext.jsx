@@ -15,7 +15,7 @@ export const UserProvider = ({ children }) => {
     const getUser = async () => {
       if (token) {
         try {
-          const response = await axios.post('http://localhost:8080/api/v1/auth/getUser', {
+          const response = await axios.post('https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/auth/getUser', {
             token,
           });
           setuser(response.data.user);

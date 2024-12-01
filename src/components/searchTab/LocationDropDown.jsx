@@ -23,7 +23,7 @@ const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
             setIsLoading(true);
             try {
                 const response = await fetch(
-                    `http://localhost:8080/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
+                    `https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await response.json();
                 setSearchResults(data);

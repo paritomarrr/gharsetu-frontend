@@ -24,7 +24,7 @@ const PropertyView = () => {
       try {
        
 
-        const res = await axios.post('http://localhost:8080/api/v1/properties/filteredProperties', {
+        const res = await axios.post('https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/properties/filteredProperties', {
           locality,
           city,
           state,
@@ -40,7 +40,7 @@ const PropertyView = () => {
     const fetchAllProperties = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:8080/api/v1/properties/getAllProperties",
+          "https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/properties/getAllProperties",
           {
             mode,
             minPrice: minPrice ? Number(minPrice) : undefined,

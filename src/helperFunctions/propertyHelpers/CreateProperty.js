@@ -40,7 +40,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
 
     dispatch(toggleError(false));
     const res = await axios.post(
-      "http://localhost:8080/api/v1/properties/create",
+      "https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/properties/create",
       {
         ownerId: user._id,
         listedBy: propertyForm.listedBy,
