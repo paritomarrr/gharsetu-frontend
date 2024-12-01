@@ -42,7 +42,7 @@ const NewUserDetails = ({ user }) => {
     if (!validate()) return; // Prevent submission if validation fails
 
     try {
-      const newUser = await axios.post('https://gharsetu-server.vercel.app/api/v1/users/saveUserDetails', {
+      const newUser = await axios.post('https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/users/saveUserDetails', {
         id: user._id,
         firstName,
         lastName,

@@ -11,7 +11,7 @@ const SellerProfile = ({ property }) => {
         if (property?.ownerId) {
             const getSellerName = async () => {
                 try {
-                    const res = await axios.post('https://gharsetu-server.vercel.app/api/v1/users/getSellerName', {
+                    const res = await axios.post('https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/users/getSellerName', {
                         sellerId: property.ownerId,
                     });
                     console.log('res', res);

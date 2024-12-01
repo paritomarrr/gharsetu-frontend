@@ -40,7 +40,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
 
     dispatch(toggleError(false));
     const res = await axios.post(
-      "https://gharsetu-server.vercel.app/api/v1/properties/create",
+      "https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/create",
       {
         ownerId: user._id,
         listedBy: propertyForm.listedBy,

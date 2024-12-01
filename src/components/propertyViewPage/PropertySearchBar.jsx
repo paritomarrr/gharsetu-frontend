@@ -22,7 +22,7 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
             setIsLoading(true);
             try {
                 const response = await fetch(
-                    `https://gharsetu-server.vercel.app/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
+                    `https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await response.json();
                 setSearchResults(data);
