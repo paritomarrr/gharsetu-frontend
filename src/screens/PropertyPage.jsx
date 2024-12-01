@@ -72,7 +72,7 @@ const PropertyPage = () => {
     const getSingleProperty = async () => {
       try {
         const res = await axios.post(
-          `https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/properties/getSingleProperty`,
+          `https://gharsetu-server.vercel.app/api/v1/properties/getSingleProperty`,
           {
             propertyId: id,
           }
@@ -93,7 +93,7 @@ const PropertyPage = () => {
       const getSellerProfile = async () => {
         try {
           const res = await axios.post(
-            'https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/properties/sellerProfile',
+            'https://gharsetu-server.vercel.app/api/v1/properties/sellerProfile',
             {
               propertyId: property._id,
             }

@@ -13,7 +13,7 @@ const SellerProfile = () => {
 
   useEffect(() => {
     const getSellerData = async () => {
-      const res = await axios.post('https://gharsetu-server-kmvglorji-paritomarrrs-projects.vercel.app/api/v1/users/getSellerprofile', {
+      const res = await axios.post('https://gharsetu-server.vercel.app/api/v1/users/getSellerprofile', {
         sellerId
       })
       console.log('resss', res)
