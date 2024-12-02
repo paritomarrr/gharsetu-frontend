@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import PropertyCard from '../components/common/PropertyCard'
 import { useEffect } from 'react'
 import axios from 'axios'
+import { backend_url } from '../config'
 
 const SellerProfile = () => {
   const { sellerId } = useParams()
@@ -13,7 +14,7 @@ const SellerProfile = () => {
 
   useEffect(() => {
     const getSellerData = async () => {
-      const res = await axios.post('https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/users/getSellerprofile', {
+      const res = await axios.post(`${backend_url}/api/v1/users/getSellerprofile`, {
         sellerId
       })
       console.log('resss', res)

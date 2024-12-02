@@ -8,6 +8,7 @@ import { HStack } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { UserContext } from '../../context/userContext';
+import { backend_url } from '../../config';
 
 const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
     const dispatch = useDispatch();
@@ -32,7 +33,7 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
     // })
 
     const sendOtp = async () => {
-        const res = await axios.post('https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/auth/sendOTP', {
+        const res = await axios.post(`${backend_url}/api/v1/auth/sendOTP`, {
             phoneNumber: phoneNumber,
         })
         if (res.data.success) {
@@ -43,7 +44,7 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
     }
 
     const verifyOTP = async () => {
-        const res = await axios.post('https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/auth/verifyOTP', {
+        const res = await axios.post(`${backend_url}/api/v1/auth/verifyOTP`, {
             phoneNumber: phoneNumber,
             otp: otp,
             reqID: reqID

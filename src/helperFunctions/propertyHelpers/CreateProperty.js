@@ -1,5 +1,6 @@
 import axios from "axios";
 import JSConfetti from "js-confetti";
+import { backend_url } from "../../config";
 
 export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleError}) => {
 
@@ -40,7 +41,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
 
     dispatch(toggleError(false));
     const res = await axios.post(
-      "https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/create",
+      `${backend_url}/api/v1/properties/create`,
       {
         ownerId: user._id,
         listedBy: propertyForm.listedBy,

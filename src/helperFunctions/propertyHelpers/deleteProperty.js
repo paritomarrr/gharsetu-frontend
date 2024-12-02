@@ -1,8 +1,9 @@
 import axios from "axios";
+import { backend_url } from "../../config";
 
 export const DeleteProperty = async ({propertyId, userId}) => {
     const res = await axios.post(
-        "https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/deleteProperty",
+        `${backend_url}/api/v1/properties/deleteProperty`,
         {
             propertyId,
             userId

@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { UserContext } from "../../context/userContext";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { backend_url } from "../../config";
 
 const NewUserDetails = ({ user }) => {
   const [firstName, setFirstName] = useState(user?.firstName || '');
@@ -42,7 +43,7 @@ const NewUserDetails = ({ user }) => {
     if (!validate()) return; // Prevent submission if validation fails
 
     try {
-      const newUser = await axios.post('https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/users/saveUserDetails', {
+      const newUser = await axios.post(`${backend_url}/api/v1/users/saveUserDetails`, {
         id: user._id,
         firstName,
         lastName,

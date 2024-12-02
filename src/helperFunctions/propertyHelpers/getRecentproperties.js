@@ -1,7 +1,8 @@
 import axios from "axios";
+import { backend_url } from "../../config";
 
 export const getRecentproperties = async () => {
-    const response = await axios.post("https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/getRecentProperties");
+    const response = await axios.post(`${backend_url}/api/v1/properties/getRecentProperties`);
     const data = response.data.properties;
     return data;
 }

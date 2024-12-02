@@ -5,6 +5,7 @@ import OptionsBar from "../components/propertyViewPage/OptionsBar";
 import PropertyViewPageMap from "../components/propertyViewPage/PropertyViewPageMap";
 import PropertyCard from "../components/common/PropertyCard";
 import { filterProperties, validatePriceRange } from "../helperFunctions/filterProperties";
+import { backend_url } from "../config";
 
 const PropertyView = () => {
   const { mode } = useParams();
@@ -24,7 +25,7 @@ const PropertyView = () => {
       try {
        
 
-        const res = await axios.post('https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/filteredProperties', {
+        const res = await axios.post(`${backend_url}/api/v1/properties/filteredProperties`, {
           locality,
           city,
           state,
@@ -40,7 +41,7 @@ const PropertyView = () => {
     const fetchAllProperties = async () => {
       try {
         const res = await axios.post(
-          "https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/getAllProperties",
+          `${backend_url}/api/v1/properties/getAllProperties`,
           {
             mode,
             minPrice: minPrice ? Number(minPrice) : undefined,

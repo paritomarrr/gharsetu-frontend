@@ -1,0 +1,1 @@
+export const backend_url = "https://gharsetu-server.vercel.app"

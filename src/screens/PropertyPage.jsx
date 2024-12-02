@@ -30,6 +30,7 @@ import { convertPriceToWords } from "../helperFunctions/basicHelpers";
 import PropertyInfo from "../components/propertyPage/PropertyInfo";
 import SellerProfile from "../components/propertyPage/SellerProfile";
 import { useToast, Box } from "@chakra-ui/react";
+import { backend_url } from "../config";
 
 const PropertyPage = () => {
   const { id } = useParams();
@@ -72,7 +73,7 @@ const PropertyPage = () => {
     const getSingleProperty = async () => {
       try {
         const res = await axios.post(
-          `https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/getSingleProperty`,
+          `${backend_url}/api/v1/properties/getSingleProperty`,
           {
             propertyId: id,
           }
@@ -93,7 +94,7 @@ const PropertyPage = () => {
       const getSellerProfile = async () => {
         try {
           const res = await axios.post(
-            'https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/sellerProfile',
+            `${backend_url}/api/v1/properties/sellerProfile`,
             {
               propertyId: property._id,
             }

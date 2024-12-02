@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { backend_url } from '../../config';
 
 const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
             setIsLoading(true);
             try {
                 const response = await fetch(
-                    `https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
+                    `${backend_url}/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await response.json();
                 setSearchResults(data);

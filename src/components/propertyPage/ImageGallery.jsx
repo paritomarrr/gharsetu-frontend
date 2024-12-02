@@ -12,7 +12,7 @@ const ImageGallery = ({ property }) => {
   ];
 
   const getImageUrl = (index) => {
-    return property?.images?.[index]?.cloudinaryUrl || '/logo.png';
+    return property?.images?.[index]?.cloudinaryUrl || '/sampleHouse.jpg';
   };
 
   return (

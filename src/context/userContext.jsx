@@ -2,6 +2,7 @@ import axios from "axios";
 import { createContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { backend_url } from "../config";
 
 export const UserContext = createContext();
 
@@ -15,7 +16,7 @@ export const UserProvider = ({ children }) => {
     const getUser = async () => {
       if (token) {
         try {
-          const response = await axios.post('https://gharsetu-server-git-main-paritomarrrs-projects.vercel.app/api/v1/auth/getUser', {
+          const response = await axios.post(`${backend_url}/api/v1/auth/getUser`, {
             token,
           });
           setuser(response.data.user);
