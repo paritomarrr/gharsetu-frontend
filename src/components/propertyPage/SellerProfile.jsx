@@ -59,7 +59,7 @@ const SellerProfile = ({ property }) => {
             />
             <div className='flex flex-col gap-[3px]'>
                 <div className='text-sm font-semibold'>
-                    Listed by {ownerData?.firstName} {ownerData?.lastName}
+                    Listed by {property?.firstName} {property?.lastName}
                 </div>
                 <div className='flex text-xs text-[#6A6A6A] items-center'>
                     <div>{property?.listedBy}</div>
