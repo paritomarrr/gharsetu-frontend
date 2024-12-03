@@ -14,7 +14,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
     if (!propertyForm.propertyType) missingFields.push('propertyType');
     if (!propertyForm.propertySubType) missingFields.push('propertySubType');
     if (!propertyForm.availableFor) missingFields.push('availableFor');
-    if (!propertyForm.area) missingFields.push('area');
+    // if (!propertyForm.area) missingFields.push('area');
     if (!propertyForm.address.houseNumber) missingFields.push('address.houseNumber');
     if (!propertyForm.address.buildingProjectSociety) missingFields.push('address.buildingProjectSociety');
     if (!propertyForm.address.state) missingFields.push('address.state');
@@ -24,7 +24,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
     // if (!propertyForm.plotSize.plotLength) missingFields.push('plotSize.plotLength');
     // if (!propertyForm.plotSize.plotWidth) missingFields.push('plotSize.plotWidth');
     // if (!propertyForm.plotSize.plotArea) missingFields.push('plotSize.plotArea');
-    if (!propertyForm.furnishType) missingFields.push('furnishType');
+    // if (!propertyForm.furnishType) missingFields.push('furnishType');
     if (!propertyForm.askedPrice) missingFields.push('askedPrice');
     if (!propertyForm.propertyStatus) missingFields.push('propertyStatus');
     if (!propertyForm.coordinates.latitude) missingFields.push('coordinates.latitude');
