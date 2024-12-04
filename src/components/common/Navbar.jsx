@@ -13,7 +13,7 @@ import { toggleIsSignInOpen } from '../../store/slices/SignInSlice';
 
 
 const Navbar = () => {
-  const { user, setFormStep } = useContext(UserContext);
+  const { user, setFormStep, formStep } = useContext(UserContext);
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const isSignInOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
@@ -22,21 +22,15 @@ const Navbar = () => {
 
   useEffect(() => {
     if (user && user.isNewUser) {
-      console.log('her2')
       if (!isNewUserDetailsModalOpen) {
-        console.log('her3')
         dispatch(toggleIsNewUserModalOpen());
       }
     }
   }, [user]);
 
   const navigateToPostProperty = () => {
-    if (!user && !user.firstName) {
-      dispatch(toggleIsSignInOpen());
-    } else {
-      setFormStep(0)
-      navigate('/postProperty')
-    }
+    setFormStep(0);
+    navigate('/postProperty')
   }
 
 
@@ -53,10 +47,10 @@ const Navbar = () => {
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
           <Link to={'/properties/rent'} className='p-3 cursor-pointer'> Rent </Link>
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
-          <Link to={'/postProperty'} className='flex items-center'>
+          <div onClick={navigateToPostProperty} className='flex items-center'>
             <div className='p-3 cursor-pointer'> Post Property </div>
             <div className='bg-gradient-to-r h-fit from-[#1D4CBE] to-[#6398FF] cursor-pointer text-white text-xs  py-1 px-2 rounded-full'> New </div>
-          </Link>
+          </div>
         </div>
 
         <div className='flex gap-4 items-center'>

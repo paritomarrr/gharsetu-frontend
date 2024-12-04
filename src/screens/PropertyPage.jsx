@@ -110,8 +110,7 @@ const PropertyPage = () => {
     }
   }, [property]);
 
-  const generateWhatsAppLink = () => {
-    const phoneNumber = "9717252292";
+  const generateWhatsAppLink = (phoneNumber) => {
     const propertyAddress = property?.address || "the listed property";
     const price = convertPriceToWords(property?.askedPrice);
     const pageLink = window.location.href
@@ -266,7 +265,7 @@ const PropertyPage = () => {
                   Seller Details
                 </div>
                 <a
-                  href={generateWhatsAppLink()}
+                  href={generateWhatsAppLink(property?.phoneNumber)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-lg py-3 px-4 text-sm font-medium text-center cursor-pointer text-[#1D4CBE] border-[#1D4CBE] border-[1px]"

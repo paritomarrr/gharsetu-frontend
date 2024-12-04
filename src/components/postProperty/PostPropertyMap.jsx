@@ -3,24 +3,25 @@ import mapboxgl from 'mapbox-gl';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-const PostPropertyMap = ({ setLatitude, setLongitude }) => {
+const PostPropertyMap = ({ setLatitude, setLongitude, latitude, longitude }) => {
   const mapContainerRef = useRef();
   const mapRef = useRef();
   const markerRef = useRef();
 
+  // Initial map setup
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoicGFyaXRvbWFyciIsImEiOiJjbTJ5Zmw1aXYwMDl3MmxzaG91bWRnNXgxIn0.ukF28kdk13Vf2y1EOKQFWg';
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [77.279713, 28.639965],
+      center: [longitude || 77.279713, latitude || 28.639965],
       zoom: 9
     });
 
     // Initialize a draggable marker and save reference to it
     markerRef.current = new mapboxgl.Marker({ draggable: true })
-      .setLngLat([77.279713, 28.639965])
+      .setLngLat([longitude || 77.279713, latitude || 28.639965])
       .addTo(mapRef.current);
 
     // Log coordinates when marker is dragged
@@ -48,7 +49,19 @@ const PostPropertyMap = ({ setLatitude, setLongitude }) => {
     return () => {
       mapRef.current.remove();
     };
-  }, [setLatitude, setLongitude]); // Add setLatitude and setLongitude to dependencies
+  }, []); // Empty dependency array since we handle updates in a separate useEffect
+
+  // Update marker and map center when latitude/longitude props change
+  useEffect(() => {
+    if (mapRef.current && markerRef.current && latitude && longitude) {
+      // Update marker position
+      markerRef.current.setLngLat([longitude, latitude]);
+      mapRef.current.setZoom(9);
+      
+      // Update map center
+      mapRef.current.setCenter([longitude, latitude]);
+    }
+  }, [latitude, longitude]);
 
   return (
     <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }}></div>

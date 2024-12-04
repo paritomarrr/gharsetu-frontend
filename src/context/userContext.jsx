@@ -8,7 +8,7 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setuser] = useState(null);
-  const [formStep, setFormStep] = useState(1)
+  const [formStep, setFormStep] = useState(0)
 
   useEffect(() => {
     const token = localStorage.getItem("token");

@@ -29,6 +29,7 @@ import {
 import DropZone from "../DropZone";
 import PostPropertyMap from "./PostPropertyMap";
 import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
+import LocalityDropDown from "./LocalityDropDown";
 
 const SpecificInfo = () => {
   const dispatch = useDispatch();
@@ -46,11 +47,14 @@ const SpecificInfo = () => {
     if (latitude && longitude) {
       dispatch(
         updatePropertyForm({
-          coordinates: { latitude, longitude },
+          coordinates: {
+            latitude: latitude,
+            longitude: longitude,
+          },
         })
       );
     }
-  }, [latitude, longitude, dispatch]);
+  }, [latitude, longitude]);
 
   useEffect(() => {
     if (images.length > 0) {
@@ -60,7 +64,7 @@ const SpecificInfo = () => {
         })
       );
     }
-  }, [images, dispatch]);
+  }, [images]);
 
   const propertySubTypes = [
     "Apartment",
@@ -135,31 +139,25 @@ const SpecificInfo = () => {
   ];
 
   useEffect(() => {
+    console.log('reverse geocoding');
     const reverseGeocode = async () => {
       const res = await fetch(
         `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=pk.eyJ1IjoicGFyaXRvbWFyciIsImEiOiJjbTJ5Zmw1aXYwMDl3MmxzaG91bWRnNXgxIn0.ukF28kdk13Vf2y1EOKQFWg`
       );
       const data = await res.json();
 
-      const locality = data.features.find(
+      const locality = data.features?.find(
         (feature) => feature.properties.feature_type === "locality"
       )?.properties.name;
-      const city = data.features.find(
+      const city = data.features?.find(
         (feature) => feature.properties.feature_type === "place"
       )?.properties.name;
-      const state = data.features.find(
+      const state = data.features?.find(
         (feature) => feature.properties.feature_type === "region"
       )?.properties.name;
-      const pincode = data.features.find(
+      const pincode = data.features?.find(
         (feature) => feature.properties.feature_type === "postcode"
       )?.properties.name;
-
-      console.log({
-        locality,
-        city,
-        state,
-        pincode,
-      });
 
       dispatch(
         updatePropertyForm({
@@ -183,6 +181,7 @@ const SpecificInfo = () => {
   };
 
   const handleAddressChange = (field, value) => {
+    console.log({ field, value });
     dispatch(
       updatePropertyForm({
         address: {
@@ -303,23 +302,41 @@ const SpecificInfo = () => {
         </VStack>
 
         {/* Locality */}
-        <VStack align="start" spacing={1}>
-          <Input
-            variant="outline"
-            placeholder="Locality"
-            value={propertyForm.address.locality}
-            onChange={(e) => handleAddressChange("locality", e.target.value)}
-          />
-          {propertyForm.showError && propertyForm.address.locality === '' && (
-            <Text color="red.500" fontSize="sm">
-              Locality is required
-            </Text>
-          )}
-          <Text color="gray.500" fontSize="xs">
-            This helps us display your listing to the right audience based on
-            location.
-          </Text>
-        </VStack>
+
+        <LocalityDropDown propertyForm={propertyForm} handleAddressChange={handleAddressChange} setLatitude={setLatitude} setLongitude={setLongitude}/>
+
+        {/* City & State */}
+        
+        <HStack className="w-fit">
+          <VStack align="start" spacing={1}>
+            <Input
+              variant="outline"
+              placeholder="City"
+              value={propertyForm.address.city}
+              onChange={(e) => handleAddressChange("city", e.target.value)}
+            />
+            {propertyForm.showError && propertyForm.address.city === '' && (
+              <Text color="red.500" fontSize="sm">
+
+                City is required
+              </Text>
+            )}
+          </VStack>
+          <VStack align="start" spacing={1}>
+            <Input
+              variant="outline"
+              placeholder="State"
+              value={propertyForm.address.state}
+              onChange={(e) => handleAddressChange("state", e.target.value)}
+            />
+            {propertyForm.showError && propertyForm.address.state === '' && (
+              <Text color="red.500" fontSize="sm">
+
+                State is required
+              </Text>
+            )}
+          </VStack>
+        </HStack>
 
         {/* Price Input */}
         <VStack align="start" spacing={1}>
@@ -563,6 +580,8 @@ const SpecificInfo = () => {
             <PostPropertyMap
               setLatitude={setLatitude}
               setLongitude={setLongitude}
+              latitude={latitude}
+              longitude={longitude}
             />
           </div>
         </VStack>
