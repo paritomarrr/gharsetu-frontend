@@ -1,23 +1,12 @@
 import {
   Share,
   Heart,
-  Grip,
-  Verified,
-  Dot,
-  Home,
   House,
   Calendar,
   DoorClosed,
   BadgeCheck,
-  ChevronRight,
   Flag,
-  Leaf,
-  Wifi,
-  Orbit,
-  Wind,
-  Refrigerator,
 } from "lucide-react";
-import Star from "../assets/icons/Star";
 import Separator from "../components/Separator";
 import PropertyCard from "../components/common/PropertyCard";
 import { useEffect, useState } from "react";

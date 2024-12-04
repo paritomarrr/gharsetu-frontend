@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
+import { backend_url } from "../../config";
 
 const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setLongitude }) => {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -23,7 +24,7 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
 
             try {
                 const res = await axios.post(
-                    "http://localhost:8080/api/v1/localitySuggestions/suggestPlaces",
+                    `${backend_url}/api/v1/localitySuggestions/suggestPlaces`,
                     { query: searchValue }
                 );
 
