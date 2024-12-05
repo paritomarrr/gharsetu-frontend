@@ -45,7 +45,6 @@ const PostPropertyBottomBar = () => {
 
   const saveProperty = async () => {
     const res = await savePropertyHelper({ propertyForm, dispatch, user, toggleError });
-    console.log('response from Save Property', res)
 
     if (res.data.success) {
       jsConfetti.addConfetti({

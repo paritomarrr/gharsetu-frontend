@@ -20,6 +20,8 @@ import PropertyInfo from "../components/propertyPage/PropertyInfo";
 import SellerProfile from "../components/propertyPage/SellerProfile";
 import { useToast, Box } from "@chakra-ui/react";
 import { backend_url } from "../config";
+import AllImagesGallery from "../components/propertyPage/AllImagesGallery";
+import {ImageGallerySkeleton} from '../components/common/Skeleton'
 
 const PropertyPage = () => {
   const { id } = useParams();
@@ -27,6 +29,10 @@ const PropertyPage = () => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [ownerData, setOwnerData] = useState()
   const toast = useToast();
+  const [ImageGalleryPopup, setimagegallerypopup] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  console.log('ImageGalleryPopup', ImageGalleryPopup);
 
   const handleShare = () => {
     const url = window.location.href; // Get the current page URL
@@ -60,6 +66,7 @@ const PropertyPage = () => {
 
   useEffect(() => {
     const getSingleProperty = async () => {
+      setIsLoading(true);
       try {
         const res = await axios.post(
           `${backend_url}/api/v1/properties/getSingleProperty`,
@@ -73,6 +80,7 @@ const PropertyPage = () => {
       } catch (error) {
         console.error("Error fetching single property:", error);
       }
+      setIsLoading(false);
     };
 
     getSingleProperty();
@@ -88,7 +96,6 @@ const PropertyPage = () => {
               propertyId: property._id,
             }
           );
-          console.log('res', res);
           setOwnerData(res.data.ownerData);
         } catch (error) {
           console.error("Error fetching seller profile:", error);
@@ -129,7 +136,7 @@ const PropertyPage = () => {
               <div className="text-sm"> Save </div>
             </div>
           </div>{" "}
-          <ImageGallery property={property} />
+          {isLoading ? <ImageGallerySkeleton /> : <ImageGallery property={property} setimagegallerypopup={setimagegallerypopup} />}
           <div className="flex justify-between w-full">
             <div className="w-[580px]">
               <PropertyInfo
@@ -213,7 +220,6 @@ const PropertyPage = () => {
               <Amenities data={property.societyAmenities} />
 
               <Separator />
-              {console.log('corr', property?.coordinates)}
 
               <div className="flex flex-col gap-6">
                 <div className="text-xl font-medium"> Property Location </div>
@@ -270,6 +276,11 @@ const PropertyPage = () => {
           </div>
         </div>
       )}
+      {
+        ImageGalleryPopup && (
+          <AllImagesGallery setimagegallerypopup={setimagegallerypopup} property={property}/>
+        )
+      }
     </div>
   );
 };

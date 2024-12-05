@@ -15,7 +15,6 @@ const SellerProfile = ({ property }) => {
                     const res = await axios.post(`${backend_url}/api/v1/users/getSellerName`, {
                         sellerId: property.ownerId,
                     });
-                    console.log('res', res);
                     setOwnerData(res.data.seller);
                 } catch (error) {
                     console.error('Error fetching seller data:', error);
@@ -46,8 +45,6 @@ const SellerProfile = ({ property }) => {
         if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
         return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
     };
-
-    console.log('property from DF', property)
 
     return (
         <Link to={`/seller/${property.ownerId}`} target='_blank' className='flex gap-5 items-center'>

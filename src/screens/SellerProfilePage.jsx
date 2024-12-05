@@ -10,22 +10,17 @@ const SellerProfile = () => {
   const [sellerData, setSellerData] = useState()
   const [properties, setProperties] = useState()
 
-  console.log('sellerId', sellerId)
-
   useEffect(() => {
     const getSellerData = async () => {
       const res = await axios.post(`${backend_url}/api/v1/users/getSellerprofile`, {
         sellerId
       })
-      console.log('resss', res)
       setSellerData(res.data.seller)
       setProperties(res.data.properties)
     }
     getSellerData()
   }, [sellerId])
 
-
-  console.log('sellerId', sellerId)
   return (
     <div className='px-16 py-6 flex flex-col gap-5'>
       <div>
