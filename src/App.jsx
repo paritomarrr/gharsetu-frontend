@@ -24,6 +24,8 @@ import HomeFooter from "./components/common/HomeFooter";
 import Error from "./screens/Error";
 import Bookmarks from "./screens/Bookmarks";
 import SellerProfile from "./screens/SellerProfilePage";
+import Articles from "./screens/Articles";
+import SingleArticle from "./screens/article/SingleArticle";
 
 const ProfileLayout = () => {
   return (
@@ -49,6 +51,8 @@ function App() {
       <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/articles" element={<Articles />} />
+        <Route path="/articles/:slug" element={<SingleArticle />} />
         <Route path="/properties/:mode" element={<PropertyView />} />
         <Route path="/property/:id" element={<PropertyPage />} />
         <Route path="/postProperty" element={<PostProperty />} />
