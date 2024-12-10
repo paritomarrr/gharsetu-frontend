@@ -21,34 +21,34 @@ import {
 
   const ArticleCard = ({ slug, title, excerpt, image }) => {
     return (
-      <Box borderWidth="1px" borderRadius="md" overflow="hidden" p={4} mb={6}>
+        <Box borderWidth="1px" borderRadius="md" overflow="hidden" p={4} mb={6}>
         <HStack spacing={2} mb={2}>
           <Tag colorScheme="blue">Real Estate</Tag>
           <Tag colorScheme="green">First time buyers</Tag>
         </HStack>
         <Flex align="center" mb={4}>
-        <Link to={`/articles/${slug}`}>
-          <Image 
-            src={image} 
-            alt={title} 
-            boxSize="200px" 
-            borderRadius="md" 
-            mr={4}
-          />
-            </Link>
-         
-            <Link to={`/articles/${slug}`}>
+          <Link to={`/articles/${slug}`}>
+            <Image 
+              src={image}
+              alt={title}
+              w="200px"
+              h="150px"
+              objectFit="cover"
+              borderRadius="md"
+              mr={4}
+              cursor="pointer"
+            />
+          </Link>
           <Box>
-            <Text fontSize="xl" fontWeight="semibold" mb={2}>
-              {title}
-            </Text>
-            <Text fontSize="md" color="gray.600">
+            <Link to={`/articles/${slug}`}>
+              <Text fontSize="xl" fontWeight="semibold" mb={2} w="500px" color="blue.600">
+                {title}
+              </Text>
+            </Link>
+            <Text fontSize="md" color="gray.600" noOfLines={3} w="500px">
               {excerpt}
             </Text>
-            
           </Box>
-          </Link>
-        
         </Flex>
         <HStack spacing={4} color="gray.500">
           <HStack>
@@ -69,6 +69,7 @@ import {
           </HStack>
         </HStack>
       </Box>
+      
     );
   };
 

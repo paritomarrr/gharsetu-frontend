@@ -1,11 +1,8 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {
   Box,
   Container,
   Text,
-  Flex,
-  Image,
-  Tag,
   HStack,
   VStack,
   Button,
@@ -16,7 +13,9 @@ import {
   Divider,
   Avatar,
   SimpleGrid,
-  Stack,
+  Tag,
+  Flex,
+  Image
 } from "@chakra-ui/react";
 import {
   FaComment,
@@ -27,8 +26,12 @@ import {
   FaStar,
   FaEye,
 } from "react-icons/fa";
+import ReactMarkdown from 'react-markdown';
+import { useParams } from "react-router-dom";
+import { backend_url } from "../../config";
 
-const comments = [
+// Rename these arrays to avoid name conflicts
+const defaultComments = [
   {
     name: "Jose",
     date: "December 2023",
@@ -61,7 +64,7 @@ const comments = [
   },
 ];
 
-const relatedArticles = [
+const defaultRelatedArticles = [
   {
     title: "10 Tips for First-Time Home Buyers",
     excerpt: "Buying your first home can be overwhelming...",
@@ -74,59 +77,123 @@ const relatedArticles = [
   },
 ];
 
-const nearbyProperties = [
-  {
-    price: "₹75 Lakhs",
-    location: "Connaught Place, New Delhi",
-    size: "1000 sqft",
-    rating: 4.84,
-    image: "https://via.placeholder.com/300x200",
-  },
-  {
-    price: "₹75 Lakhs",
-    location: "Connaught Place, New Delhi",
-    size: "1000 sqft",
-    rating: 4.84,
-    image: "https://via.placeholder.com/300x200",
-  },
-  {
-    price: "₹75 Lakhs",
-    location: "Connaught Place, New Delhi",
-    size: "1000 sqft",
-    rating: 4.84,
-    image: "https://via.placeholder.com/300x200",
-  },
-  {
-    price: "₹75 Lakhs",
-    location: "Connaught Place, New Delhi",
-    size: "1000 sqft",
-    rating: 4.84,
-    image: "https://via.placeholder.com/300x200",
-  },
-];
+// const defaultNearbyProperties = [
+//   {
+//     price: "750000",
+//     location: "Connaught Place, New Delhi",
+//     size: "1000 sqft",
+//     rating: 4.84,
+//     image: "https://via.placeholder.com/300x200",
+//   },
+//   {
+//     price: "₹75 Lakhs",
+//     location: "Connaught Place, New Delhi",
+//     size: "1000 sqft",
+//     rating: 4.84,
+//     image: "https://via.placeholder.com/300x200",
+//   },
+//   {
+//     price: "₹75 Lakhs",
+//     location: "Connaught Place, New Delhi",
+//     size: "1000 sqft",
+//     rating: 4.84,
+//     image: "https://via.placeholder.com/300x200",
+//   },
+//   {
+//     price: "₹75 Lakhs",
+//     location: "Connaught Place, New Delhi",
+//     size: "1000 sqft",
+//     rating: 4.84,
+//     image: "https://via.placeholder.com/300x200",
+//   },
+// ];
 
 const SingleArticle = () => {
+  const {slug} = useParams();
+  const [article, setArticle] = useState(null);
+  const [relatedArticles, setRelatedArticles] = useState(defaultRelatedArticles);
+  const [nearbyProperties, setNearbyProperties] = useState([]);
+  const [comments, setComments] = useState(defaultComments);
+
+  useEffect(() => {
+    fetch(`${backend_url}/api/v1/articles/${slug}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log("data", data)
+        if (data.success) {
+          setArticle(data.article);
+
+          if (data.relatedArticles) {
+            setRelatedArticles(data.relatedArticles);
+          }
+
+          if (data.nearbyProperties) {
+            setNearbyProperties(data.nearbyProperties);
+          }
+
+          if (data.comments) {
+            setComments(data.comments);
+          }
+        }
+      })
+      .catch(console.error);
+  }, [slug]);
+
+  useEffect(() => {
+    fetch(`${backend_url}/api/v1/properties/getAllProperties`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({}) // If your endpoint needs a body, adjust accordingly
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.properties) {
+        const top4 = data.properties.slice(0, 4);
+        setNearbyProperties(top4);
+      }
+    })
+    .catch(console.error);
+  }, []);
+
+  if (!article) return <Box py={10} textAlign="center">Loading...</Box>
+
+  const {
+    title,
+    excerpt,
+    image,
+    tags = [],
+    content,
+    author,
+    views,
+    commentsCount,
+    likesCount,
+    createdAt,
+    readTime
+  } = article;
+
+  const formattedDate = createdAt ? new Date(createdAt).toLocaleDateString() : '';
+
   return (
     <Box>
       <Container maxW="container.md" py={6}>
         {/* Tags  */}
         <HStack spacing={2} mb={3}>
-          <Tag colorScheme="blue">Real Estate</Tag>
-          <Tag colorScheme="green">First time buyers</Tag>
-          <Tag colorScheme="gray">Insights</Tag>
+          {tags.map((tag, index) => (
+            <Tag key={index} colorScheme="blue">{tag}</Tag>
+          ))}
         </HStack>
         {/* Title, Meta */}
-        <Text fontSize="3xl" fontWeight="bold" mb={2}>
-          10 Tips for First-Time Home Buyers
-        </Text>
+        <Text fontSize="3xl" fontWeight="bold" mb={2}>{title}</Text>
         <HStack spacing={4} mb={4} color="gray.600">
           <HStack spacing={1}>
             <Icon as={FaEye} />
-            <Text fontSize="sm">3K Views</Text>
+            <Text fontSize="sm">{views ? `${views.toLocaleString()} Views` : "Views"}</Text>
           </HStack>
           <HStack spacing={1}>
             <Icon as={FaComment} />
-            <Text fontSize="sm">32 Comments</Text>
+            <Text fontSize="sm">{commentsCount ? `${commentsCount} Comments` : "Comments"}</Text>
           </HStack>
           <HStack spacing={1}>
             <Icon as={FaShareAlt} />
@@ -138,85 +205,45 @@ const SingleArticle = () => {
           </HStack>
         </HStack>
 
+
         {/* Article Image */}
-        <Box mb={6}>
-          <Image
-            src="https://via.placeholder.com/800x400"
-            alt="Article Cover"
-            borderRadius="md"
-            w="full"
-            h="auto"
-          />
-        </Box>
+        {image && (
+          <Box mb={6}>
+            <Image
+              src={image}
+              alt={title}
+              borderRadius="md"
+              w="full"
+              h="auto"
+            />
+          </Box>
+        )}
 
         {/* Author Info */}
         <HStack mb={4}>
-          <Avatar name="Sharma Jii" src="https://via.placeholder.com/50" />
+          <Avatar name={author?.name || "Author"} src={author?.avatar} />
           <Box>
-            <Text fontWeight="bold">written by Sharma Jii</Text>
+            <Text fontWeight="bold">Written by {author?.name || "Gharsetu Team"}</Text>
             <Text fontSize="sm" color="gray.600">
-              5min read | Oct 5th, 2023
+              {readTime || 'A few minutes read'} | {formattedDate}
             </Text>
           </Box>
         </HStack>
 
         {/* Article Content */}
         <VStack align="start" spacing={4} mb={8}>
-          <Text>
-            Buying your first home is an exciting yet challenging milestone.
-            It's a huge financial commitment and a significant life decision. To
-            make the process smoother, here are 10 essential tips to help you
-            navigate the journey.
-          </Text>
-          <Text>
-            <strong>1. Determine Your Budget:</strong> Establish a realistic
-            budget. Consider your monthly income, existing expenses, and how
-            much you can comfortably set aside for your mortgage. This ensures
-            you're looking at properties you can actually afford.
-          </Text>
-          <Text>
-            <strong>2. Get Pre-Approved for a Mortgage:</strong> Before even
-            starting house hunting, get pre-approved for a mortgage. This helps
-            you understand how much you can borrow. It also makes you a more
-            attractive buyer to sellers since your financial strength is
-            verified.
-          </Text>
-          <Text>
-            <strong>3. Prioritize Your Needs Over Wants:</strong> Make a list of
-            what you truly need in your new home, such as a specific number of
-            bedrooms. This will help you stay focused and avoid being swayed by
-            non-essential features during the search.
-          </Text>
-          <Text>
-            <strong>4. Research the Neighborhood:</strong> Look at different
-            neighborhoods' crime rates, school districts, and what the vibe of
-            the day-to-day is like. Feel the environment. Look for amenities,
-            nearby hospitals, public transport, and future development plans.
-          </Text>
-          <Text>
-            <strong>5. Factor in Closing Costs:</strong> In addition to the
-            home's price, consider other fees—like closing costs, inspection
-            fees, and legal paperwork. Make sure you have enough saved to cover
-            these expenses.
-          </Text>
-          <Text>
-            <strong>Final Thoughts:</strong> Buying a home is not just a
-            purchase, but a long-term investment. It can also be an emotional
-            experience. Take your time, do your research, and don't hesitate to
-            ask for professional advice. Following these tips can help you avoid
-            common pitfalls and make your home search a more rewarding journey.
-          </Text>
+          <ReactMarkdown>{content}</ReactMarkdown>
         </VStack>
 
         {/* Social Stats Below Content */}
         <HStack spacing={6} mb={8} color="gray.600">
           <HStack spacing={1}>
             <Icon as={FaHeart} />
-            <Text fontSize="sm">39 Likes</Text>
+            <Text fontSize="sm">{likesCount ? `${likesCount} Likes` : "Likes"}</Text>
           </HStack>
           <HStack spacing={1}>
             <Icon as={FaComment} />
-            <Text fontSize="sm">18 Commenters</Text>
+            <Text fontSize="sm">{comments.length > 0 ? `${comments.length} Commenters` : "Commenters"}</Text>
           </HStack>
           <HStack spacing={1}>
             <Icon as={FaShareAlt} />
@@ -244,18 +271,14 @@ const SingleArticle = () => {
         {/* Reviews */}
         <Box mb={8}>
           <HStack mb={4} align="center" spacing={2}>
-            <Text fontSize="2xl" fontWeight="bold">
-              5.0
-            </Text>
+            <Text fontSize="2xl" fontWeight="bold">5.0</Text>
             <HStack spacing={0}>
-              <Icon as={FaStar} color="yellow.400" />
-              <Icon as={FaStar} color="yellow.400" />
-              <Icon as={FaStar} color="yellow.400" />
-              <Icon as={FaStar} color="yellow.400" />
-              <Icon as={FaStar} color="yellow.400" />
+              {Array(5).fill('').map((_, i) => (
+                <Icon key={i} as={FaStar} color="yellow.400" />
+              ))}
             </HStack>
             <Text fontSize="sm" color="gray.600">
-              7 reviews
+              {comments.length} reviews
             </Text>
           </HStack>
           <VStack align="start" spacing={6}>
@@ -275,127 +298,108 @@ const SingleArticle = () => {
             ))}
           </VStack>
           <Button mt={4} variant="outline" colorScheme="blue">
-            Show all 18 reviews
+            Show all {comments.length} reviews
           </Button>
         </Box>
 
         <Divider mb={8} />
 
         {/* Related Articles */}
-        <Box mb={8}>
-          <Text fontSize="xl" fontWeight="semibold" mb={4}>
-            Read more articles
-          </Text>
-          <SimpleGrid columns={[1, 2]} spacing={6}>
-            {relatedArticles.map((article, i) => (
-              <Box
-                key={i}
-                borderWidth="1px"
-                borderRadius="md"
-                overflow="hidden"
-                p={4}
-              >
-                <HStack spacing={2} mb={2}>
-                  <Tag colorScheme="blue">Real Estate</Tag>
-                  <Tag colorScheme="green">First time buyers</Tag>
-                </HStack>
-                <Flex align="center" mb={4}>
-                  <Image
-                    src={article.image}
-                    alt="Article"
-                    boxSize="100px"
-                    borderRadius="md"
-                    mr={4}
-                  />
-                  <Box>
-                    <Text fontWeight="semibold">{article.title}</Text>
-                    <Text fontSize="sm" color="gray.600">
-                      {article.excerpt}
-                    </Text>
-                  </Box>
-                </Flex>
-                <HStack spacing={4} color="gray.500" fontSize="sm">
-                  <HStack>
-                    <Icon as={FaHeart} />
-                    <Text>Likes</Text>
+               {/* Related Articles */}
+               {relatedArticles.length > 0 && (
+          <Box mb={8}>
+            <Text fontSize="xl" fontWeight="semibold" mb={4}>Read more articles</Text>
+            <SimpleGrid columns={[1, 2]} spacing={6}>
+              {relatedArticles.map((ra, i) => (
+                <Box key={i} borderWidth="1px" borderRadius="md" overflow="hidden" p={4}>
+                  <HStack spacing={2} mb={2}>
+                    {ra.tags && ra.tags.map((t, idx) => (
+                      <Tag key={idx} colorScheme="blue">{t}</Tag>
+                    ))}
                   </HStack>
-                  <HStack>
-                    <Icon as={FaComment} />
-                    <Text>Comment</Text>
+                  <Flex align="center" mb={4}>
+                    <Image
+                      src={ra.image}
+                      alt={ra.title}
+                      boxSize="100px"
+                      borderRadius="md"
+                      mr={4}
+                    />
+                    <Box>
+                      <Text fontWeight="semibold">{ra.title}</Text>
+                      <Text fontSize="sm" color="gray.600">{ra.excerpt}</Text>
+                    </Box>
+                  </Flex>
+                  <HStack spacing={4} color="gray.500" fontSize="sm">
+                    <HStack>
+                      <Icon as={FaHeart} />
+                      <Text>Likes</Text>
+                    </HStack>
+                    <HStack>
+                      <Icon as={FaComment} />
+                      <Text>Comment</Text>
+                    </HStack>
+                    <HStack>
+                      <Icon as={FaShareAlt} />
+                      <Text>Share</Text>
+                    </HStack>
+                    <HStack>
+                      <Icon as={FaBookmark} />
+                      <Text>Save</Text>
+                    </HStack>
                   </HStack>
-                  <HStack>
-                    <Icon as={FaShareAlt} />
-                    <Text>Share</Text>
-                  </HStack>
-                  <HStack>
-                    <Icon as={FaBookmark} />
-                    <Text>Save</Text>
-                  </HStack>
-                </HStack>
-              </Box>
-            ))}
-          </SimpleGrid>
-        </Box>
+                </Box>
+              ))}
+            </SimpleGrid>
+          </Box>
+        )}
+
 
         <Divider mb={8} />
 
         {/* Nearby Listing */}
-        <Box mb={8}>
-          <Text fontSize="xl" fontWeight="semibold" mb={4}>
-            View nearby listing
-          </Text>
-          <SimpleGrid columns={[1, 2, 4]} spacing={6}>
-            {nearbyProperties.map((property, idx) => (
-              <Box
-                key={idx}
-                borderWidth="1px"
-                borderRadius="md"
-                overflow="hidden"
-              >
-                <Box position="relative">
-                  {/* A label on the image */}
-                  <Box
-                    position="absolute"
-                    top="2"
-                    left="2"
-                    bg="white"
-                    px={2}
-                    py={1}
-                    borderRadius="md"
-                    boxShadow="md"
-                    fontSize="xs"
-                    fontWeight="semibold"
-                  >
-                    Guest favourite
+        {nearbyProperties.length > 0 && (
+          <Box mb={8}>
+            <Text fontSize="xl" fontWeight="semibold" mb={4}>View nearby listing</Text>
+            <SimpleGrid columns={[1, 2, 4]} spacing={6}>
+              {nearbyProperties.map((property, idx) => (
+                <Box key={idx} borderWidth="1px" borderRadius="md" overflow="hidden">
+                  <Box position="relative">
+                    <Box
+                      position="absolute"
+                      top="2"
+                      left="2"
+                      bg="white"
+                      px={2}
+                      py={1}
+                      borderRadius="md"
+                      boxShadow="md"
+                      fontSize="xs"
+                      fontWeight="semibold"
+                    >
+                      Guest favourite
+                    </Box>
+                    <Image
+                      src={property.image}
+                      alt="Property Image"
+                      w="full"
+                      h="auto"
+                    />
                   </Box>
-                  <Image
-                    src={property.image}
-                    alt="Property Image"
-                    w="full"
-                    h="auto"
-                  />
+                  <Box p={4}>
+                    <Text fontWeight="semibold" mb={1}>{property.price}</Text>
+                    <Text fontSize="sm" color="gray.600" mb={1}>{property.location}</Text>
+                    <Text fontSize="sm" color="gray.500" mb={2}>{property.size}</Text>
+                    <HStack spacing={1}>
+                      <Icon as={FaStar} color="yellow.400" />
+                      <Text fontSize="sm" color="gray.700">{property.rating}</Text>
+                    </HStack>
+                  </Box>
                 </Box>
-                <Box p={4}>
-                  <Text fontWeight="semibold" mb={1}>
-                    {property.price}
-                  </Text>
-                  <Text fontSize="sm" color="gray.600" mb={1}>
-                    {property.location}
-                  </Text>
-                  <Text fontSize="sm" color="gray.500" mb={2}>
-                    {property.size}
-                  </Text>
-                  <HStack spacing={1}>
-                    <Icon as={FaStar} color="yellow.400" />
-                    <Text fontSize="sm" color="gray.700">
-                      {property.rating}
-                    </Text>
-                  </HStack>
-                </Box>
-              </Box>
-            ))}
-          </SimpleGrid>
-        </Box>
+              ))}
+            </SimpleGrid>
+          </Box>
+        )}
       </Container>
 
       {/* CTA Section */}
