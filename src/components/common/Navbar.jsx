@@ -49,7 +49,7 @@ const Navbar = () => {
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
           <div onClick={navigateToPostProperty} className='flex items-center'>
             <div className='p-3 cursor-pointer'> Post Property </div>
-            <div className='bg-gradient-to-r h-fit from-[#1D4CBE] to-[#6398FF] cursor-pointer text-white text-xs  py-1 px-2 rounded-full'> New </div>
+            <div className='bg-gradient-to-r h-fit from-[#1D4CBE] to-[#6398FF] cursor-pointer text-white text-xs  py-1 px-2 rounded-full'> Free </div>
           </div>
         </div>
 

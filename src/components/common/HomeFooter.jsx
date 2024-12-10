@@ -47,8 +47,8 @@ const HomeFooter = () => {
         </div>
         <div className='pt-10 pb-20 px-5 text-[#BDBDBD] flex flex-col gap-5'>
           <div className='flex gap-6 text-xs'>
-            <div> Terms of Use </div>
-            <div> Privacy Policy </div> 
+            <div> <Link to="terms-of-use" target='_blank'>Terms of Use</Link> </div>
+            <div> <Link to="/privacy-policy" target='_blank'>Privacy Policy</Link> </div> 
             <div> About Cookies </div>
           </div>
           <div className='text-[8px]'>
@@ -56,6 +56,12 @@ const HomeFooter = () => {
           </div>
           <div className='text-[9.5px]'>
           Making home-finding easy across India. GharSetu connects property buyers, sellers, and renters, simplifying your journey to finding the perfect home.
+          </div>
+          <div className='text-[9.5px]'>
+            <span className='font-bold'>Address:</span> Kavi Nagar, Ghaziabad, Uttar Pradesh, India
+          </div>
+          <div className='text-[9.5px] -mt-2'>
+            <span className='font-bold'>Phone:</span> 9717252292
           </div>
         </div>
       </div>
