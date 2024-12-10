@@ -47,7 +47,7 @@ const HomeFooter = () => {
         </div>
         <div className='pt-10 pb-20 px-5 text-[#BDBDBD] flex flex-col gap-5'>
         <div className='text-[12px] -mt-8'>
-            <span className='font-bold'>Address:</span> Kavi Nagar, Ghaziabad, Uttar Pradesh, India
+            <span className='font-bold'>Address:</span>KH-91, Kavi Nagar, Ghaziabad, Uttar Pradesh, India
           </div>
           <div className='text-[12px] -mt-2'>
             <span className='font-bold'>Phone:</span> 9717252292
