@@ -48,7 +48,7 @@ const HomeFooter = () => {
         <div className='pt-10 pb-20 px-5 text-[#BDBDBD] flex flex-col gap-5'>
           <div className='flex gap-6 text-xs'>
             <div> Terms of Use </div>
-            <div> Privacy Policy </div>
+            <div> Privacy Policy </div> 
             <div> About Cookies </div>
           </div>
           <div className='text-[8px]'>

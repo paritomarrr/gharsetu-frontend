@@ -26,6 +26,8 @@ import Bookmarks from "./screens/Bookmarks";
 import SellerProfile from "./screens/SellerProfilePage";
 import Articles from "./screens/Articles";
 import SingleArticle from "./screens/article/SingleArticle";
+import PrivacyPolicy from "./screens/PrivacyPolicy";
+import TermsOfUse from "./screens/TermsOfUse";
 
 const ProfileLayout = () => {
   return (
@@ -58,6 +60,8 @@ function App() {
         <Route path="/postProperty" element={<PostProperty />} />
         <Route path="/postProperty/add" element={<PostPropertySteps />} />
         <Route path="/bookmarks" element={<Bookmarks />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-use" element={<TermsOfUse />} />
         <Route path="/*" element={<Error />} />
 
         {/* Profile Routes */}
