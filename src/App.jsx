@@ -62,7 +62,7 @@ function App() {
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-use" element={<TermsOfUse />} />
-        {/* <Route path="/*" element={<Error />} /> */}
+        <Route path="/*" element={<Error />} />
 
         {/* Profile Routes */}
         <Route path="/profile" element={<Profile />} />
