@@ -1,7 +1,6 @@
 import { Button, Input, Box, Text, VStack, HStack } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
-import { useSelector } from "react-redux";
 
 const PersonalInfo = ({ showError }) => {
   const dispatch = useDispatch();
@@ -12,6 +11,8 @@ const PersonalInfo = ({ showError }) => {
     const { name, value } = e.target;
     dispatch(updatePropertyForm({ [name]: value }));
   };
+
+  const inputWidth = "500px"; 
 
   return (
     <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
@@ -34,7 +35,7 @@ const PersonalInfo = ({ showError }) => {
                 fontWeight="semibold"
                 borderRadius="xl"
                 onClick={() => {
-                  dispatch(updatePropertyForm({ listedBy: type })); 
+                  dispatch(updatePropertyForm({ listedBy: type }));
                 }}
                 colorScheme={propertyForm?.listedBy === type ? "teal" : "gray"}
               >
@@ -49,14 +50,14 @@ const PersonalInfo = ({ showError }) => {
           )}
         </VStack>
 
-
-        <VStack spacing={1} align="start" className="w-full">
+        <VStack spacing={1} align="start">
           <Input
             name="firstName"
             variant="outline"
             placeholder="First Name"
             value={propertyForm?.firstName}
             onChange={handleInputChange}
+            width={inputWidth}
           />
           {propertyForm.showError && propertyForm.firstName === '' && (
             <Text color="red.500" fontSize="sm">
@@ -66,12 +67,14 @@ const PersonalInfo = ({ showError }) => {
           <Text color="gray.500" fontSize="xs">
             Make sure it matches the name on your government ID.
           </Text>
+
           <Input
             name="lastName"
             variant="outline"
             placeholder="Last Name"
             value={propertyForm?.lastName}
             onChange={handleInputChange}
+            width={inputWidth}
           />
           {propertyForm.showError && propertyForm.lastName === '' && (
             <Text color="red.500" fontSize="sm">
@@ -83,29 +86,32 @@ const PersonalInfo = ({ showError }) => {
           </Text>
         </VStack>
 
-        <div>
+        <Box>
           <Input
             name="phoneNumber"
             variant="outline"
             placeholder="Phone Number"
+            type="number"
             value={propertyForm?.phoneNumber}
             onChange={handleInputChange}
+            width={inputWidth}
           />
           {propertyForm.showError && propertyForm.phoneNumber === '' && (
             <Text color="red.500" fontSize="sm">
               Please Enter Phone Number
             </Text>
           )}
-        </div>
+        </Box>
 
-
-        <VStack spacing={1} align="start" className="w-full">
+        <VStack spacing={1} align="start">
           <Input
             name="email"
             variant="outline"
+            type="email"
             placeholder="Email"
             value={propertyForm?.email}
             onChange={handleInputChange}
+            width={inputWidth}
           />
           {propertyForm.showError && propertyForm.email === '' && (
             <Text color="red.500" fontSize="sm">
@@ -117,13 +123,14 @@ const PersonalInfo = ({ showError }) => {
           </Text>
         </VStack>
 
-        <VStack spacing={1} align="start" className="w-full">
+        <VStack spacing={1} align="start">
           <Input
             name="firmName"
             variant="outline"
             placeholder="Firm Name"
             value={propertyForm?.firmName}
             onChange={handleInputChange}
+            width={inputWidth}
           />
           <Text color="gray.500" fontSize="xs">
             Name of the firm you are associated with.

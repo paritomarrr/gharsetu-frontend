@@ -1,4 +1,12 @@
-import { Box, Text, VStack, HStack, Button, Input } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  VStack,
+  HStack,
+  Button,
+  Input,
+  SimpleGrid
+} from "@chakra-ui/react";
 import Separator from "../../components/Separator";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -54,7 +62,7 @@ const SpecificInfo = () => {
         })
       );
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, dispatch]);
 
   useEffect(() => {
     if (images.length > 0) {
@@ -64,7 +72,7 @@ const SpecificInfo = () => {
         })
       );
     }
-  }, [images]);
+  }, [images, dispatch]);
 
   const propertySubTypes = [
     "Apartment",
@@ -79,28 +87,12 @@ const SpecificInfo = () => {
 
   const flatFurnishings = [
     { name: "Wi-Fi", icon: <Wifi size={18} />, value: "wifi" },
-    {
-      name: "Dining Table",
-      icon: <WashingMachine size={18} />,
-      value: "diningTable",
-    },
-    {
-      name: "Washing Machine",
-      icon: <HandPlatter size={18} />,
-      value: "washingMachine",
-    },
+    { name: "Dining Table", icon: <HandPlatter size={18} />, value: "diningTable" },
+    { name: "Washing Machine", icon: <WashingMachine size={18} />, value: "washingMachine" },
     { name: "Microwave", icon: <Microwave size={18} />, value: "microwave" },
     { name: "Stove", icon: <Heater size={18} />, value: "stove" },
-    {
-      name: "Refrigerator",
-      icon: <Refrigerator size={18} />,
-      value: "refrigerator",
-    },
-    {
-      name: "Water Purifier",
-      icon: <Droplets size={18} />,
-      value: "waterPurifier",
-    },
+    { name: "Refrigerator", icon: <Refrigerator size={18} />, value: "refrigerator" },
+    { name: "Water Purifier", icon: <Droplets size={18} />, value: "waterPurifier" },
     { name: "Bed", icon: <Bed size={18} />, value: "bed" },
     { name: "AC", icon: <AirVent size={18} />, value: "ac" },
     { name: "TV", icon: <Tv size={18} />, value: "tv" },
@@ -109,38 +101,22 @@ const SpecificInfo = () => {
 
   const societyAmenities = [
     { name: "Gym", icon: <Dumbbell size={18} />, value: "gym" },
-    {
-      name: "Car Parking",
-      icon: <CircleParking size={18} />,
-      value: "carParking",
-    },
+    { name: "Car Parking", icon: <CircleParking size={18} />, value: "carParking" },
     { name: "Garden/Park", icon: <Fence size={18} />, value: "gardenPark" },
-    {
-      name: "Elevator",
-      icon: <SquareChevronUp size={18} />,
-      value: "elevator",
-    },
+    { name: "Elevator", icon: <SquareChevronUp size={18} />, value: "elevator" },
     { name: "Security", icon: <Webcam size={18} />, value: "security" },
     { name: "Pet-Friendly", icon: <Wifi size={18} />, value: "petFriendly" },
     { name: "Swimming", icon: <Waves size={18} />, value: "swimming" },
     { name: "CCTV", icon: <Cctv size={18} />, value: "cctv" },
     { name: "Intercomm", icon: <Phone size={18} />, value: "intercomm" },
-    {
-      name: "Waste Management",
-      icon: <Trash2 size={18} />,
-      value: "wasteManagement",
-    },
+    { name: "Waste Management", icon: <Trash2 size={18} />, value: "wasteManagement" },
     { name: "Power Backup", icon: <Cable size={18} />, value: "powerBackup" },
-    {
-      name: "Sports facility",
-      icon: <Volleyball size={18} />,
-      value: "sportsFacility",
-    },
+    { name: "Sports facility", icon: <Volleyball size={18} />, value: "sportsFacility" },
   ];
 
   useEffect(() => {
-    console.log('reverse geocoding');
     const reverseGeocode = async () => {
+      if (!latitude || !longitude) return;
       const res = await fetch(
         `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=pk.eyJ1IjoicGFyaXRvbWFyciIsImEiOiJjbTJ5Zmw1aXYwMDl3MmxzaG91bWRnNXgxIn0.ukF28kdk13Vf2y1EOKQFWg`
       );
@@ -181,7 +157,6 @@ const SpecificInfo = () => {
   };
 
   const handleAddressChange = (field, value) => {
-    console.log({ field, value });
     dispatch(
       updatePropertyForm({
         address: {
@@ -216,26 +191,32 @@ const SpecificInfo = () => {
     dispatch(updatePropertyForm({ area: e.target.value }));
   }
 
+  const inputWidth = { base: "100%", md: "300px" };
+
   return (
-    <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
+    <Box
+      h="calc(100vh - 158px)"
+      px={{ base: 4, md: 20 }}
+      py={6}
+      overflowY="auto"
+    >
       <VStack spacing={9} align="start">
         <Box>
-          <Text fontWeight="bold" fontSize="2xl">
+          <Text fontWeight="bold" fontSize={{ base: "xl", md: "2xl" }}>
             3. Property Specific Details
           </Text>
-          <Text fontSize="xl">
-            Provide specific information to showcase your property's best
-            attributes.
+          <Text fontSize={{ base: "lg", md: "xl" }}>
+            Provide specific information to showcase your property's best attributes.
           </Text>
           <Separator />
         </Box>
 
         {/* Property Sub-Type */}
         <VStack align="start" spacing={4}>
-          <Text fontSize="xl" fontWeight="semibold">
+          <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
             Property Sub-Type:
           </Text>
-          <HStack spacing={8}>
+          <HStack spacing={{ base: 4, md: 8 }} wrap="wrap">
             {propertySubTypes.map((subType) => (
               <Button
                 key={subType}
@@ -261,13 +242,14 @@ const SpecificInfo = () => {
           )}
         </VStack>
 
-        {/* Address Fields */}
+        {/* House Number */}
         <VStack align="start" spacing={1}>
           <Input
             variant="outline"
             placeholder="House / Apartment No."
             value={propertyForm.address.houseNumber}
             onChange={(e) => handleAddressChange("houseNumber", e.target.value)}
+            width={inputWidth}
           />
           {propertyForm.showError && propertyForm.address.houseNumber === '' && (
             <Text color="red.500" fontSize="sm">
@@ -275,8 +257,7 @@ const SpecificInfo = () => {
             </Text>
           )}
           <Text color="gray.500" fontSize="xs">
-            This helps us display your listing to the right audience based on
-            location.
+            This helps us display your listing to the right audience based on location.
           </Text>
         </VStack>
 
@@ -289,6 +270,7 @@ const SpecificInfo = () => {
             onChange={(e) =>
               handleAddressChange("buildingProjectSociety", e.target.value)
             }
+            width={inputWidth}
           />
           {propertyForm.showError && propertyForm.address.buildingProjectSociety === '' && (
             <Text color="red.500" fontSize="sm">
@@ -296,28 +278,30 @@ const SpecificInfo = () => {
             </Text>
           )}
           <Text color="gray.500" fontSize="xs">
-            This helps us display your listing to the right audience based on
-            location.
+            This helps us display your listing to the right audience based on location.
           </Text>
         </VStack>
 
         {/* Locality */}
-
-        <LocalityDropDown propertyForm={propertyForm} handleAddressChange={handleAddressChange} setLatitude={setLatitude} setLongitude={setLongitude}/>
+        <LocalityDropDown
+          propertyForm={propertyForm}
+          handleAddressChange={handleAddressChange}
+          setLatitude={setLatitude}
+          setLongitude={setLongitude}
+        />
 
         {/* City & State */}
-        
-        <HStack className="w-fit">
+        <HStack spacing={4} flexWrap="wrap">
           <VStack align="start" spacing={1}>
             <Input
               variant="outline"
               placeholder="City"
               value={propertyForm.address.city}
               onChange={(e) => handleAddressChange("city", e.target.value)}
+              width={inputWidth}
             />
             {propertyForm.showError && propertyForm.address.city === '' && (
               <Text color="red.500" fontSize="sm">
-
                 City is required
               </Text>
             )}
@@ -328,10 +312,10 @@ const SpecificInfo = () => {
               placeholder="State"
               value={propertyForm.address.state}
               onChange={(e) => handleAddressChange("state", e.target.value)}
+              width={inputWidth}
             />
             {propertyForm.showError && propertyForm.address.state === '' && (
               <Text color="red.500" fontSize="sm">
-
                 State is required
               </Text>
             )}
@@ -345,6 +329,7 @@ const SpecificInfo = () => {
             placeholder="Price"
             value={price}
             onChange={handlePriceChange}
+            width={inputWidth}
           />
           {propertyForm.showError && propertyForm.askedPrice === '' && (
             <Text color="red.500" fontSize="sm">
@@ -357,12 +342,13 @@ const SpecificInfo = () => {
         </VStack>
 
         {propertyForm.propertySubType === "Plot" ? (
-          <VStack align="start" spacing={1} className="w-full">
+          <VStack align="start" spacing={1}>
             <Input
               variant="outline"
               placeholder="Plot Area"
               value={propertyForm.plotSize.plotArea}
               onChange={(e) => handlePlotSizeChange("plotArea", e.target.value)}
+              width={inputWidth}
             />
             {propertyForm.showError && propertyForm.plotSize.plotArea === '' && (
               <Text color="red.500" fontSize="sm">
@@ -382,6 +368,7 @@ const SpecificInfo = () => {
                 placeholder="Property Area"
                 value={propertyForm.area}
                 onChange={handleAreaChange}
+                width={inputWidth}
               />
               {propertyForm.showError && propertyForm.area === '' && (
                 <Text color="red.500" fontSize="sm">
@@ -393,11 +380,12 @@ const SpecificInfo = () => {
               </Text>
             </VStack>
 
+            {/* Furnish Type */}
             <VStack align="start" spacing={4}>
-              <Text fontSize="xl" fontWeight="semibold">
+              <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
                 Furnish Type:
               </Text>
-              <HStack spacing={8}>
+              <HStack spacing={{ base: 4, md: 8 }} wrap="wrap">
                 {furnishTypes.map((type) => (
                   <Button
                     key={type}
@@ -423,11 +411,12 @@ const SpecificInfo = () => {
               )}
             </VStack>
 
+            {/* BHK Configuration */}
             <VStack align="start" spacing={4}>
-              <Text fontSize="xl" fontWeight="semibold">
+              <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
                 BHK Configuration:
               </Text>
-              <HStack spacing={8}>
+              <HStack spacing={{ base: 4, md: 8 }} wrap="wrap">
                 {bhkOptions.map((option) => (
                   <Button
                     key={option}
@@ -457,133 +446,137 @@ const SpecificInfo = () => {
 
         {/* Flat Furnishings */}
         <VStack align="start" spacing={4}>
-          <Text fontSize="lg" fontWeight="semibold">
+          <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
             Flat Furnishings
           </Text>
-          <div className="grid grid-cols-8 gap-8">
+          <SimpleGrid columns={{ base: 2, sm: 4, md: 8 }} gap={4}>
             {flatFurnishings.map((item) => (
-              <div
+              <Box
                 key={item.value}
-                className={`w-24 h-24 border-[1px] border-[#DDD] cursor-pointer rounded-md flex flex-col items-center justify-center gap-2 ${propertyForm.flatFurnishings?.includes(item.value)
-                  ? "bg-teal-200"
-                  : ""
-                  }`}
+                w="24"
+                h="24"
+                borderWidth="1px"
+                borderColor="#DDD"
+                cursor="pointer"
+                rounded="md"
+                display="flex"
+                flexDir="column"
+                alignItems="center"
+                justifyContent="center"
+                gap={2}
+                bg={propertyForm.flatFurnishings?.includes(item.value) ? "teal.200" : "white"}
                 onClick={() => toggleSelection(item, "flatFurnishings")}
               >
                 {item.icon}
-                <div className="text-xs text-center">{item.name}</div>
-              </div>
+                <Text fontSize="xs" textAlign="center">{item.name}</Text>
+              </Box>
             ))}
-          </div>
-          {/* {propertyForm.showError && propertyForm.propertySubType === '' && (
-            <Text color="red.500" fontSize="sm">
-              Flat furnishings are required
-            </Text>
-          )} */}
+          </SimpleGrid>
         </VStack>
 
         {/* Society Amenities */}
         <VStack align="start" spacing={4}>
-          <Text fontSize="lg" fontWeight="semibold">
+          <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
             Society Amenities
           </Text>
-          <div className="grid grid-cols-8 gap-8">
+          <SimpleGrid columns={{ base: 2, sm: 4, md: 8 }} gap={4}>
             {societyAmenities.map((item) => (
-              <div
+              <Box
                 key={item.value}
-                className={`w-24 h-24 border-[1px] border-[#DDD] cursor-pointer rounded-md flex flex-col items-center justify-center gap-2 ${propertyForm.societyAmenities?.includes(item.value)
-                  ? "bg-teal-200"
-                  : ""
-                  }`}
+                w="24"
+                h="24"
+                borderWidth="1px"
+                borderColor="#DDD"
+                cursor="pointer"
+                rounded="md"
+                display="flex"
+                flexDir="column"
+                alignItems="center"
+                justifyContent="center"
+                gap={2}
+                bg={propertyForm.societyAmenities?.includes(item.value) ? "teal.200" : "white"}
                 onClick={() => toggleSelection(item, "societyAmenities")}
               >
                 {item.icon}
-                <div className="text-xs text-center">{item.name}</div>
-              </div>
+                <Text fontSize="xs" textAlign="center">{item.name}</Text>
+              </Box>
             ))}
-          </div>
-          {/* {propertyForm.showError && propertyForm.propertySubType === '' && (
-            <Text color="red.500" fontSize="sm">
-              Property description is required
-            </Text>
-          )} */}
+          </SimpleGrid>
         </VStack>
 
         {/* Construction Type */}
-        {
-          propertyForm.propertySubType !== "Rent" && (
-            <VStack align="start" spacing={4}>
-              <Text fontSize="xl" fontWeight="semibold">
-                Construction Type:
+        {propertyForm.propertySubType !== "Rent" && (
+          <VStack align="start" spacing={4}>
+            <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
+              Construction Type:
+            </Text>
+            <HStack spacing={{ base: 4, md: 8 }} wrap="wrap">
+              {constructionTypes.map((type) => (
+                <Button
+                  key={type}
+                  size="sm"
+                  variant="outline"
+                  fontWeight="semibold"
+                  borderRadius="xl"
+                  onClick={() =>
+                    dispatch(updatePropertyForm({ propertyStatus: type }))
+                  }
+                  colorScheme={
+                    propertyForm.propertyStatus === type ? "teal" : "gray"
+                  }
+                >
+                  {type}
+                </Button>
+              ))}
+            </HStack>
+            {propertyForm.showError && propertyForm.propertyStatus === '' && (
+              <Text color="red.500" fontSize="sm">
+                Property status is required
               </Text>
-              <HStack spacing={8}>
-                {constructionTypes.map((type) => (
-                  <Button
-                    key={type}
-                    size="sm"
-                    variant="outline"
-                    fontWeight="semibold"
-                    borderRadius="xl"
-                    onClick={() =>
-                      dispatch(updatePropertyForm({ propertyStatus: type }))
-                    }
-                    colorScheme={
-                      propertyForm.propertyStatus === type ? "teal" : "gray"
-                    }
-                  >
-                    {type}
-                  </Button>
-                ))}
-              </HStack>
-              {propertyForm.showError && propertyForm.propertyStatus === '' && (
-                <Text color="red.500" fontSize="sm">
-                  Property status is required
-                </Text>
-              )}
-            </VStack>
-          )
-        }
+            )}
+          </VStack>
+        )}
 
         <DropZone setImages={setImages} images={images} />
 
-        <VStack align="start" className="w-full">
-          <Text fontSize="xl" fontWeight="semibold">
+        <VStack align="start" spacing={4} w="full">
+          <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
             Pin Your Property Location:
           </Text>
-          <HStack className="flex">
+          <HStack wrap="wrap" spacing={4}>
             <Input
               disabled
               value={propertyForm.address.locality}
               placeholder="Locality"
+              width={inputWidth}
             />
             <Input
               disabled
               value={propertyForm.address.city}
               placeholder="City"
+              width={inputWidth}
             />
             <Input
               disabled
               value={propertyForm.address.state}
               placeholder="State"
+              width={inputWidth}
             />
             <Input
               disabled
               value={propertyForm.address.pincode}
               placeholder="Pin Code"
+              width={inputWidth}
             />
           </HStack>
-          <div className="h-96 w-full max-w-[190vh]">
-            {console.log({
-              latitude,
-              longitude
-            })}
+          <Box h="96" w="full" maxW="100%">
             <PostPropertyMap
               setLatitude={setLatitude}
               setLongitude={setLongitude}
               latitude={latitude}
               longitude={longitude}
             />
-          </div>
+          </Box>
         </VStack>
       </VStack>
     </Box>
