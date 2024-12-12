@@ -11,7 +11,7 @@ const SearchTab = () => {
   const [searchLocation, setSearchLocation] = useState('');
   const [budget, setBudget] = useState({
     min: searchParams.get('minPrice') || '400000',
-    max: searchParams.get('maxPrice') || '10000000',
+    max: searchParams.get('maxPrice') || '500000000',
   });
   const [propertyType, setPropertyType] = useState('');
   const navigate = useNavigate();
@@ -51,19 +51,51 @@ const SearchTab = () => {
   };
 
   return (
-    <div className="py-2 flex border-[1px] relative border-[#DDD] shadow-custom pl-8 pr-2 rounded-full items-center">
+    <div className="border border-[#DDD] shadow-custom px-8 md:px-8 gap-2 items-stretch md:items-center 
+rounded-2xl flex flex-col md:flex-row py-2 lg:rounded-full">
+    {/* Location Section */}
+    <div className="flex flex-col">
       <LocationDropDown setSearchLocation={setSearchLocation} searchLocation={searchLocation} />
-      <div className='bg-[#DDD] h-full w-[1px] mx-6'></div>
+    </div>
+  
+    {/* Divider for large screens */}
+    <div className="hidden md:block bg-[#DDD] h-full w-[1px]" />
+  
+    {/* On smaller screens, a horizontal divider after location */}
+    <div className="block md:hidden bg-[#DDD] w-full h-[1px]" />
+  
+    {/* Price Range Section */}
+    <div className="flex flex-col">
       <PriceRange budget={budget} setBudget={setBudget} />
-      <div className='bg-[#DDD] h-full w-[1px] mx-6'></div>
-      <div>
-        <div className="text-xs font-semibold"> Property Type </div>
-        <input type="text" placeholder="Choose property type" className="text-sm focus:outline-none" />
-      </div>
-      <div onClick={handleNavigation} className='bg-gradient-to-r cursor-pointer from-[#1D4CBE] to-[#6398FF] p-4 rounded-full'>
+    </div>
+  
+    {/* Divider for large screens */}
+    <div className="hidden md:block bg-[#DDD] h-full w-[1px]" />
+  
+    {/* On smaller screens, another horizontal divider after price range */}
+    <div className="block md:hidden bg-[#DDD] w-full h-[1px]" />
+  
+    {/* Property Type Section */}
+    <div className="flex flex-col">
+      <div className="text-xs font-semibold mb-1">Property Type</div>
+      <input 
+        type="text" 
+        placeholder="Choose property type" 
+        className="text-sm focus:outline-none border-b border-[#DDD] pb-1"
+      />
+    </div>
+  
+    {/* On large screens, place the search button to the right */}
+    <div className="mt-2 md:mt-0 md:ml-auto">
+      <div 
+        onClick={handleNavigation} 
+        className='bg-gradient-to-r from-[#1D4CBE] to-[#6398FF] p-3 rounded-full cursor-pointer flex justify-center items-center'
+      >
         <Search size={16} className='text-white' />
       </div>
     </div>
+  </div>
+  
   )
 }
 

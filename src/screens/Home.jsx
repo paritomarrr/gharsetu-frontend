@@ -5,34 +5,29 @@ import SearchTab from "../components/SearchTab"
 import useUserAddress from "../helperFunctions/useUserAddress"
 
 const Home = () => {
-
   const { location, address, error } = useUserAddress();
 
-  console.log({
-    location,
-    address,
-    error
-  })
+  console.log({ location, address, error });
 
   return (
-    <div className='px-[70px] flex flex-col gap-[70px]'>
+    <div className='flex flex-col gap-16 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24'>
       <div className="py-6 flex justify-center">
         <SearchTab />
       </div>
 
-      <div className="flex flex-col gap-7">
-        <div className="font-bold text-2xl text-[#222]"> Feature Real Estate Projects </div>
+      <div className="flex flex-col gap-4 md:gap-7">
+        <h2 className="font-bold text-xl sm:text-2xl text-[#222]">Feature Real Estate Projects</h2>
         <FeatutedProperties />
       </div>
 
-      <div className="flex flex-col gap-7">
-        <div className="font-bold text-2xl text-[#222]"> Latest Properties on Ghaziabad </div>
+      <div className="flex flex-col gap-4 md:gap-7">
+        <h2 className="font-bold text-xl sm:text-2xl text-[#222]">Latest Properties on Ghaziabad</h2>
         <CityWiseProperties />
       </div>
 
-      <div className="flex justify-center items-center gap-4 flex-col">
-        <div className="text-lg font-medium">Continue exploring amazing views</div>
-        <button className="py-[14px] px-6 rounded-lg bg-black text-white"> Show More </button>
+      <div className="flex flex-col items-center gap-4">
+        <div className="text-base sm:text-lg font-medium">Continue exploring amazing views</div>
+        <button className="py-3 px-4 sm:px-6 rounded-lg bg-black text-white">Show More</button>
       </div>
     </div>
   )

@@ -36,13 +36,14 @@ const Navbar = () => {
 
   return (
     <>
-      <div className='px-20 py-4 border-b-[1px] flex justify-between items-center shadow-sm'>
+      <div className='px-4 md:px-20 py-4 border-b-[1px] flex justify-between items-center shadow-sm'>
         <Link to={'/'} className='flex items-center gap-2'>
           <MainIcon />
           <div className='font-MavenPro font-bold text-[30px]'> GharSetu </div>
         </Link>
 
-        <div className='flex text-[#6A6A6A] items-center'>
+      {/* Desktop Links */}
+        <div className='hidden md:flex text-[#6A6A6A] items-center'>
           <Link to={'/properties/buy'} className='p-3 cursor-pointer'> Buy </Link>
           <div className='bg-[#DDD] h-6 w-[1px]'></div>
           <Link to={'/properties/rent'} className='p-3 cursor-pointer'> Rent </Link>
@@ -53,7 +54,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className='flex gap-4 items-center'>
+        <div className='flex gap-4 items-center z-100'>
           <Bell size={20} />
           <ProfileDropDown user={user} setLoginModalOpen={setLoginModalOpen} loginModalOpen={loginModalOpen} />
         </div>

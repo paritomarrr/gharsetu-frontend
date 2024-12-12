@@ -24,7 +24,7 @@ const FeaturedProperties = () => {
 
   if (isLoading) {
     return (
-      <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 m-4">
         {[...Array(8)].map((_, index) => (
           <PropertyCardSkeleton key={index} />
         ))}
@@ -33,7 +33,7 @@ const FeaturedProperties = () => {
   }
 
   return (
-    <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-10">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 m-4">
       {properties.map(property => (
         <PropertyCard key={property._id} property={property} />
       ))}
