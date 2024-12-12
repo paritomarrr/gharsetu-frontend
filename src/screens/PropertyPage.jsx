@@ -1,36 +1,29 @@
-import {
-  Share,
-  Heart,
-  House,
-  Calendar,
-  DoorClosed,
-  BadgeCheck,
-  Flag,
-} from "lucide-react";
-import Separator from "../components/Separator";
-import PropertyCard from "../components/common/PropertyCard";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import ImageGallery from "../components/propertyPage/ImageGallery";
-import PropertyPageMap from "../components/propertyPage/PropertyPageMap";
-import Amenities from "../components/propertyPage/Amenities";
-import { convertPriceToWords } from "../helperFunctions/basicHelpers";
-import PropertyInfo from "../components/propertyPage/PropertyInfo";
-import SellerProfile from "../components/propertyPage/SellerProfile";
-import { useToast } from "@chakra-ui/react";
-import { backend_url } from "../config";
-import AllImagesGallery from "../components/propertyPage/AllImagesGallery";
-import { ImageGallerySkeleton } from '../components/common/Skeleton'
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { Share, Heart, House, Calendar, DoorClosed, BadgeCheck, Flag } from 'lucide-react';
+import Slider from 'react-slick';
+import axios from 'axios';
+
+import Separator from '../components/Separator';
+import PropertyCard from '../components/common/PropertyCard';
+import PropertyPageMap from '../components/propertyPage/PropertyPageMap';
+import Amenities from '../components/propertyPage/Amenities';
+import { convertPriceToWords } from '../helperFunctions/basicHelpers';
+import PropertyInfo from '../components/propertyPage/PropertyInfo';
+import SellerProfile from '../components/propertyPage/SellerProfile';
+import AllImagesGallery from '../components/propertyPage/AllImagesGallery';
+import { useToast } from '@chakra-ui/react';
+import { backend_url } from '../config';
+import { ImageGallerySkeleton } from '../components/common/Skeleton';
 
 const PropertyPage = () => {
   const { id } = useParams();
   const [property, setProperty] = useState({});
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [ownerData, setOwnerData] = useState();
-  const toast = useToast();
   const [ImageGalleryPopup, setimagegallerypopup] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const toast = useToast();
 
   const handleShare = () => {
     const url = window.location.href;
@@ -54,7 +47,6 @@ const PropertyPage = () => {
           duration: 3000,
           isClosable: true,
         });
-        console.error("Failed to copy: ", err);
       });
   };
 
@@ -108,8 +100,18 @@ const PropertyPage = () => {
     return `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
   };
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: true
+  };
+
   return (
     <div className="flex flex-col gap-4 px-4 md:px-10 lg:px-20 xl:px-36 py-5">
+      {/* Top Actions */}
       <div className="flex justify-end gap-4 cursor-pointer">
         <div className="flex gap-2 items-center" onClick={handleShare}>
           <Share size={16} />
@@ -121,30 +123,46 @@ const PropertyPage = () => {
         </div>
       </div>
 
+      {/* Image Carousel */}
       {isLoading ? (
         <ImageGallerySkeleton />
       ) : (
-        <ImageGallery property={property} setimagegallerypopup={setimagegallerypopup} />
+        <div className="w-full">
+          <Slider {...settings}>
+            {property?.images?.map((img, index) => (
+              <div key={index} className="relative w-full h-[300px] md:h-[500px] overflow-hidden">
+                <img
+                  src={img.cloudinaryUrl}
+                  alt={`Property image ${index}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </Slider>
+        </div>
       )}
 
-      {/* Price Card Below the Images */}
-      <div className="p-[25px] rounded-lg border border-[#E5E7EB] flex gap-[14px] flex-col shadow-lg w-full md:w-2/3 lg:w-1/2">
-        <div className="text-3xl font-medium">
-          ₹{convertPriceToWords(property?.askedPrice)}
+      {/* Price Card */}
+      {property?.askedPrice && (
+        <div className="p-4 md:p-[21px] rounded-lg border border-[#E5E7EB] flex flex-col gap-[14px] shadow-lg w-full max-w-md">
+          <div className="text-2xl md:text-3xl font-medium">
+            ₹{convertPriceToWords(property?.askedPrice)}
+          </div>
+          <div className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer">
+            Seller Details
+          </div>
+          <a
+            href={generateWhatsAppLink(property?.phoneNumber)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg py-3 px-4 text-sm font-medium text-center cursor-pointer text-[#1D4CBE] border-[#1D4CBE] border"
+          >
+            Chat on WhatsApp
+          </a>
         </div>
-        <div className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer">
-          Seller Details
-        </div>
-        <a
-          href={generateWhatsAppLink(property?.phoneNumber)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-lg py-3 px-4 text-sm font-medium text-center cursor-pointer text-[#1D4CBE] border-[#1D4CBE] border"
-        >
-          Chat on WhatsApp
-        </a>
-      </div>
+      )}
 
+      {/* Property Info */}
       <PropertyInfo
         address={property?.address}
         propertyStatus={property?.propertyStatus}
@@ -153,10 +171,12 @@ const PropertyPage = () => {
 
       <Separator />
 
+      {/* Seller Profile */}
       <SellerProfile property={property} />
 
       <Separator />
 
+      {/* Highlights */}
       <div className="flex flex-col gap-[14px]">
         <div className="flex gap-3">
           <House size={20} />
@@ -198,6 +218,7 @@ const PropertyPage = () => {
 
       <Separator />
 
+      {/* Description */}
       <div className="text-sm md:text-base leading-relaxed">
         <div>
           {showFullDescription
@@ -218,10 +239,12 @@ const PropertyPage = () => {
 
       <Separator />
 
+      {/* Amenities */}
       <Amenities data={property.societyAmenities} />
 
       <Separator />
 
+      {/* Map Section */}
       <div className="flex flex-col gap-6">
         <div className="text-xl font-medium">Property Location</div>
         {property.coordinates && (
@@ -231,6 +254,7 @@ const PropertyPage = () => {
 
       <Separator />
 
+      {/* Similar Houses */}
       <div className="flex flex-col gap-6">
         <div className="text-xl font-medium">Similar nearby houses for sale</div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -239,7 +263,6 @@ const PropertyPage = () => {
           <PropertyCard />
           <PropertyCard />
         </div>
-
         <div className="flex justify-center">
           <div className="py-[11px] px-[14px] text-white bg-black rounded-lg cursor-pointer text-sm md:text-base">
             View More

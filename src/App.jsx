@@ -28,6 +28,9 @@ import Articles from "./screens/Articles";
 import SingleArticle from "./screens/article/SingleArticle";
 import PrivacyPolicy from "./screens/PrivacyPolicy";
 import TermsOfUse from "./screens/TermsOfUse";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 
 const ProfileLayout = () => {
   return (
