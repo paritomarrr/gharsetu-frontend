@@ -8,25 +8,59 @@ import { useContext } from "react";
 import { UserContext } from "../../context/userContext";
 
 const Dashboard = () => {
-  const {user} = useContext(UserContext)
-  const [totalListings, setTotalListings] = useState(0);
+  const {user} = useContext(UserContext);
+  const [stats, setStats] = useState({
+    totalListings: 0,
+    totalImpressions: 0,
+    totalViews: 0,
+    totalGenerated: 0
+  })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const fetchStats = async () => {
+      if (!user?._id) return;
+      try {
+        const res = await fetch("http://localhost:8080/api/v1/stats/dashboard", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: user._id }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setStats(data.data);
+          console.log("data", data.data)
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStats()
+
+
     const getUserProp = async () => {
       const res = await getUserProperties(user?._id);
       setTotalListings(res.length);
     };
     getUserProp();
-  }, []);
+  }, [user]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="flex flex-col gap-[26px]">
-      <div className="text-3xl font-bold"> Welcome, Keshav</div>
+      <div className="text-3xl font-bold"> Welcome, {user?.firstName || "User"}</div>
 
       <div className="flex gap-5">
-        <StatBox title="Total Listings" value={totalListings} />
-        <StatBox title="Total Impressions" value="5432" />
-        <StatBox title="Total Views" value="1234" />
-        <StatBox title="Total Generated" value="56" />
+        <StatBox title="Total Listings" value={stats.totalListings} />
+        <StatBox title="Total Impressions" value={stats.totalImpressions} />
+        <StatBox title="Total Views" value={stats.totalViews} />
+        <StatBox title="Total Generated" value={stats.totalGenerated} />
       </div>
 
       <div className="bg-[#DDD] h-[0.8px] w-full"></div>

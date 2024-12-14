@@ -1,9 +1,11 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import Separator from '../Separator'
 import { SquarePen } from 'lucide-react'
 import VerifiedUser from '../../assets/icons/VerifiedUser'
+import { UserContext } from '../../context/userContext'
 
 const PersonalInfo = () => {
+  const {user} = useContext(UserContext);
   return (
     <div className="px-10 py-6 flex flex-col gap-5 overflow-scroll">
       <div className="flex justify-between gap-10">
@@ -29,12 +31,12 @@ const PersonalInfo = () => {
                 <input
                   type="text"
                   className="border-[1px] border-[#DDD] p-2 rounded-t-lg"
-                  placeholder="First Name"
+                  placeholder={user?.firstName}
                 />
                 <input
                   type="text"
                   className="border-[1px] border-[#DDD] p-2 rounded-b-lg"
-                  placeholder="Last Name"
+                  placeholder={user?.lastName}
                 />
               </div>
             </div>
@@ -44,7 +46,7 @@ const PersonalInfo = () => {
               <input
                 type="text"
                 className="border-[1px] border-[#DDD] p-2 rounded-lg"
-                placeholder="Your Email"
+                placeholder={user?.email}
               />
             </div>
 
@@ -53,7 +55,7 @@ const PersonalInfo = () => {
               <input
                 type="text"
                 className="border-[1px] border-[#DDD] p-2 rounded-lg"
-                placeholder="Your Phone Number"
+                placeholder={user?.phoneNumber}
               />
             </div>
 
