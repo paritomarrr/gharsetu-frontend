@@ -18,7 +18,7 @@ import Amenities from "../components/propertyPage/Amenities";
 import { convertPriceToWords } from "../helperFunctions/basicHelpers";
 import PropertyInfo from "../components/propertyPage/PropertyInfo";
 import SellerProfile from "../components/propertyPage/SellerProfile";
-import { useToast, Box } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { backend_url } from "../config";
 import AllImagesGallery from "../components/propertyPage/AllImagesGallery";
 import { ImageGallerySkeleton } from '../components/common/Skeleton';
@@ -27,10 +27,11 @@ const PropertyPage = () => {
   const { id } = useParams();
   const [property, setProperty] = useState({});
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const [ownerData, setOwnerData] = useState()
+  const [ownerData, setOwnerData] = useState();
   const toast = useToast();
   const [ImageGalleryPopup, setimagegallerypopup] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSellerDetails, setShowSellerDetails] = useState(false); // toggle for seller details
 
   const handleShare = () => {
     const url = window.location.href; 
@@ -64,9 +65,7 @@ const PropertyPage = () => {
       try {
         const res = await axios.post(
           `${backend_url}/api/v1/properties/getSingleProperty`,
-          {
-            propertyId: id,
-          }
+          { propertyId: id }
         );
         if (res.data.success) {
           setProperty(res.data.property);
@@ -76,7 +75,6 @@ const PropertyPage = () => {
       }
       setIsLoading(false);
     };
-
     getSingleProperty();
   }, [id]);
 
@@ -86,16 +84,13 @@ const PropertyPage = () => {
         try {
           const res = await axios.post(
             `${backend_url}/api/v1/properties/sellerProfile`,
-            {
-              propertyId: property._id,
-            }
+            { propertyId: property._id }
           );
           setOwnerData(res.data.ownerData);
         } catch (error) {
           console.error("Error fetching seller profile:", error);
         }
       };
-
       getSellerProfile();
     }
   }, [property]);
@@ -103,7 +98,7 @@ const PropertyPage = () => {
   const generateWhatsAppLink = (phoneNumber) => {
     const propertyAddress = property?.address || "the listed property";
     const price = convertPriceToWords(property?.askedPrice);
-    const pageLink = window.location.href
+    const pageLink = window.location.href;
     const message = encodeURIComponent(
       `Hello, I saw this property on your website and would like to know more about it. Details:\n\n` +
       `Address: ${propertyAddress.locality}, ${propertyAddress.city}\n` +
@@ -139,15 +134,31 @@ const PropertyPage = () => {
           </div>
         )}
 
-        {/* Price Card */}
+        {/* Price Card with Seller Details Toggle */}
         {property?.askedPrice && (
           <div className="p-4 rounded-lg border border-[#E5E7EB] flex flex-col gap-[14px] shadow-lg w-full max-w-md mb-4">
             <div className="text-2xl font-medium">
               ₹{convertPriceToWords(property?.askedPrice)}
             </div>
-            <div className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer">
-              Seller Details
-            </div>
+
+            {!showSellerDetails ? (
+              <div
+                onClick={() => setShowSellerDetails(true)}
+                className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer"
+              >
+                Seller Details
+              </div>
+            ) : (
+              // Show the seller's contact details once toggled
+              <div className="flex flex-col gap-2 text-sm">
+                <div className="font-semibold">
+                  {property?.firstName} {property?.lastName}
+                </div>
+                <div className="text-gray-700">Phone: {property?.phoneNumber}</div>
+                <div className="text-gray-700">Email: {property?.email}</div>
+              </div>
+            )}
+
             <a
               href={generateWhatsAppLink(property?.phoneNumber)}
               target="_blank"
@@ -267,7 +278,7 @@ const PropertyPage = () => {
         </div>
       </div>
 
-      {/* Desktop View (Old Code) */}
+      {/* Desktop View (Old Code + Seller Details Toggle) */}
       <div className="hidden md:block">
         <div className="px-36 py-5 flex flex-col gap-4">
           <div className="flex justify-end gap-4 cursor-pointer">
@@ -406,9 +417,24 @@ const PropertyPage = () => {
                 <div className="text-3xl font-medium">
                   ₹{convertPriceToWords(property?.askedPrice)}
                 </div>
-                <div className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer">
-                  Seller Details
-                </div>
+
+                {!showSellerDetails ? (
+                  <div
+                    onClick={() => setShowSellerDetails(true)}
+                    className="bg-[#1D4CBE] rounded-lg py-3 px-4 text-white text-sm font-medium text-center cursor-pointer"
+                  >
+                    Seller Details
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2 text-sm">
+                    <div className="font-semibold">
+                      {property?.firstName} {property?.lastName}
+                    </div>
+                    <div className="text-gray-700">Phone: {property?.phoneNumber}</div>
+                    <div className="text-gray-700">Email: {property?.email}</div>
+                  </div>
+                )}
+
                 <a
                   href={generateWhatsAppLink(property?.phoneNumber)}
                   target="_blank"
