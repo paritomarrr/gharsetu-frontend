@@ -16,12 +16,12 @@ const Home = () => {
       </div>
 
       <div className="flex flex-col gap-4 md:gap-7">
-        <h2 className="font-bold text-xl sm:text-2xl text-[#222]">Feature Real Estate Projects</h2>
+        <h1 className="font-bold text-xl sm:text-2xl text-[#222]">Feature Real Estate Projects</h1>
         <FeatutedProperties />
       </div>
 
       <div className="flex flex-col gap-4 md:gap-7">
-        <h2 className="font-bold text-xl sm:text-2xl text-[#222]">Latest Properties on Ghaziabad</h2>
+        <h1 className="font-bold text-xl sm:text-2xl text-[#222]">Latest Properties on Ghaziabad</h1>
         <CityWiseProperties />
       </div>
 

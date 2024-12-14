@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /internal-api/
+Disallow: /test/
+Disallow: /login/
+Disallow: /signup/
+
+# Allow search engines to crawl everything else, especially property listings.
+# Ensure that property details, city/area pages, and main categories remain accessible.
+
+Sitemap: https://www.gharsetu.com/sitemap.xml
