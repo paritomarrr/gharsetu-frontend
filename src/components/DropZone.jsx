@@ -2,18 +2,26 @@ import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { CloudUpload, Loader2, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
 const DropZone = ({ setImages, images }) => {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState(null);
+    const propertyForm = useSelector((state) => state.propertyForm);
+
+  
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024
+    
 
     const uploadToCloudinary = async (file) => {
+        const customName = `property_for_${propertyForm.availableFor}_${propertyForm.address.locality.replace(/\s+/g, '')}_${Date.now()}`;
+        console.log(customName);
         try {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', 'GharSetu2'); // Replace with your upload preset
+            formData.append('public_id', customName);
 
             const response = await fetch(
                 `https://api.cloudinary.com/v1_1/dzqgyl0wf/image/upload`, // Replace with your cloud name
@@ -49,7 +57,7 @@ const DropZone = ({ setImages, images }) => {
             });
 
             const uploadPromises = validFiles.map(async (file) => {
-                const cloudinaryUrl = await uploadToCloudinary(file);
+                const cloudinaryUrl = await uploadToCloudinary(file, );
                 return {
                     originalFile: file,
                     cloudinaryUrl,
