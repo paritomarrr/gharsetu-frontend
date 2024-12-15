@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { CloudUpload, Loader2, X } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const DropZone = ({ setImages, images }) => {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState(null);
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024
 
     const uploadToCloudinary = async (file) => {
         try {
@@ -37,7 +40,15 @@ const DropZone = ({ setImages, images }) => {
         setError(null);
 
         try {
-            const uploadPromises = acceptedFiles.map(async (file) => {
+            const validFiles = acceptedFiles.filter((file) => {
+                if (file.size > MAX_FILE_SIZE) {
+                    toast.error(`File exceeds the 5MB limit.`);
+                    return false;
+                }
+                return true;
+            });
+
+            const uploadPromises = validFiles.map(async (file) => {
                 const cloudinaryUrl = await uploadToCloudinary(file);
                 return {
                     originalFile: file,
@@ -55,7 +66,8 @@ const DropZone = ({ setImages, images }) => {
                 }))
             ]);
         } catch (err) {
-            setError('Failed to upload some images. Please try again.');
+            setError('Something went wrong. Please try again.');
+            console.log(err);
         } finally {
             setUploading(false);
         }
@@ -77,7 +89,7 @@ const DropZone = ({ setImages, images }) => {
     return (
         <div className="flex flex-col w-full gap-4">
             {error && (
-                window.alert(error)
+                toast.error(error)
             )}
 
             <div
@@ -99,7 +111,7 @@ const DropZone = ({ setImages, images }) => {
                                 : 'Select a file or drag and drop here (Minimum 5 images)'}
                         </div>
                         <div className="text-[#717171] text-sm">
-                            JPG, PNG, or PDF, file size no more than 10MB
+                            JPG, PNG, or PDF, file size no more than 5MB
                         </div>
                     </div>
                 </div>
