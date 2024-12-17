@@ -5,6 +5,7 @@ import { SlidersHorizontal } from "lucide-react";
 import DashboardTable from "../../components/profile/DashboardTable";
 import { getUserProperties } from "../../helperFunctions/profileHelpers/getUserProperties";
 import { useContext } from "react";
+import { backend_url } from "../../config";
 import { UserContext } from "../../context/userContext";
 
 const Dashboard = () => {
@@ -21,7 +22,7 @@ const Dashboard = () => {
     const fetchStats = async () => {
       if (!user?._id) return;
       try {
-        const res = await fetch("http://localhost:8080/api/v1/stats/dashboard", {
+        const res = await fetch(`${backend_url}/api/v1/stats/dashboard`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

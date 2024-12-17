@@ -3,9 +3,11 @@ import CityWiseProperties from "../components/CityWiseProperties"
 import FeatutedProperties from "../components/FeatutedProperties"
 import SearchTab from "../components/SearchTab"
 import useUserAddress from "../helperFunctions/useUserAddress"
+import { Link } from "react-router-dom"
 
 const Home = () => {
   const { location, address, error } = useUserAddress();
+  const city = 'Ghaziabad';
 
   console.log({ location, address, error });
 
@@ -16,18 +18,18 @@ const Home = () => {
       </div>
 
       <div className="flex flex-col gap-4 md:gap-7">
-        <h1 className="font-bold text-xl sm:text-2xl text-[#222]">Feature Real Estate Projects</h1>
+        <h1 className="font-bold text-xl sm:text-2xl text-[#222]">Featured Real Estate Projects</h1>
         <FeatutedProperties />
       </div>
 
       <div className="flex flex-col gap-4 md:gap-7">
-        <h1 className="font-bold text-xl sm:text-2xl text-[#222]">Latest Properties on Ghaziabad</h1>
-        <CityWiseProperties />
+        <h1 className="font-bold text-xl sm:text-2xl text-[#222]">Latest Properties in {city}</h1>
+        <CityWiseProperties city={city}/>
       </div>
 
       <div className="flex flex-col items-center gap-4">
         <div className="text-base sm:text-lg font-medium">Continue exploring amazing views</div>
-        <button className="py-3 px-4 sm:px-6 rounded-lg bg-black text-white">Show More</button>
+        <Link to={'/properties/buy'} className="py-3 px-4 sm:px-6 rounded-lg bg-black text-white">Show More</Link>
       </div>
     </div>
   )

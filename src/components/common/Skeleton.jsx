@@ -18,22 +18,23 @@ export const ImageGallerySkeleton = () => {
       {[1, 2, 3, 4].map((index) => (
         <div
           key={index}
-          className={`h-[210px] w-full bg-gray-200 animate-pulse ${
-            index === 2 ? "rounded-tr-xl" : index === 4 ? "rounded-br-xl" : ""
-          }`}
+          className={`h-[210px] w-full bg-gray-200 animate-pulse ${index === 2 ? "rounded-tr-xl" : index === 4 ? "rounded-br-xl" : ""
+            }`}
         />
       ))}
     </div>
   );
 
   return (
-    <div className="flex gap-2 w-full relative">
+    <div className="flex gap-2 w-full px-36 py-5">
       {renderMainSkeleton()}
       {renderThumbnailSkeletons()}
-      
-      <div className="absolute bottom-5 right-7 bg-white flex gap-2 items-center px-4 py-2 rounded-lg shadow-sm">
-        <div className="h-4 w-4 bg-gray-200 animate-pulse rounded" />
-        <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
+
+      <div className='relative'>
+        <div className="absolute bottom-5 right-7 bg-white flex gap-2 items-center px-4 py-2 rounded-lg shadow-sm">
+          <div className="h-4 w-4 bg-gray-200 animate-pulse rounded" />
+          <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
+        </div>
       </div>
     </div>
   );

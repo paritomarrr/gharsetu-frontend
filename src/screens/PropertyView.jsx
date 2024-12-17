@@ -65,7 +65,7 @@ const PropertyView = () => {
     }
   }, [search, mode, minPrice, maxPrice]);
 
-  const cityName = search?.split(' ')[1] || "Lagos";
+  const cityName = search?.split(' ')[1] || "Ghaziabad";
 
   // For the desktop resizing logic
   const [isResizing, setIsResizing] = useState(false);

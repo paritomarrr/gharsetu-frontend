@@ -7,6 +7,8 @@ import { convertPriceToWords } from '../../helperFunctions/basicHelpers';
 
 
 const PropertyCard = ({property}) => {
+
+  console.log('property', property)
   
   return (
     <Link to={`/property/${property?._id}`} className="flex gap-[10px] flex-col cursor-pointer">
@@ -21,7 +23,7 @@ const PropertyCard = ({property}) => {
       </div>
       <div className="">
         <div className="flex justify-between">
-          <div className="font-semibold text-xl"> ₹{convertPriceToWords(property?.askedPrice)} </div>
+          <div className="font-semibold text-xl flex gap-2 items-center"> ₹{convertPriceToWords(property?.askedPrice)} {property?.availableFor === 'Rent' && (<div className='text-sm flex items-end'> / month </div>)}  </div>
           <div className="text-sm flex items-center gap-1"> <Star size={14} className='text-[#222222]' /> 4.84 </div>
         </div>
         <div className="text-sm"> {property?.address.locality}, {property?.address.city} </div>
