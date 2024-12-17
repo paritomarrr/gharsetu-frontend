@@ -62,7 +62,7 @@ const SearchTab = () => {
   };
 
   return (
-    <div className="border border-[#DDD] shadow-custom pl-8 pr-2 md:pl-8 md:pr-2 gap-2 items-stretch md:items-center rounded-2xl flex flex-col md:flex-row py-2 lg:rounded-full">
+    <div className="border border-[#DDD] shadow-custom p-4 w-full md:w-fit  md:pl-8 md:pr-2 gap-2 items-stretch md:items-center rounded-2xl flex flex-col md:flex-row py-4 lg:rounded-full">
       {/* Location Section */}
       <div className="flex flex-col">
         <LocationDropDown setSearchLocation={setSearchLocation} searchLocation={searchLocation} />
@@ -88,7 +88,7 @@ const SearchTab = () => {
       {/* Property Type Section */}
       <div className="flex flex-col relative">
         <div className="text-xs font-semibold mb-1">Property Type</div>
-        <div className={`${propertyTypeDropdown ? 'w-[300px]' : 'w-[200px]' }  transition-all duration-500 ease-in-out text-sm flex justify-between items-center cursor-pointer`} onClick={() => setPropertyTypeDropdown(!propertyTypeDropdown)}>
+        <div className={`${propertyTypeDropdown ? 'md:w-[300px] w-full' : 'w-full md:w-[200px]' } transition-all duration-500 ease-in-out text-sm flex justify-between items-center cursor-pointer`} onClick={() => setPropertyTypeDropdown(!propertyTypeDropdown)}>
           <div> {propertyTypeToShow(propertyType)} </div>
           <ChevronDown size={16} />
         </div>

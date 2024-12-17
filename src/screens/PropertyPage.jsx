@@ -256,7 +256,7 @@ const PropertyPage = () => {
 
         <Separator />
 
-        <div className="flex flex-col gap-6">
+        {/* <div className="flex flex-col gap-6">
           <div className="text-xl font-medium">
             Similar nearby houses for sale
           </div>
@@ -271,7 +271,7 @@ const PropertyPage = () => {
               View More
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex gap-2 text-xs underline justify-center items-center cursor-pointer mt-4">
           <Flag size={14} /> Report this listing
@@ -392,7 +392,7 @@ const PropertyPage = () => {
 
               <Separator />
 
-              <div className="flex flex-col gap-6">
+              {/* <div className="flex flex-col gap-6">
                 <div className="text-xl font-medium">
                   Similar nearby houses for sale{" "}
                 </div>
@@ -409,7 +409,7 @@ const PropertyPage = () => {
                     View More{" "}
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="w-1/3 flex flex-col gap-[21px]">

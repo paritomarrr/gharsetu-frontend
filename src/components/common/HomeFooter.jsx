@@ -10,7 +10,7 @@ const HomeFooter = () => {
       {/* CTA Section */}
       <div className='relative'>
         <img src={CTA} alt='CTA' className='w-full' />
-        <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white w-full max-w-md mx-auto flex flex-col gap-4 text-center px-4'>
+        <div className='absolute md:p-0 mt-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white w-full max-w-md mx-auto flex flex-col gap-4 text-center px-4'>
           <div className='text-2xl md:text-6xl font-semibold mt-8'>
             Find your dream home, effortlessly.
           </div>

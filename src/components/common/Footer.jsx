@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 const Footer = () => {
     return (
-        <div className="bg-[#F9FAFB] pt-[56px] px-[71px] pb-[21px]">
+        <div className="bg-[#F9FAFB] pt-[56px] md:px-[71px] px-5 py-5 md:pb-[21px]">
             <div className="flex gap-5 w-full justify-between border-b-[1px] pb-[42px]">
                 <div className="w-1/3 flex flex-col gap-[14px]">
                     <div className="text-sm font-semibold"> Support </div>
@@ -51,7 +51,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            <div className="pt-[21px] flex justify-between">
+            <div className="pt-[21px] flex justify-between flex-col md:flex-row gap-5">
                 <div className="flex items-center text-xs">
                     <Link to={'/'}> © 2024 Gharsetu, Inc </Link>
                     <Dot />
