@@ -27,7 +27,6 @@ const PropertyCard = ({property}) => {
           <div className="text-sm flex items-center gap-1"> <Star size={14} className='text-[#222222]' /> 4.84 </div>
         </div>
         <div className="text-sm"> {property?.address.locality}, {property?.address.city} </div>
-        <div className="text-sm">1200 sq.ft</div>
       </div>
     </Link>
   )
