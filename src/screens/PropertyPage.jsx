@@ -22,8 +22,11 @@ import { useToast } from "@chakra-ui/react";
 import { backend_url } from "../config";
 import AllImagesGallery from "../components/propertyPage/AllImagesGallery";
 import { ImageGallerySkeleton } from '../components/common/Skeleton';
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
 const PropertyPage = () => {
+  const { user } = useContext(UserContext);
   const { id } = useParams();
   const [property, setProperty] = useState({});
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -32,9 +35,12 @@ const PropertyPage = () => {
   const [ImageGalleryPopup, setimagegallerypopup] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showSellerDetails, setShowSellerDetails] = useState(false); // toggle for seller details
+  const [bookmarked, setBookmarked] = useState(false);
+
+  console.log('bm', bookmarked);
 
   const handleShare = () => {
-    const url = window.location.href; 
+    const url = window.location.href;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -109,6 +115,25 @@ const PropertyPage = () => {
     return `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
   };
 
+  const bookmarkProperty = async () => {
+    console.log('bookmarking property');
+    const res = await axios.post(`${backend_url}/api/v1/users/saveProperty`, {
+      userId: user._id,
+      propertyId: id
+    })
+    if (res.data.success) {
+      toast({
+        title: res.data.msg,
+        description: "The property has been Bookmarked",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      setBookmarked(true);
+    }
+  }
+
   if (isLoading) {
     return <ImageGallerySkeleton />;
   }
@@ -122,10 +147,19 @@ const PropertyPage = () => {
             <Share size={16} />
             <div className="text-sm">Share</div>
           </div>
-          <div className="flex gap-2 items-center cursor-pointer">
-            <Heart size={16} />
-            <div className="text-sm">Save</div>
-          </div>
+
+          <div
+      className={`flex items-center gap-3 cursor-pointer p-1 rounded-lg transition-all duration-300 ease-in-out ${bookmarked ? 'bg-red-500 scale-105 shadow-lg' : 'bg-gray-100 hover:bg-gray-200'}`}
+      onClick={bookmarkProperty}
+    >
+      <Heart
+        size={16}
+        className={`transition-transform duration-300 ${bookmarked ? 'text-white' : 'text-gray-600'}`}
+      />
+      <div className={`text-sm font-semibold ${bookmarked ? 'text-white' : 'text-gray-800'}`}>
+        {bookmarked ? 'Bookmarked' : 'Save'}
+      </div>
+    </div>
         </div>
 
         {property?.images && (
@@ -174,6 +208,8 @@ const PropertyPage = () => {
           address={property?.address}
           propertyStatus={property?.propertyStatus}
           propertySubType={property?.propertySubType}
+          area={property?.area}
+          furnishTypes={property?.furnishType}
         />
 
         <Separator />
@@ -286,9 +322,17 @@ const PropertyPage = () => {
               <Share size={16} />
               <div className="text-sm"> Share </div>
             </div>
-            <div className="flex gap-2 items-center cursor-pointer">
-              <Heart size={16} />
-              <div className="text-sm"> Save </div>
+            <div
+              className={`flex items-center gap-3 cursor-pointer p-2 rounded-lg transition-all duration-300 ease-in-out ${bookmarked ? 'bg-red-500 scale-105 shadow-lg' : 'bg-gray-100 hover:bg-gray-200'}`}
+              onClick={bookmarkProperty}
+            >
+              <Heart
+                size={18}
+                className={`transition-transform duration-300 ${bookmarked ? 'text-white' : 'text-gray-600'}`}
+              />
+              <div className={`text-sm font-semibold ${bookmarked ? 'text-white' : 'text-gray-800'}`}>
+                {bookmarked ? 'Bookmarked' : 'Save'}
+              </div>
             </div>
           </div>{" "}
           {isLoading ? (

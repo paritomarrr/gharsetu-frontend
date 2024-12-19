@@ -63,7 +63,7 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
 
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20 md:p-0 p-2">
             <div className="bg-white rounded-lg shadow-lg w-full max-w-[568px]">
                 <div className="py-[22px] px-6 border-b-[1px] flex justify-between w-full items-center">
                     <X onClick={closeSignInModal} size={16} className="cursor-pointer" />
@@ -120,11 +120,13 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
                         </button>
                     </div>
 
-                    <div className='flex items-center'>
+                    {/* Commented for Now */}
+                    {/* <div className='flex items-center'>
                         <div className='w-full h-[1px] bg-[#DDD]'></div>
                         <div className='px-5 text-xs'>or</div>
                         <div className='w-full h-[1px] bg-[#DDD]'></div>
                     </div>
+                 
                     <div className='flex flex-col gap-2'>
                         <div className='border-[1px] font-semibold cursor-pointer border-black rounded-md py-2 text-sm text-center'>
                             Continue with Google
@@ -133,7 +135,7 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
                         <div className='border-[1px] font-semibold cursor-pointer border-black rounded-md py-2 text-sm text-center'>
                             Continue with email
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

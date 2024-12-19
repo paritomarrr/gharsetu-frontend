@@ -62,7 +62,7 @@ const PostPropertyBottomBar = () => {
   return (
     <>
       <div
-        className={`bottom-0 px-20 items-center py-4 border-t-2 flex ${formStep == 1 ? "justify-end" : "justify-between"
+        className={`bottom-0 md:px-20 px-5 items-center py-4 border-t-2 flex ${formStep == 1 ? "justify-end" : "justify-between"
           }`}
       >
         {formStep !== 1 && (

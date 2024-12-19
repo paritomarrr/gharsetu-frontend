@@ -456,7 +456,7 @@ const SpecificInfo = () => {
                 w="24"
                 h="24"
                 borderWidth="1px"
-                borderColor="#DDD"
+                borderColor={propertyForm.flatFurnishings?.includes(item.value) ? "gray.400" : "gray.200"}
                 cursor="pointer"
                 rounded="md"
                 display="flex"
@@ -464,7 +464,7 @@ const SpecificInfo = () => {
                 alignItems="center"
                 justifyContent="center"
                 gap={2}
-                bg={propertyForm.flatFurnishings?.includes(item.value) ? "teal.200" : "white"}
+                bg={propertyForm.flatFurnishings?.includes(item.value) ? "gray.50" : "white"}
                 onClick={() => toggleSelection(item, "flatFurnishings")}
               >
                 {item.icon}

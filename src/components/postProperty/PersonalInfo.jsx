@@ -1,21 +1,43 @@
 import { Button, Input, Box, Text, VStack, HStack } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
+import { isMobile } from "../../helperFunctions/basicHelpers";
+import { useEffect, useState } from "react";
 
 const PersonalInfo = ({ showError }) => {
   const dispatch = useDispatch();
   const propertyForm = useSelector((state) => state.propertyForm);
   const userTypes = ["Owner", "Builder", "Agent", "Flatmate"];
+  const [isMobileDevice, setIsMobileDevice] = useState(isMobile());
+
+
+  // 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileDevice(isMobile());
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatch(updatePropertyForm({ [name]: value }));
   };
 
-  const inputWidth = "500px"; 
+  const inputWidth = "500px";;
 
   return (
-    <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
+    <Box h="calc(100vh - 158px)"
+      px={isMobileDevice ? '5' : '20'}
+      py="6"
+      overflowY="auto">
       <VStack spacing={9} align="start">
         <Box>
           <Text fontWeight="bold" fontSize="2xl">

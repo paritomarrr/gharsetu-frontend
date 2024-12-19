@@ -126,7 +126,7 @@ const DropZone = ({ setImages, images }) => {
             </div>
 
             <div className="mt-4">
-                <strong>Selected Images:</strong>
+                {images.length > 0 && (<strong>Selected Images:</strong>)}
                 <div className="flex flex-wrap gap-2 mt-2">
                     {images?.map((file, index) => (
                         <div key={index} className="relative flex flex-col items-center">

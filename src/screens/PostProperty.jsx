@@ -1,9 +1,9 @@
 const PostProperty = () => {
   return (
-    <div className="bg-white flex flex-col md:flex-row h-[80vh] overflow-hidden">
+    <div className="bg-white flex flex-col md:flex-row h-[80vh] md:overflow-hidden overflow-scroll">
       {/* Left Side Heading */}
       <div className="md:w-1/2 w-full py-8 md:py-16 flex items-center justify-center px-6 md:px-20">
-        <h1 className="text-4xl md:text-5xl font-bold text-black leading-snug">
+        <h1 className="text-3xl md:text-5xl font-bold text-black leading-snug">
           Get Started with Posting Your Property on Gharsetu
         </h1>
       </div>

@@ -30,3 +30,8 @@ export const convertPriceToWords = (price) => {
         return price.toString();
     }
 };
+
+
+export const isMobile = () => {
+    return window.innerWidth < 768;
+}

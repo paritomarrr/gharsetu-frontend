@@ -10,10 +10,26 @@ import {
 import Separator from "../../components/Separator";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
+import { isMobile } from "../../helperFunctions/basicHelpers";
+import { useEffect, useState } from "react";
 
 const BasicInfo = () => {
   const dispatch = useDispatch();
   const propertyForm = useSelector((state) => state.propertyForm);
+  const [isMobileDevice, setIsMobileDevice] = useState(isMobile());
+  
+   useEffect(() => {
+      const handleResize = () => {
+        setIsMobileDevice(isMobile());
+      };
+  
+      handleResize();
+      window.addEventListener('resize', handleResize);
+  
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }, []);
 
   const propertyTypes = ["Residential", "Commercial"];
   const lookingToOptions = ["Rent", "Sell", "Co-Living Space"];
@@ -40,10 +56,15 @@ const BasicInfo = () => {
   const hanleDescriptionChange = (e) => {
     dispatch(updatePropertyForm({ description: e.target.value }));
   }
+
+
   
 
   return (
-    <Box h="calc(100vh - 158px)" px="20" py="6" overflowY="auto">
+    <Box h="calc(100vh - 158px)"
+    px={isMobileDevice ? '5' : '20'}
+    py="6"
+    overflowY="auto">
       <VStack spacing={9} align="start">
         <Box>
           <Text fontWeight="bold" fontSize="2xl">

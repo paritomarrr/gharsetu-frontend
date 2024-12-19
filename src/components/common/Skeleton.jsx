@@ -26,15 +26,24 @@ export const ImageGallerySkeleton = () => {
   );
 
   return (
-    <div className="flex gap-2 w-full px-36 py-5">
-      {renderMainSkeleton()}
-      {renderThumbnailSkeletons()}
+    <div className='md:px-36 px-4 py-5 flex flex-col gap-4'>
+      <div className="flex gap-2 w-full ">
+        {renderMainSkeleton()}
+        {renderThumbnailSkeletons()}
 
-      <div className='relative'>
-        <div className="absolute bottom-5 right-7 bg-white flex gap-2 items-center px-4 py-2 rounded-lg shadow-sm">
-          <div className="h-4 w-4 bg-gray-200 animate-pulse rounded" />
-          <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
+        <div className='relative'>
+          <div className="absolute bottom-5 right-7 bg-white flex gap-2 items-center px-4 py-2 rounded-lg shadow-sm">
+            <div className="h-4 w-4 bg-gray-200 animate-pulse rounded" />
+            <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
+          </div>
         </div>
+
+
+      </div>
+      <div className='flex flex-col gap-2'>
+        <div className="h-4 w-full bg-gray-200 animate-pulse rounded" />
+        <div className="h-4 w-full bg-gray-200 animate-pulse rounded" />
+        <div className="h-4 w-full bg-gray-200 animate-pulse rounded" />
       </div>
     </div>
   );
