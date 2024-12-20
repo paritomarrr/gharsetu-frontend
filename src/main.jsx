@@ -5,8 +5,16 @@ import './index.css'
 import { Provider } from 'react-redux'
 import { store } from '../src/store/store.js'
 import { ChakraProvider } from '@chakra-ui/react'
-import { UserProvider } from './context/userContext.jsx'
+import { UserProvider } from './context/UserContext.jsx'
 import { BrowserRouter } from 'react-router-dom'
+import TagManager from 'react-gtm-module'
+
+const tagManagerArgs = {
+  gtmId: 'G-XEM56GK8PH'
+}
+
+TagManager.initialize(tagManagerArgs)
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

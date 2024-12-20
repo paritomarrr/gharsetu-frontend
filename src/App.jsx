@@ -30,11 +30,8 @@ import PrivacyPolicy from "./screens/PrivacyPolicy";
 import TermsOfUse from "./screens/TermsOfUse";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import ReactGA from "react-ga4";
 
 // Google Analytics
-ReactGA.initialize("G-XEM56GK8PH");
-
 
 const ProfileLayout = () => {
   return (
