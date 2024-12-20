@@ -7,7 +7,7 @@ import { store } from '../src/store/store.js'
 import { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter } from 'react-router-dom'
 import TagManager from 'react-gtm-module'
-import { UserProvider } from './context/userContext'
+import { UserProvider } from './context/UserContext'
 
 const tagManagerArgs = {
   gtmId: 'G-XEM56GK8PH'
