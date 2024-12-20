@@ -2,7 +2,7 @@ import React, {useContext} from 'react'
 import Separator from '../Separator'
 import { SquarePen } from 'lucide-react'
 import VerifiedUser from '../../assets/icons/VerifiedUser'
-import { UserContext } from '../../context/userContext'
+import { UserContext } from '../../context/UserContext'
 
 const PersonalInfo = () => {
   const {user} = useContext(UserContext);

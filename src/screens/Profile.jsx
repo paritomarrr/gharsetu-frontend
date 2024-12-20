@@ -1,7 +1,7 @@
 import { SquarePen } from "lucide-react";
 import Separator from "../components/Separator";
 import { useContext, useEffect } from "react";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import VerifiedUser from "../assets/icons/VerifiedUser";
 

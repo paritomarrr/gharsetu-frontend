@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import SignInModal from '../signIn/SignInModal';
 import NewUserDetails from '../signIn/NewUserDetails';
 import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../../context/userContext';
+import { UserContext } from '../../context/UserContext';
 import { useDispatch } from 'react-redux';
 import { toggleIsNewUserModalOpen } from '../../store/slices/SignInSlice';
 import { toggleIsSignInOpen } from '../../store/slices/SignInSlice';

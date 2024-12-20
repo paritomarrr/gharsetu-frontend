@@ -6,7 +6,7 @@ import {
   setSignInModalTitle,
 } from "../store/slices/SignInSlice";
 import { useContext } from "react";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 import { Link } from "react-router-dom";
 
 const ProfileDropDown = ({ user, loginModalOpen, setLoginModalOpen }) => {

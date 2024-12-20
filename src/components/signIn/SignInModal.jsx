@@ -7,7 +7,7 @@ import { PinInput, PinInputField } from '@chakra-ui/react';
 import { HStack } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
-import { UserContext } from '../../context/userContext';
+import { UserContext } from '../../context/UserContext';
 import { backend_url } from '../../config';
 
 const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {

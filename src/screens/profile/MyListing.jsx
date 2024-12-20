@@ -5,7 +5,7 @@ import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { SlidersHorizontal } from "lucide-react";
 import ListingPropertyCard from "../../components/profile/ListingPropertyCard";
 import { useContext } from "react";
-import { UserContext } from "../../context/userContext";
+import { UserContext } from "../../context/UserContext";
 import { getUserProperties } from "../../helperFunctions/profileHelpers/getUserProperties";
 import { useState } from "react";
 import { Link } from "react-router-dom";

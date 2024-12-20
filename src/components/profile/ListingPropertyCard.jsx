@@ -3,7 +3,7 @@ import { ChartArea, ExternalLink, PenLine, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { convertPriceToWords } from "../../helperFunctions/basicHelpers";
 import { useContext } from "react";
-import { UserContext } from "../../context/userContext";
+import { UserContext } from "../../context/UserContext";
 import { DeleteProperty } from "../../helperFunctions/propertyHelpers/deleteProperty";
 
 const ListingPropertyCard = ({ property, setDeletePropertyModel }) => {

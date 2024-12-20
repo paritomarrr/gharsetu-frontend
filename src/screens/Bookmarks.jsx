@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
-import { UserContext } from '../context/userContext.jsx';
+import { UserContext } from '../context/UserContext.jsx';
 import PropertyCard from '../components/common/PropertyCard.jsx';
 import { backend_url } from '../config/index.js';
 

@@ -2,7 +2,7 @@ import PersonalInfo from '../components/postProperty/PersonalInfo'
 import BasicInfo from '../components/postProperty/BasicInfo'
 import SpecificInfo from '../components/postProperty/SpecificInfo'
 import { useContext, useState } from 'react'
-import { UserContext } from '../context/userContext'
+import { UserContext } from '../context/UserContext'
 import PropertyPostSuccess from '../components/postProperty/PropertyPostSuccess'
 import { useSelector } from 'react-redux'
 

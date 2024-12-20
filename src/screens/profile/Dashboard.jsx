@@ -6,7 +6,7 @@ import DashboardTable from "../../components/profile/DashboardTable";
 import { getUserProperties } from "../../helperFunctions/profileHelpers/getUserProperties";
 import { useContext } from "react";
 import { backend_url } from "../../config";
-import { UserContext } from "../../context/userContext";
+import { UserContext } from "../../context/UserContext";
 
 const Dashboard = () => {
   const {user} = useContext(UserContext);
