@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
 import { backend_url } from "../../config";
 import { getCoordinates } from "../../helperFunctions/MapHelpers";
-import { backend_url } from "../../config";
 
 const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setLongitude }) => {
     const [showDropdown, setShowDropdown] = useState(false);
