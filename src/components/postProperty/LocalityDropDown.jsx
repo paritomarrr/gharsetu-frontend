@@ -3,6 +3,8 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { updatePropertyForm } from "../../store/slices/PropertyFormSlice";
 import { backend_url } from "../../config";
+import { getCoordinates } from "../../helperFunctions/MapHelpers";
+import { backend_url } from "../../config";
 
 const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setLongitude }) => {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -10,7 +12,10 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
     const [suggestions, setSuggestions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedSuggestion, setSelectedSuggestion] = useState(null);
     const dispatch = useDispatch();
+
+    console.log('selectedSuggestion', selectedSuggestion)
 
     useEffect(() => {
         const getLocalitySuggestions = async () => {
@@ -23,15 +28,16 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
             setError(null);
 
             try {
-                const res = await axios.post(
-                    `${backend_url}/api/v1/localitySuggestions/suggestPlaces`,
-                    { query: searchValue }
-                );
+                // const res = await axios.post(
+                //     `${backend_url}/api/v1/localitySuggestions/suggestPlaces`,
+                //     { query: searchValue }
+                // );
+                const res = await axios.post(`${backend_url}/api/v1/localitySuggestions/suggestPlaces`, { query: searchValue });
 
-                console.log(res.data);
+                console.log(res.data.response.suggestions);
 
                 if (res.data.success) {
-                    setSuggestions(res.data.data);
+                    setSuggestions(res.data.response.suggestions);
                 } else {
                     setSuggestions([]);
                 }
@@ -51,6 +57,29 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
         // Delay hiding the dropdown to allow click events to process
         setTimeout(() => setShowDropdown(false), 150);
     };
+
+    const handleSelectSuggestion = async (suggestion) => {
+
+        const coordinates = await getCoordinates(suggestion.name+','+suggestion.place_formatted);
+
+        console.log('coordinates', coordinates);
+
+        dispatch(updatePropertyForm({
+            address: {
+                locality: suggestion.name,
+                city: suggestion.context.place.name,
+                state: suggestion.context.region.name,
+            },
+            coordinates: {
+                latitude: coordinates[1],
+                longitude: coordinates[0]
+            }
+        }));
+        setLatitude(coordinates[1]);
+        setLongitude(coordinates[0]);
+        setSearchValue(suggestion.name);
+        setShowDropdown(false)
+    }
 
     return (
         <div className="relative">
@@ -86,27 +115,10 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
                         suggestions.map((suggestion, index) => (
                             <div
                                 key={index}
-                                className="cursor-pointer p-2 hover:bg-gray-100"
-                                onClick={() => {
-                                    dispatch(updatePropertyForm({
-                                        address: {
-                                            locality: suggestion.name,
-                                            city: suggestion.city,
-                                            state: suggestion.region,
-                                        },
-                                        coordinates:{
-                                            latitude: suggestion.coordinates.latitude,
-                                            longitude: suggestion.coordinates.longitude
-                                        }
-                                    }));
-                                    setLatitude(suggestion.coordinates.latitude);
-                                    setLongitude(suggestion.coordinates.longitude);
-                                    setSearchValue(suggestion.name);
-                                    setShowDropdown(false);
-                                }}
-                            >
+                                onClick={() => handleSelectSuggestion(suggestion)}
+                                className="cursor-pointer p-2 hover:bg-gray-100">
                                 <div className="font-semibold "> {suggestion.name} </div>
-                                <div className="text-sm text-gray-600"> {suggestion.region}, {suggestion.country} </div>
+                                <div className="text-sm text-gray-600"> {suggestion.place_formatted} </div>
                             </div>
                         ))}
                 </div>
