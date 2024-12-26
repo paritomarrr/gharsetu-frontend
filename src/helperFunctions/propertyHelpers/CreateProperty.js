@@ -33,7 +33,6 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
     if (!propertyForm.description) missingFields.push('description');
 
     if (missingFields.length > 0) {
-      console.log('Missing fields:', missingFields);
       dispatch(toggleError(true));
       alert(`Please fill all the fields: ${missingFields.join(', ')}`);
       return;

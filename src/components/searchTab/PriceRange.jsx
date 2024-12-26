@@ -28,7 +28,6 @@ const PriceRange = ({budget, setBudget}) => {
         };
     }, []);
 
-    console.log('searchFocused', dropdownOpen);    
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -73,7 +72,6 @@ const PriceRange = ({budget, setBudget}) => {
                             max={maxBudget}
 
                             onChangeEnd={(val) => {
-                                console.log(val);
                                 setBudget({ min: val[0], max: val[1] });
                             }}
                         >

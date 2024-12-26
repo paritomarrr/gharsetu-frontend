@@ -14,7 +14,6 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
     const [selectedSuggestion, setSelectedSuggestion] = useState(null);
     const dispatch = useDispatch();
 
-    console.log('selectedSuggestion', selectedSuggestion)
 
     useEffect(() => {
         const getLocalitySuggestions = async () => {
@@ -33,7 +32,6 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
                 // );
                 const res = await axios.post(`${backend_url}/api/v1/localitySuggestions/suggestPlaces`, { query: searchValue });
 
-                console.log(res.data.response.suggestions);
 
                 if (res.data.success) {
                     setSuggestions(res.data.response.suggestions);
@@ -61,7 +59,6 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
 
         const coordinates = await getCoordinates(suggestion.name+','+suggestion.place_formatted);
 
-        console.log('coordinates', coordinates);
 
         dispatch(updatePropertyForm({
             address: {

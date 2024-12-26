@@ -27,10 +27,7 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
 
     const isSignInModalOpen = useSelector((state) => state.signInModal.isSignInModalOpen);
     const isNewUserModalOpen = useSelector((state) => state.signInModal.isNewUserModalOpen);
-    // console.log({
-    //     isSignInModalOpen,
-    //     isNewUserModalOpen
-    // })
+  
 
     const sendOtp = async () => {
         const res = await axios.post(`${backend_url}/api/v1/auth/sendOTP`, {
@@ -58,7 +55,6 @@ const SignInModal = ({setLoginModalOpen, loginModalOpen }) => {
             window.location.reload();
             return;
         }
-        console.log('Verification failed');
     };
 
 

@@ -32,7 +32,6 @@ const Dashboard = () => {
         const data = await res.json();
         if (data.success) {
           setStats(data.data);
-          console.log("data", data.data)
         }
       } catch (error) {
         console.error("Error fetching dashboard stats:", error)

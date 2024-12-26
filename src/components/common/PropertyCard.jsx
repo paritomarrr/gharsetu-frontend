@@ -8,7 +8,6 @@ import { convertPriceToWords } from '../../helperFunctions/basicHelpers';
 
 const PropertyCard = ({property}) => {
 
-  console.log('property', property)
   
   return (
     <Link to={`/property/${property?._id}`} className="flex gap-[10px] flex-col cursor-pointer">

@@ -27,7 +27,6 @@ const PostPropertyMap = ({ setLatitude, setLongitude, latitude, longitude }) => 
     // Log coordinates when marker is dragged
     markerRef.current.on('dragend', () => {
       const lngLat = markerRef.current.getLngLat();
-      console.log(`Longitude: ${lngLat.lng}, Latitude: ${lngLat.lat}`);
       // Set the latitude and longitude
       setLongitude(lngLat.lng);
       setLatitude(lngLat.lat);
@@ -37,7 +36,6 @@ const PostPropertyMap = ({ setLatitude, setLongitude, latitude, longitude }) => 
     mapRef.current.on('click', (event) => {
       const { lng, lat } = event.lngLat;
       markerRef.current.setLngLat([lng, lat]);
-      console.log(`Longitude: ${lng}, Latitude: ${lat}`);
       // Set the latitude and longitude
       setLongitude(lng);
       setLatitude(lat);

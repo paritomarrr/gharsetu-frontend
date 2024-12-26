@@ -4,7 +4,6 @@ export const filterProperties = (properties, minPrice, maxPrice) => {
         return [];
     }
 
-    console.log('Filtering properties by price:', minPrice, maxPrice);
 
     return properties.filter(property => {
         const price = property.askedPrice;

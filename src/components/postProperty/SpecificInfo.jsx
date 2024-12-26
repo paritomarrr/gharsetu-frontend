@@ -51,7 +51,6 @@ const SpecificInfo = () => {
   );
   const [images, setImages] = useState([]);
 
-  console.log('propertyForm', propertyForm)
 
   useEffect(() => {
     if (latitude && longitude) {

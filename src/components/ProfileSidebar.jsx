@@ -32,7 +32,6 @@ const profileSidebarItems = [
 
 const ProfileSidebar = () => {
   const { pathname } = useLocation();
-  console.log("path", pathname);
 
   return (
     <div className="w-60 shadow-md rounded-lg h-fit">

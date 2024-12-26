@@ -37,7 +37,6 @@ const PropertyPage = () => {
   const [showSellerDetails, setShowSellerDetails] = useState(false); // toggle for seller details
   const [bookmarked, setBookmarked] = useState(false);
 
-  console.log('bm', bookmarked);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -116,7 +115,6 @@ const PropertyPage = () => {
   };
 
   const bookmarkProperty = async () => {
-    console.log('bookmarking property');
     const res = await axios.post(`${backend_url}/api/v1/users/saveProperty`, {
       userId: user._id,
       propertyId: id

@@ -16,7 +16,6 @@ const ListingPropertyCard = ({ property, setDeletePropertyModel }) => {
       if (confirm("Are you sure you want to delete this property?")) {
         const res = await DeleteProperty({propertyId, userId: user?._id})
         if(res.data.success) {
-          console.log("Property deleted successfully")
           setDeletePropertyModel(prev => !prev)
         }
       }

@@ -16,7 +16,6 @@ const DropZone = ({ setImages, images }) => {
 
     const uploadToCloudinary = async (file) => {
         const customName = `property_for_${propertyForm.availableFor}_${propertyForm.address.locality.replace(/\s+/g, '')}_${Date.now()}`;
-        console.log(customName);
         try {
             const formData = new FormData();
             formData.append('file', file);
@@ -75,7 +74,6 @@ const DropZone = ({ setImages, images }) => {
             ]);
         } catch (err) {
             setError('Something went wrong. Please try again.');
-            console.log(err);
         } finally {
             setUploading(false);
         }

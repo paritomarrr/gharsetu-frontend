@@ -40,7 +40,6 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
     }, [searchQuery]);
     
     const handleNavigation = (location) => {
-        console.log('location', location);
         const searchComponents = [
           location.localities?.[0]?.replace(/\s+/g, ''),
           location.city?.replace(/\s+/g, ''),
@@ -48,7 +47,6 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         ].filter(Boolean);
         
         const searchString = searchComponents.join('+');
-        console.log('searchString', searchString);
         navigate(`/properties/${selectedMode}?search=${searchString}`);
       };
 

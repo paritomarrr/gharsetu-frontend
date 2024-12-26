@@ -15,14 +15,12 @@ const CityWiseProperties = ({city}) => {
       const res = await axios.post(`${backend_url}/api/v1/properties/getProertiesByCity`, {
         city: city
       })
-      console.log('rs', res)
       setCityProperties(res.data.properties)
     }
     getPropertiesInCity()
     setLoading(false)
   },[city])
   
-  console.log('cityProperties', cityProperties)
 
   if (loading) {
     return (

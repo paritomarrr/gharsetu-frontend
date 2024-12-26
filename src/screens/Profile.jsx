@@ -11,7 +11,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (user === null) {
-      console.log("User not found, redirecting to homepage...");
       navigate("/");
     }
   }, [user, navigate]);
