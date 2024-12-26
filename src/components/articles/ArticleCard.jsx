@@ -1,81 +1,78 @@
+import React from "react";
 import { 
-    Box, 
-    Flex, 
-    Text, 
-    Grid, 
-    GridItem, 
-    Image, 
-    Tag, 
-    HStack, 
-    Stack, 
-    Button, 
-    InputGroup, 
-    InputLeftElement, 
-    Input, 
-    Icon, 
-    Divider 
-  } from '@chakra-ui/react';
-  import { FaSearch, FaHeart, FaRegComment, FaShareAlt, FaBookmark, FaStar } from 'react-icons/fa';
-  import { Link } from 'react-router-dom';
+  Box, 
+  Flex, 
+  Text, 
+  Image, 
+  Tag, 
+  HStack, 
+  Icon 
+} from "@chakra-ui/react";
+import { FaHeart, FaRegComment, FaShareAlt, FaBookmark } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
+const ArticleCard = ({ slug, title, excerpt, image, tags }) => {
+  return (
+    <Box borderWidth="1px" borderRadius="md" overflow="hidden" p={4} mb={6}>
+      {/* Tags */}
+      <HStack spacing={2} mb={2} wrap="wrap">
+        {tags.map((tag, index) => (
+          <Tag key={index} colorScheme="blue" mb={1}>
+            {tag}
+          </Tag>
+        ))}
+      </HStack>
 
-  const ArticleCard = ({ slug, title, excerpt, image, tags }) => {
+      <Flex align="center" mb={4}>
+        {/* Article Image */}
+        <Link to={`/articles/${slug}`}>
+          <Image
+            src={image}
+            alt={title}
+            w="150px"
+            h="auto"
+            objectFit="cover"
+            borderRadius="md"
+            mr={8}
+            cursor="pointer"
+            display={["none", "block"]} // Hide image on mobile
+          />
+        </Link>
 
-    return (
-        <Box borderWidth="1px" borderRadius="md" overflow="hidden" p={4} mb={6}>
-       <HStack spacing={2} mb={2}>
-  {tags.map((tag, index) => (
-    <Tag key={index} colorScheme="blue">
-      {tag}
-    </Tag>
-  ))}
-</HStack>
-        <Flex align="center" mb={4}>
+        {/* Article Content */}
+        <Box className="pl-2">
           <Link to={`/articles/${slug}`}>
-            <Image 
-              src={image}
-              alt={title}
-              w="200px"
-              h="150px"
-              objectFit="cover"
-              borderRadius="md"
-              mr={4}
-              cursor="pointer"
-            />
-          </Link>
-          <Box>
-            <Link to={`/articles/${slug}`}>
-              <Text fontSize="xl" fontWeight="semibold" mb={2} w="500px" color="blue.600">
-                {title}
-              </Text>
-            </Link>
-            <Text fontSize="md" color="gray.600" noOfLines={3} w="500px">
-              {excerpt}
+            <Text fontSize="xl" fontWeight="semibold" mb={2} color="blue.600">
+              {title}
             </Text>
-          </Box>
-        </Flex>
-        <HStack spacing={4} color="gray.500">
-          <HStack>
-            <Icon as={FaHeart} />
-            <Text fontSize="sm">Likes</Text>
-          </HStack>
-          <HStack>
-            <Icon as={FaRegComment} />
-            <Text fontSize="sm">Comment</Text>
-          </HStack>
-          <HStack>
-            <Icon as={FaShareAlt} />
-            <Text fontSize="sm">Share</Text>
-          </HStack>
-          <HStack>
-            <Icon as={FaBookmark} />
-            <Text fontSize="sm">Save</Text>
-          </HStack>
-        </HStack>
-      </Box>
-      
-    );
-  };
+          </Link>
+          <Text fontSize="md" color="gray.600" noOfLines={3}>
+            {excerpt}
+          </Text>
+        </Box>
+      </Flex>
 
-  
-  export default ArticleCard;
+      {/* Actions */}
+      <HStack spacing={4} color="gray.500">
+        <HStack>
+          <Icon as={FaHeart} />
+          <Text fontSize="sm">Likes</Text>
+        </HStack>
+        <HStack>
+          <Icon as={FaRegComment} />
+          <Text fontSize="sm">Comment</Text>
+        </HStack>
+        <HStack>
+          <Icon as={FaShareAlt} />
+          <Text fontSize="sm">Share</Text>
+        </HStack>
+        <HStack>
+          <Icon as={FaBookmark} />
+          <Text fontSize="sm">Save</Text>
+        </HStack>
+      </HStack>
+    </Box>
+  );
+};
+
+export default ArticleCard;
