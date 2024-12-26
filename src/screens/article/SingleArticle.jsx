@@ -23,7 +23,7 @@ import {
   FaEye,
 } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
-import LOGO from '../../../dist/logo.png';
+import LOGO from '../../../src/assets/logo.png';
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { useParams } from "react-router-dom";
 import { backend_url } from "../../config";
