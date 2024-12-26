@@ -19,13 +19,17 @@ import {
   import { Link } from 'react-router-dom';
 
 
-  const ArticleCard = ({ slug, title, excerpt, image }) => {
+  const ArticleCard = ({ slug, title, excerpt, image, tags }) => {
+
     return (
         <Box borderWidth="1px" borderRadius="md" overflow="hidden" p={4} mb={6}>
-        <HStack spacing={2} mb={2}>
-          <Tag colorScheme="blue">Real Estate</Tag>
-          <Tag colorScheme="green">First time buyers</Tag>
-        </HStack>
+       <HStack spacing={2} mb={2}>
+  {tags.map((tag, index) => (
+    <Tag key={index} colorScheme="blue">
+      {tag}
+    </Tag>
+  ))}
+</HStack>
         <Flex align="center" mb={4}>
           <Link to={`/articles/${slug}`}>
             <Image 

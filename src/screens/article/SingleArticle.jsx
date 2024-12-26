@@ -63,6 +63,21 @@ const markdownTheme = {
     const { children } = props;
     return <Box as="li" listStyleType="disc" mb={2}>{children}</Box>;
   },
+  a: (props) => {
+    const { href, children } = props;
+    return (
+      <Text
+        as="a"
+        href={href}
+        color="blue.500"
+        textDecoration="underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </Text>
+    );
+  },
 };
 
 const SingleArticle = () => {

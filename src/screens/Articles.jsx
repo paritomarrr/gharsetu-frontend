@@ -118,6 +118,7 @@ const Articles = () => {
                       title={article.title}
                       excerpt={article.excerpt}
                       image={article.image}
+                      tags={article.tags}
                     />
                   ))}
             </SimpleGrid>
