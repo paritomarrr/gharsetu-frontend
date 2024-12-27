@@ -18,7 +18,7 @@ const HomeFooter = () => {
             Your journey to the perfect property starts here. Whether you're buying, selling, or renting, we're here to make it simple.
           </div>
 
-          <div className='flex justify-center'>
+          <div className='flex justify-center mt-12'>
             <div className='border border-gray-500 hover:border-white cursor-pointer w-fit p-3 md:p-4 rounded-full'>
               <MoveRight className='text-gray-500 hover:text-white' />
             </div>
@@ -33,10 +33,10 @@ const HomeFooter = () => {
           <MainIconDarkMode />
           <div className='flex flex-col md:flex-row gap-8 md:gap-48 text-[#E0E0E0]'>
             <div className='flex flex-col gap-4 text-sm'>
-              <Link to={'/'}>About us</Link>
+              <Link to={'/about-us'}>About us</Link>
               <Link to={'/articles'}>Articles</Link>
               <Link to={'/postProperty'} target='_blank'>List with us</Link>
-              <Link to={'/'}>Contact Us</Link>
+              <Link to={'/contact-us'}>Contact Us</Link>
             </div>
             <div className='flex flex-col gap-3 text-sm'>
               <Link to={'https://www.linkedin.com/company/gharsetu/'} target='_blank'>Linkedin</Link>

@@ -30,6 +30,8 @@ import PrivacyPolicy from "./screens/PrivacyPolicy";
 import TermsOfUse from "./screens/TermsOfUse";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import AboutUs from "./components/aboutUs";
+import ContactUs from "./components/contactUs";
 
 // Google Analytics
 
@@ -63,10 +65,12 @@ function App() {
         <Route path="/property/:id" element={<PropertyPage />} />
         <Route path="/property/properties-for-type-in-location-:id" element={<PropertyPage />} />
         <Route path="/postProperty" element={<PostProperty />} />
+        <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/postProperty/add" element={<PostPropertySteps />} />
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-use" element={<TermsOfUse />} />
+        <Route path="/about-us" element={<AboutUs />} />
         <Route path="/*" element={<Error />} />
 
         {/* Profile Routes */}
