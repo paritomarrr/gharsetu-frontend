@@ -8,9 +8,14 @@ import { convertPriceToWords } from '../../helperFunctions/basicHelpers';
 
 const PropertyCard = ({property}) => {
 
-  
+  let location = property?.address?.locality;
+  let city = property?.address?.city;
+  const formattedCity = city.replace(/\s+/g, '-');
+  const formattedLocation = location.replace(/\s+/g, '-');
+
+  console.log(property.address.city);
   return (
-    <Link to={`/property/${property?._id}`} className="flex gap-[10px] flex-col cursor-pointer">
+    <Link to={`/property/properties-for-${property?.availableFor}-in-${formattedLocation}-${formattedCity}-${property?._id}`} className="flex gap-[10px] flex-col cursor-pointer">
       <div className='relative'>
         <div className="absolute p-[14px] cursor-pointer flex justify-between w-full">
           <div className='bg-white py-1 px-2 rounded-full text-xs'> Guest favourite </div>

@@ -27,7 +27,7 @@ import { UserContext } from "../context/UserContext";
 
 const PropertyPage = () => {
   const { user } = useContext(UserContext);
-  const { id } = useParams();
+  let { id } = useParams();
   const [property, setProperty] = useState({});
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [ownerData, setOwnerData] = useState();
@@ -65,6 +65,9 @@ const PropertyPage = () => {
   };
 
   useEffect(() => {
+    const parts = id.split("-");
+    id = parts[parts.length - 1];
+    
     const getSingleProperty = async () => {
       setIsLoading(true);
       try {

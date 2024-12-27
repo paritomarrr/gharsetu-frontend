@@ -61,6 +61,7 @@ function App() {
         <Route path="/articles/:slug" element={<SingleArticle />} />
         <Route path="/properties/:mode" element={<PropertyView />} />
         <Route path="/property/:id" element={<PropertyPage />} />
+        <Route path="/property/properties-for-type-in-location-:id" element={<PropertyPage />} />
         <Route path="/postProperty" element={<PostProperty />} />
         <Route path="/postProperty/add" element={<PostPropertySteps />} />
         <Route path="/bookmarks" element={<Bookmarks />} />
