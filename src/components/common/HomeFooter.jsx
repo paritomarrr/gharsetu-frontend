@@ -61,7 +61,7 @@ const HomeFooter = () => {
             <div><Link to="terms-of-use" target='_blank'>Terms of Use</Link></div>
             <div><Link to="/privacy-policy" target='_blank'>Privacy Policy</Link></div>
             <div>About Cookies</div>
-          </div>
+          </div> 
           <div className='text-[8px] md:text-[9px]'>
             Copyright © 2024 Transparent. All rights reserved.
           </div>

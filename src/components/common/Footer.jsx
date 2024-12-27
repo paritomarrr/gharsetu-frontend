@@ -42,7 +42,7 @@ const Footer = () => {
                     <div className="flex flex-col gap-[14px]">
                         <Link to="/" className="text-xs text-[#4B5563]"> About</Link>
                         <Link to="/" className="text-xs text-[#4B5563]"> Contact Us </Link>
-                        <Link to="/" className="text-xs text-[#4B5563]"> Articles </Link>
+                        <Link to="/articles" className="text-xs text-[#4B5563]"> Articles </Link>
                         {/* <Link to="/" className="text-xs text-[#4B5563]"> Careers</Link> */}
                         {/* <Link to="/" className="text-xs text-[#4B5563]"> Investors </Link> */}
                         {/* <Link to="/" className="text-xs text-[#4B5563]"> gharsetu Luxe </Link> */}
@@ -55,9 +55,9 @@ const Footer = () => {
                 <div className="flex items-center text-xs">
                     <Link to={'/'}> © 2024 Gharsetu, Inc </Link>
                     <Dot />
-                    <Link to={'/'}>Privacy</Link>
+                    <Link to={'/privacy-policy'} target="_blank">Privacy</Link>
                     <Dot />
-                    <Link to={'/'}>Terms</Link>
+                    <Link to={'terms-of-use'} target="_blank">Terms</Link>
                     <Dot />
                     <Link to={'/'}>Sitemap</Link>
                 </div>
