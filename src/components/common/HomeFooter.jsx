@@ -34,7 +34,7 @@ const HomeFooter = () => {
           <div className='flex flex-col md:flex-row gap-8 md:gap-48 text-[#E0E0E0]'>
             <div className='flex flex-col gap-4 text-sm'>
               <Link to={'/'}>About us</Link>
-              <Link to={'/'}>Articles</Link>
+              <Link to={'/articles'}>Articles</Link>
               <Link to={'/postProperty'} target='_blank'>List with us</Link>
               <Link to={'/'}>Contact Us</Link>
             </div>
