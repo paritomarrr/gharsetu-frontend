@@ -40,8 +40,8 @@ const Footer = () => {
                 <div className="w-full flex flex-col gap-[14px]">
                     <div className="text-sm font-semibold"> About </div>
                     <div className="flex flex-col gap-[14px]">
-                        <Link to="/" className="text-xs text-[#4B5563]"> About</Link>
-                        <Link to="/" className="text-xs text-[#4B5563]"> Contact Us </Link>
+                        <Link to="/about-us" className="text-xs text-[#4B5563]"> About</Link>
+                        <Link to="/contact-us" className="text-xs text-[#4B5563]"> Contact Us </Link>
                         <Link to="/articles" className="text-xs text-[#4B5563]"> Articles </Link>
                         {/* <Link to="/" className="text-xs text-[#4B5563]"> Careers</Link> */}
                         {/* <Link to="/" className="text-xs text-[#4B5563]"> Investors </Link> */}
