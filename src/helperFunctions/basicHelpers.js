@@ -22,9 +22,8 @@ export const convertPriceToWords = (price) => {
         return `${formattedLakhs} Lakhs`;
     } else if (price >= 1000) {
         // Convert to Thousands
-        const inThousands = price / 1000;
-        const formattedThousands = Number(inThousands).toFixed(2).replace(/\.?0+$/, '');
-        return `${formattedThousands} Thousands`;
+        // include commas for thousands
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     } else {
         // Less than a thousand
         return price.toString();
