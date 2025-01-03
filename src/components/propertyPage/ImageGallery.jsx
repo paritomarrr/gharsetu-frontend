@@ -2,6 +2,9 @@ import React from "react";
 import { Grip } from "lucide-react";
 
 const ImageGallery = ({ property, setimagegallerypopup }) => {
+
+  const customAlt = `${property?.address?.locality}-${property?.address?.city}-${property?.address?.state}`.replace(/\s+/g, "");
+
   const placeholderImages = [
     "/api/placeholder/800/600",
     "/api/placeholder/400/300",
@@ -32,11 +35,10 @@ const ImageGallery = ({ property, setimagegallerypopup }) => {
       {[1, 2, 3, 4].map((index) => (
         <img
           key={index}
-          className={`h-[210px] w-full object-cover ${
-            index === 2 ? "rounded-tr-xl" : index === 4 ? "rounded-br-xl" : ""
-          }`}
+          className={`h-[210px] w-full object-cover ${index === 2 ? "rounded-tr-xl" : index === 4 ? "rounded-br-xl" : ""
+            }`}
           src={getImageUrl(index)}
-          alt={`Property view ${index + 1}`}
+          alt={`${customAlt}-${index + 1}`}
         />
       ))}
     </div>
@@ -46,9 +48,9 @@ const ImageGallery = ({ property, setimagegallerypopup }) => {
     <div className="flex gap-2 w-full relative">
       {renderMainImage()}
       {renderThumbnails()}
-      
+
       <button
-      onClick={()=>setimagegallerypopup(true)}
+        onClick={() => setimagegallerypopup(true)}
         className="absolute bottom-5 right-7 bg-white hover:bg-gray-50 flex gap-2 items-center px-4 py-2 rounded-lg shadow-sm transition-colors"
       >
         <Grip className="h-4 w-4" />
