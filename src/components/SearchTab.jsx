@@ -12,7 +12,7 @@ const SearchTab = () => {
     min: searchParams.get('minPrice') || '400000',
     max: searchParams.get('maxPrice') || '500000000',
   });
-  const [propertyType, setPropertyType] = useState('any');
+  const [propertyType, setPropertyType] = useState('buy');
   const [propertyTypeDropdown, setPropertyTypeDropdown] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null); // Create a reference for the dropdown
@@ -47,6 +47,7 @@ const SearchTab = () => {
   };
 
   const handlePropertyType = (type) => {
+    console.log('first', type);
     setPropertyType(type);
     setPropertyTypeDropdown(false);
   };
@@ -76,7 +77,7 @@ const SearchTab = () => {
 
       {/* Price Range Section */}
       <div className="flex flex-col">
-        <PriceRange budget={budget} setBudget={setBudget} />
+        <PriceRange budget={budget} setBudget={setBudget} propertyType={propertyType}/>
       </div>
 
       {/* Divider for large screens */}

@@ -1,7 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { minBudget, maxBudget } from '../../utils/HardCodedData';
-import { useSearchParams } from 'react-router-dom';
-import { Button } from '@chakra-ui/react';
 import {
     RangeSlider,
     RangeSliderTrack,
@@ -10,11 +7,27 @@ import {
 } from '@chakra-ui/react';
 import { convertPriceToWords } from '../../helperFunctions/basicHelpers';
 
-const PriceRange = ({budget, setBudget}) => {
+const PriceRange = ({ budget, setBudget, propertyType }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const maxBudget = 10000000
-    const minBudget = 0
     const dropdownRef = useRef(null);
+
+    console.log('propertyType', propertyType);
+
+    const getDefaultRange = () => {
+        if (propertyType === 'rent') {
+            return [5000, 50000];
+        }
+        return [200000, 5000000];
+    };
+
+    const [range, setRange] = useState(getDefaultRange());
+
+    useEffect(() => {
+        const newRange = getDefaultRange();
+        setRange(newRange);
+        setBudget({ min: newRange[0], max: newRange[1] });
+    }, [propertyType]);
+
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
             setDropdownOpen(false);
@@ -27,7 +40,6 @@ const PriceRange = ({budget, setBudget}) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -55,25 +67,26 @@ const PriceRange = ({budget, setBudget}) => {
                     `}
                 >
                     <div className="flex flex-col gap-4">
-                        <div className='flex justify-between'>
-                            <div className='text-xs font-semibold'>
+                        <div className="flex justify-between">
+                            <div className="text-xs font-semibold">
                                 <div> Min </div>
                                 <div> {convertPriceToWords(budget.min)} </div>
                             </div>
-                            <div className='text-xs font-semibold'>
+                            <div className="text-xs font-semibold">
                                 <div> Max </div>
                                 <div> {convertPriceToWords(budget.max)} </div>
                             </div>
                         </div>
                         <RangeSlider
                             aria-label={['min', 'max']}
-                            defaultValue={[200000, 5000000]}
-                            min={minBudget}
-                            max={maxBudget}
-
+                            value={range}
+                            min={propertyType === 'rent' ? 0 : 0}
+                            max={propertyType === 'rent' ? 100000 : 10000000}
+                            onChange={(val) => setRange(val)}
                             onChangeEnd={(val) => {
                                 setBudget({ min: val[0], max: val[1] });
                             }}
+                            step={5000}
                         >
                             <RangeSliderTrack>
                                 <RangeSliderFilledTrack />

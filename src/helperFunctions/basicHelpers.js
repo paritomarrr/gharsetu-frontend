@@ -1,11 +1,15 @@
 /**
  * Function to convert price to words
  * Ex: 7500000 to 75 Lakhs, 10000000 to 1 Crore
- * 
- * @param {Number} price 
+ *
+ * @param {Number} price
  * @returns {String} Price in words
  */
 export const convertPriceToWords = (price) => {
+    if (price === 0) {
+        return '0';
+    }
+
     if (!price || isNaN(price)) {
         return 'Invalid input';
     }
@@ -31,7 +35,13 @@ export const convertPriceToWords = (price) => {
     }
 };
 
-
+/**
+ * Function to check if the device is mobile
+ * @returns {Boolean} True if window width is less than 768px
+ */
 export const isMobile = () => {
+    if (typeof window === 'undefined') {
+        return false; // Assume non-mobile if no window (e.g., server-side rendering)
+    }
     return window.innerWidth < 768;
-}
+};
