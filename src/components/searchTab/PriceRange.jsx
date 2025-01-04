@@ -17,7 +17,7 @@ const PriceRange = ({ budget, setBudget, propertyType }) => {
         if (propertyType === 'rent') {
             return [5000, 50000];
         }
-        return [200000, 5000000];
+        return [200000, 100000000];
     };
 
     const [range, setRange] = useState(getDefaultRange());
@@ -81,7 +81,7 @@ const PriceRange = ({ budget, setBudget, propertyType }) => {
                             aria-label={['min', 'max']}
                             value={range}
                             min={propertyType === 'rent' ? 0 : 0}
-                            max={propertyType === 'rent' ? 100000 : 150000000}
+                            max={propertyType === 'rent' ? 100000 : 50000000}
                             onChange={(val) => setRange(val)}
                             onChangeEnd={(val) => {
                                 setBudget({ min: val[0], max: val[1] });
