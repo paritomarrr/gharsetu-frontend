@@ -16,6 +16,32 @@ const PropertyView = () => {
   const minPrice = searchParams.get('minPrice');
   const maxPrice = searchParams.get('maxPrice');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const propertiesPerPage = 6;
+
+  const totalPages = Math.ceil(propertiesToShow.length / propertiesPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const paginatedProperties = propertiesToShow.slice(
+    (currentPage - 1) * propertiesPerPage,
+    currentPage * propertiesPerPage
+  );
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset page number when mode changes
+  }, [mode]);
+
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
       const [locality, city, state] = searchTerms.split(' ');
@@ -167,15 +193,32 @@ const PropertyView = () => {
           </div>
 
           <div className="h-full overflow-y-auto px-4 pb-4">
-            {propertiesToShow.length > 0 ? (
+            {paginatedProperties.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
-                {propertiesToShow.map((property) => (
+                {paginatedProperties.map((property) => (
                   <PropertyCard key={property._id} property={property} />
                 ))}
               </div>
             ) : (
               <div className="py-4 text-center text-gray-600">No Properties Found</div>
             )}
+            <div className="flex justify-center items-center mt-4 space-x-4">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span className="text-sm font-medium">{currentPage}/{totalPages}</span>
+              <button
+                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -205,15 +248,32 @@ const PropertyView = () => {
           </div>
           <div className="w-full h-[1px] bg-[#d6d9df]" />
           <div className="h-[calc(100vh-200px)] overflow-y-auto">
-            {propertiesToShow.length > 0 ? (
+            {paginatedProperties.length > 0 ? (
               <div className="grid grid-cols-2 gap-9 py-3">
-                {propertiesToShow.map((property) => (
+                {paginatedProperties.map((property) => (
                   <PropertyCard key={property._id} property={property} />
                 ))}
               </div>
             ) : (
               <div>No Properties Found</div>
             )}
+            <div className="flex justify-center items-center mt-4 space-x-4">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span className="text-sm font-medium">{currentPage}/{totalPages}</span>
+              <button
+                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
 
