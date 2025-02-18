@@ -11,7 +11,7 @@ const Home = () => {
   const city = 'Ghaziabad';
 
   useEffect(() => {
-    document.title = 'GharSetu | Home';
+    document.title = 'Gharsetu | Buy, Sell & Rent Verified Properties';
   }, []);
 
   return (
