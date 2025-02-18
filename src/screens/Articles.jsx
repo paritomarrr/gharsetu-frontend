@@ -21,6 +21,8 @@ const Articles = () => {
   const [loadingProperties, setLoadingProperties] = useState(true);
 
   useEffect(() => {
+    document.title = "Articles | Gharsetu";
+
     // Fetch articles
     fetch(`${backend_url}/api/v1/articles`)
       .then((res) => res.json())

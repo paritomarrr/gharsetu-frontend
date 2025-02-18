@@ -99,6 +99,12 @@ const SingleArticle = () => {
       .catch(console.error);
   }, [slug]);
 
+  useEffect(() => {
+    if (article) {
+      document.title = `${article.title} | Gharsetu`;
+    }
+  }, [article]);
+
   if (!article) return <Box py={10} textAlign="center">Loading...</Box>;
 
   const {
@@ -252,4 +258,4 @@ const SingleArticle = () => {
   );
 };
 
-export default SingleArticle; 
+export default SingleArticle;
