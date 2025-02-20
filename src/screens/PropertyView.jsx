@@ -93,6 +93,10 @@ const PropertyView = () => {
 
   const cityName = search?.split(' ')[1] || "Ghaziabad";
 
+  useEffect(() => {
+    document.title = `${mode === "rent" ? "Rent" : "Buy"} Properties in ${cityName} | Gharsetu`;
+  }, [mode, cityName]);
+
   // For the desktop resizing logic
   const [isResizing, setIsResizing] = useState(false);
   const [splitPosition, setSplitPosition] = useState(50);

@@ -27,7 +27,7 @@ import { UserContext } from "../context/UserContext";
 
 const PropertyPage = () => {
   const { user } = useContext(UserContext);
-  let { id } = useParams();
+  let { id, type } = useParams();
   const [property, setProperty] = useState({});
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [ownerData, setOwnerData] = useState();
@@ -36,7 +36,8 @@ const PropertyPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showSellerDetails, setShowSellerDetails] = useState(false); // toggle for seller details
   const [bookmarked, setBookmarked] = useState(false);
-
+  const [propertyId, setPropertyId] = useState(id);
+  const [propertyType, setPropertyType] = useState(type);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -66,14 +67,18 @@ const PropertyPage = () => {
 
   useEffect(() => {
     const parts = id.split("-");
-    id = parts[parts.length - 1];
-    
+    const newId = parts[parts.length - 1];
+    const newType = parts[parts.length - 5];
+    setPropertyId(newId);
+    setPropertyType(newType);
+    console.log(newId, newType);
+
     const getSingleProperty = async () => {
       setIsLoading(true);
       try {
         const res = await axios.post(
           `${backend_url}/api/v1/properties/getSingleProperty`,
-          { propertyId: id }
+          { propertyId: newId }
         );
         if (res.data.success) {
           setProperty(res.data.property);
@@ -102,6 +107,13 @@ const PropertyPage = () => {
       getSellerProfile();
     }
   }, [property]);
+
+  useEffect(() => {
+    if (property?.address) {
+      const { locality, city } = property.address;
+      document.title = `5 BHK ${property.propertySubType} for ${propertyType === "Rent" ? "Rent" : "Sale"} in ${locality}, ${city} | Gharsetu`;
+    }
+  }, [property, propertyType]);
 
   const generateWhatsAppLink = (phoneNumber) => {
     const propertyAddress = property?.address || "the listed property";
