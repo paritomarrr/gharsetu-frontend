@@ -71,11 +71,10 @@ const PropertyPage = () => {
 
   useEffect(() => {
     const parts = id.split("-");
-        const newId = parts[parts.length - 1];
+    const newId = parts[parts.length - 1];
     const newType = parts[parts.length - 5];
     setPropertyId(newId);
     setPropertyType(newType);
-    console.log(newId, newType);
 
     const getSingleProperty = async () => {
       setIsLoading(true);
@@ -162,6 +161,18 @@ const PropertyPage = () => {
   };
 
   const submitReview = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "You need to be signed in to post a review.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      return;
+    }
+  
     if (newRating === 0) {
       toast({
         title: "Rating required",
@@ -181,7 +192,15 @@ const PropertyPage = () => {
         rating: newRating,
       });
       if (res.data.success) {
-        setReviews([...reviews, res.data.review]);
+        const newReviewWithUser = {
+          ...res.data.review,
+          userId: {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          },
+        };
+        setReviews([...reviews, newReviewWithUser]);
         setNewReview("");
         setNewRating(0);
         toast({
