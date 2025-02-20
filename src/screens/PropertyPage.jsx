@@ -71,7 +71,7 @@ const PropertyPage = () => {
 
   useEffect(() => {
     const parts = id.split("-");
-    const newId = parts[parts.length - 1];
+        const newId = parts[parts.length - 1];
     const newType = parts[parts.length - 5];
     setPropertyId(newId);
     setPropertyType(newType);
@@ -86,6 +86,7 @@ const PropertyPage = () => {
         );
         if (res.data.success) {
           setProperty(res.data.property);
+          fetchReviews(res.data.property._id);
         }
       } catch (error) {
         console.error("Error fetching single property:", error);
@@ -151,9 +152,9 @@ const PropertyPage = () => {
     }
   }
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (propertyId) => {
     try {
-      const res = await axios.get(`${backend_url}/api/v1/properties/${propertyId}/reviews`);
+            const res = await axios.get(`${backend_url}/api/v1/properties/${propertyId}/reviews`);
       setReviews(res.data.reviews);
     } catch (error) {
       console.error("Error fetching reviews:", error);
@@ -161,8 +162,20 @@ const PropertyPage = () => {
   };
 
   const submitReview = async () => {
+    if (newRating === 0) {
+      toast({
+        title: "Rating required",
+        description: "Please select a rating before submitting your review.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      return;
+    }
+  
     try {
-      const res = await axios.post(`${backend_url}/api/v1/properties/${propertyId}/reviews`, {
+      const res = await axios.post(`${backend_url}/api/v1/properties/${property._id}/reviews`, {
         userId: user._id,
         review: newReview,
         rating: newRating,
@@ -191,11 +204,7 @@ const PropertyPage = () => {
       });
     }
   };
-
-  useEffect(() => {
-    fetchReviews();
-  }, [propertyId]);
-
+  
   if (isLoading) {
     return <ImageGallerySkeleton />;
   }
@@ -365,6 +374,7 @@ const PropertyPage = () => {
                   ))}
                 </div>
                 <div className="mt-2">{review.review}</div>
+                <div className="text-sm text-gray-500">- {review.userId.firstName} {review.userId.lastName}</div>
               </div>
             ))}
           </div>
@@ -535,6 +545,7 @@ const PropertyPage = () => {
                         ))}
                       </div>
                       <div className="mt-2">{review.review}</div>
+                      <div className="text-sm text-gray-500">- {review.userId.firstName} {review.userId.lastName}</div>
                     </div>
                   ))}
                 </div>
