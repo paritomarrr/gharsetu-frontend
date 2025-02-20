@@ -6,6 +6,7 @@ import {
   DoorClosed,
   BadgeCheck,
   Flag,
+  Star,
 } from "lucide-react";
 import Separator from "../components/Separator";
 import PropertyCard from "../components/common/PropertyCard";
@@ -38,6 +39,9 @@ const PropertyPage = () => {
   const [bookmarked, setBookmarked] = useState(false);
   const [propertyId, setPropertyId] = useState(id);
   const [propertyType, setPropertyType] = useState(type);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState("");
+  const [newRating, setNewRating] = useState(0);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -146,6 +150,51 @@ const PropertyPage = () => {
       setBookmarked(true);
     }
   }
+
+  const fetchReviews = async () => {
+    try {
+      const res = await axios.get(`${backend_url}/api/v1/properties/${propertyId}/reviews`);
+      setReviews(res.data.reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  const submitReview = async () => {
+    try {
+      const res = await axios.post(`${backend_url}/api/v1/properties/${propertyId}/reviews`, {
+        userId: user._id,
+        review: newReview,
+        rating: newRating,
+      });
+      if (res.data.success) {
+        setReviews([...reviews, res.data.review]);
+        setNewReview("");
+        setNewRating(0);
+        toast({
+          title: "Review submitted!",
+          description: "Your review has been submitted successfully.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit the review. Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, [propertyId]);
 
   if (isLoading) {
     return <ImageGallerySkeleton />;
@@ -305,22 +354,48 @@ const PropertyPage = () => {
 
         <Separator />
 
-        {/* <div className="flex flex-col gap-6">
-          <div className="text-xl font-medium">
-            Similar nearby houses for sale
+        <div className="flex flex-col gap-6">
+          <div className="text-xl font-medium">Reviews and Ratings</div>
+          <div className="flex flex-col gap-4">
+            {reviews.map((review) => (
+              <div key={review._id} className="border p-4 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <Star key={i} size={16} className="text-yellow-500 fill-current" />
+                  ))}
+                </div>
+                <div className="mt-2">{review.review}</div>
+              </div>
+            ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <PropertyCard />
-            <PropertyCard />
-            <PropertyCard />
-            <PropertyCard />
-          </div>
-          <div className="flex justify-center">
-            <div className="py-[11px] px-[14px] text-white bg-black rounded-lg cursor-pointer text-sm">
-              View More
+          <div className="flex flex-col gap-4 mt-4">
+            <textarea
+              value={newReview}
+              onChange={(e) => setNewReview(e.target.value)}
+              placeholder="Leave a review..."
+              className="border p-2 rounded-lg focus:border-[#1D4CBE] focus:ring-[#1D4CBE] focus:ring-2"
+              style={{ borderColor: '#1D4CBE', outline: 'none' }}
+            />
+            <div className="flex items-center gap-2">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={24}
+                  className={`cursor-pointer ${newRating > i ? "text-yellow-500 fill-current" : "text-gray-300"}`}
+                  onClick={() => setNewRating(i + 1)}
+                />
+              ))}
             </div>
+            <button
+              onClick={submitReview}
+              className="bg-[#1D4CBE] text-white py-2 px-4 rounded-lg"
+            >
+              Submit Review
+            </button>
           </div>
-        </div> */}
+        </div>
+
+        <Separator />
 
         <div className="flex gap-2 text-xs underline justify-center items-center cursor-pointer mt-4">
           <Flag size={14} /> Report this listing
@@ -445,6 +520,49 @@ const PropertyPage = () => {
                 {property.coordinates && (
                   <PropertyPageMap coordinates={property?.coordinates} />
                 )}
+              </div>
+
+              <Separator />
+
+              <div className="flex flex-col gap-6">
+                <div className="text-xl font-medium">Reviews and Ratings</div>
+                <div className="flex flex-col gap-4">
+                  {reviews.map((review) => (
+                    <div key={review._id} className="border p-4 rounded-lg shadow-sm">
+                      <div className="flex items-center gap-2">
+                        {[...Array(review.rating)].map((_, i) => (
+                          <Star key={i} size={16} className="text-yellow-500 fill-current" />
+                        ))}
+                      </div>
+                      <div className="mt-2">{review.review}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-4 mt-4">
+                  <textarea
+                    value={newReview}
+                    onChange={(e) => setNewReview(e.target.value)}
+                    placeholder="Leave a review..."
+                    className="border p-2 rounded-lg focus:border-[#1D4CBE] focus:ring-[#1D4CBE] focus:ring-2"
+                    style={{ borderColor: '#1D4CBE', outline: 'none' }}
+                  />
+                  <div className="flex items-center gap-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={24}
+                        className={`cursor-pointer ${newRating > i ? "text-yellow-500 fill-current" : "text-gray-300"}`}
+                        onClick={() => setNewRating(i + 1)}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={submitReview}
+                    className="bg-[#1D4CBE] text-white py-2 px-4 rounded-lg"
+                  >
+                    Submit Review
+                  </button>
+                </div>
               </div>
 
               <Separator />
