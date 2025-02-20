@@ -21,15 +21,25 @@ const PropertyView = () => {
 
   const totalPages = Math.ceil(propertiesToShow.length / propertiesPerPage);
 
+  const propertyListRef = useRef(null);
+
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
+      window.scrollTo(0, 0);
+      if (propertyListRef.current) {
+        propertyListRef.current.scrollTop = 0;
+      }
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
+      window.scrollTo(0, 0);
+      if (propertyListRef.current) {
+        propertyListRef.current.scrollTop = 0;
+      }
     }
   };
 
@@ -90,6 +100,13 @@ const PropertyView = () => {
       fetchAllProperties();
     }
   }, [search, mode, minPrice, maxPrice]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (propertyListRef.current) {
+      propertyListRef.current.scrollTop = 0;
+    }
+  }, [currentPage]);
 
   const cityName = search?.split(' ')[1] || "Ghaziabad";
 
@@ -196,7 +213,7 @@ const PropertyView = () => {
             </div>
           </div>
 
-          <div className="h-full overflow-y-auto px-4 pb-4">
+          <div className="h-full overflow-y-auto px-4 pb-4" ref={propertyListRef}>
             {paginatedProperties.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
                 {paginatedProperties.map((property) => (
@@ -251,7 +268,7 @@ const PropertyView = () => {
             )}
           </div>
           <div className="w-full h-[1px] bg-[#d6d9df]" />
-          <div className="h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="h-[calc(100vh-200px)] overflow-y-auto" ref={propertyListRef}>
             {paginatedProperties.length > 0 ? (
               <div className="grid grid-cols-2 gap-9 py-3">
                 {paginatedProperties.map((property) => (
