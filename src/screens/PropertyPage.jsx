@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Separator from "../components/Separator";
 import PropertyCard from "../components/common/PropertyCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import ImageGallery from "../components/propertyPage/ImageGallery";
@@ -42,6 +42,9 @@ const PropertyPage = () => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState("");
   const [newRating, setNewRating] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const reviewsRef = useRef(null);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -153,8 +156,15 @@ const PropertyPage = () => {
 
   const fetchReviews = async (propertyId) => {
     try {
-            const res = await axios.get(`${backend_url}/api/v1/properties/${propertyId}/reviews`);
-      setReviews(res.data.reviews);
+      const res = await axios.get(`${backend_url}/api/v1/properties/${propertyId}/reviews`);
+      const reviews = res.data.reviews;
+      setReviews(reviews);
+
+      // Calculate average rating and review count
+      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+      const avgRating = reviews.length ? (totalRating / reviews.length).toFixed(2) : 0;
+      setAverageRating(avgRating);
+      setReviewCount(reviews.length);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     }
@@ -224,6 +234,12 @@ const PropertyPage = () => {
     }
   };
   
+  const handleReviewLinkClick = () => {
+    if (reviewsRef.current) {
+      reviewsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   if (isLoading) {
     return <ImageGallerySkeleton />;
   }
@@ -298,8 +314,13 @@ const PropertyPage = () => {
           address={property?.address}
           propertyStatus={property?.propertyStatus}
           propertySubType={property?.propertySubType}
+          averageRating={averageRating}
+          reviewCount={reviewCount}
+          onReviewLinkClick={handleReviewLinkClick}
           area={property?.area}
-          furnishTypes={property?.furnishType}
+          bhk={property?.bhk}
+          furnishType={property?.furnishType}
+          baths={property?.baths}
         />
 
         <Separator />
@@ -382,7 +403,7 @@ const PropertyPage = () => {
 
         <Separator />
 
-        <div className="flex flex-col gap-6">
+        <div ref={reviewsRef} id="reviews-section" className="flex flex-col gap-6">
           <div className="text-xl font-medium">Reviews and Ratings</div>
           <div className="flex flex-col gap-4">
             {reviews.map((review) => (
@@ -466,6 +487,13 @@ const PropertyPage = () => {
                 address={property?.address}
                 propertyStatus={property?.propertyStatus}
                 propertySubType={property?.propertySubType}
+                averageRating={averageRating}
+                reviewCount={reviewCount}
+                onReviewLinkClick={handleReviewLinkClick}
+                area={property?.area}
+                bhk={property?.bhk}
+                furnishType={property?.furnishType}
+                baths={property?.baths}
               />
 
               <Separator />
@@ -553,7 +581,7 @@ const PropertyPage = () => {
 
               <Separator />
 
-              <div className="flex flex-col gap-6">
+              <div ref={reviewsRef} id="reviews-section" className="flex flex-col gap-6">
                 <div className="text-xl font-medium">Reviews and Ratings</div>
                 <div className="flex flex-col gap-4">
                   {reviews.map((review) => (
