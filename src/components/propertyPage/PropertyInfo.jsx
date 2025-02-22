@@ -14,7 +14,7 @@ const PropertyInfo = ({ address, propertyStatus, propertySubType, averageRating,
       </div>
       <div className="flex text-sm">
         <div>{area} sq ft</div>
-        <div>· {bhkConfig} BHK</div>
+        <div>· {bhkConfig || "3 BHK"}</div>
         <div>· {furnishType}</div>
         <div>· {propertyStatus}</div>
         <div>· {propertySubType}</div>
