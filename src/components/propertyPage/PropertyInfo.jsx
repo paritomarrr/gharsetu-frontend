@@ -1,7 +1,7 @@
 import React from "react";
 import { Verified, Dot, Star } from "lucide-react";
 
-const PropertyInfo = ({ address, propertyStatus, propertySubType, averageRating, reviewCount, onReviewLinkClick, area, bhk, furnishType, baths }) => {
+const PropertyInfo = ({ address, propertyStatus, propertySubType, averageRating, reviewCount, onReviewLinkClick, area, bhkConfig, furnishType, baths }) => {
   return (
     <div className="flex flex-col gap-[5px]">
       <div className="text-[#222] flex items-center gap-1">
@@ -14,9 +14,8 @@ const PropertyInfo = ({ address, propertyStatus, propertySubType, averageRating,
       </div>
       <div className="flex text-sm">
         <div>{area} sq ft</div>
-        <div>· {bhk} BHK</div>
+        <div>· {bhkConfig} BHK</div>
         <div>· {furnishType}</div>
-        <div>· {baths} bath</div>
         <div>· {propertyStatus}</div>
         <div>· {propertySubType}</div>
       </div>

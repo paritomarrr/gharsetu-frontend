@@ -318,9 +318,8 @@ const PropertyPage = () => {
           reviewCount={reviewCount}
           onReviewLinkClick={handleReviewLinkClick}
           area={property?.area}
-          bhk={property?.bhk}
+          bhkConfig={property?.bhkConfig}
           furnishType={property?.furnishType}
-          baths={property?.baths}
         />
 
         <Separator />
@@ -491,9 +490,8 @@ const PropertyPage = () => {
                 reviewCount={reviewCount}
                 onReviewLinkClick={handleReviewLinkClick}
                 area={property?.area}
-                bhk={property?.bhk}
+                bhkConfig={property?.bhkConfig}
                 furnishType={property?.furnishType}
-                baths={property?.baths}
               />
 
               <Separator />

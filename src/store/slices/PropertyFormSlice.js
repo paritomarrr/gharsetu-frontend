@@ -28,6 +28,7 @@ const initialState = {
   furnishType: '',
   flatFurnishings: [],
   societyAmenities: [],
+  bhkConfig: '',
   askedPrice: '',
   propertyStatus: '',
   coordinates: {
