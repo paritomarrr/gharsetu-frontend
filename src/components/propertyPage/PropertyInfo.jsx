@@ -1,7 +1,7 @@
 import React from "react";
 import { Verified, Dot, Star } from "lucide-react";
 
-const PropertyInfo = ({ address, propertyStatus, propertySubType }) => {
+const PropertyInfo = ({ address, propertyStatus, propertySubType, averageRating, reviewCount, onReviewLinkClick, area, bhkConfig, furnishType, baths }) => {
   return (
     <div className="flex flex-col gap-[5px]">
       <div className="text-[#222] flex items-center gap-1">
@@ -13,20 +13,20 @@ const PropertyInfo = ({ address, propertyStatus, propertySubType }) => {
         {address?.state}, {address?.pincode}
       </div>
       <div className="flex text-sm">
-        <div>1500 sq ft</div>
-        <div>· 5 BHK</div>
-        <div>· Fully Furnished</div>
-        <div>· 3 bath</div>
+        <div>{area} sq ft</div>
+        <div>· {bhkConfig || "3 BHK"}</div>
+        <div>· {furnishType}</div>
         <div>· {propertyStatus}</div>
         <div>· {propertySubType}</div>
       </div>
       <div className="flex text-sm items-center font-semibold ">
         <div className="flex gap-1 items-center">
-          {" "}
-          <Star /> 4.90{" "}
+          <Star /> {averageRating}{" "}
         </div>
         <Dot />
-        <div className="underline cursor-pointer">366 reviews</div>
+        <div className="underline cursor-pointer" onClick={onReviewLinkClick}>
+          {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+        </div>
       </div>
     </div>
   );

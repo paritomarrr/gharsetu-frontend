@@ -6,10 +6,11 @@ import {
   DoorClosed,
   BadgeCheck,
   Flag,
+  Star,
 } from "lucide-react";
 import Separator from "../components/Separator";
 import PropertyCard from "../components/common/PropertyCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import ImageGallery from "../components/propertyPage/ImageGallery";
@@ -38,6 +39,12 @@ const PropertyPage = () => {
   const [bookmarked, setBookmarked] = useState(false);
   const [propertyId, setPropertyId] = useState(id);
   const [propertyType, setPropertyType] = useState(type);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState("");
+  const [newRating, setNewRating] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const reviewsRef = useRef(null);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -71,7 +78,6 @@ const PropertyPage = () => {
     const newType = parts[parts.length - 5];
     setPropertyId(newId);
     setPropertyType(newType);
-    console.log(newId, newType);
 
     const getSingleProperty = async () => {
       setIsLoading(true);
@@ -82,6 +88,7 @@ const PropertyPage = () => {
         );
         if (res.data.success) {
           setProperty(res.data.property);
+          fetchReviews(res.data.property._id);
         }
       } catch (error) {
         console.error("Error fetching single property:", error);
@@ -146,6 +153,92 @@ const PropertyPage = () => {
       setBookmarked(true);
     }
   }
+
+  const fetchReviews = async (propertyId) => {
+    try {
+      const res = await axios.get(`${backend_url}/api/v1/properties/${propertyId}/reviews`);
+      const reviews = res.data.reviews;
+      setReviews(reviews);
+
+      // Calculate average rating and review count
+      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+      const avgRating = reviews.length ? (totalRating / reviews.length).toFixed(2) : 0;
+      setAverageRating(avgRating);
+      setReviewCount(reviews.length);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  const submitReview = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "You need to be signed in to post a review.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      return;
+    }
+  
+    if (newRating === 0) {
+      toast({
+        title: "Rating required",
+        description: "Please select a rating before submitting your review.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      return;
+    }
+  
+    try {
+      const res = await axios.post(`${backend_url}/api/v1/properties/${property._id}/reviews`, {
+        userId: user._id,
+        review: newReview,
+        rating: newRating,
+      });
+      if (res.data.success) {
+        const newReviewWithUser = {
+          ...res.data.review,
+          userId: {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          },
+        };
+        setReviews([...reviews, newReviewWithUser]);
+        setNewReview("");
+        setNewRating(0);
+        toast({
+          title: "Review submitted!",
+          description: "Your review has been submitted successfully.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit the review. Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+  
+  const handleReviewLinkClick = () => {
+    if (reviewsRef.current) {
+      reviewsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   if (isLoading) {
     return <ImageGallerySkeleton />;
@@ -221,8 +314,12 @@ const PropertyPage = () => {
           address={property?.address}
           propertyStatus={property?.propertyStatus}
           propertySubType={property?.propertySubType}
+          averageRating={averageRating}
+          reviewCount={reviewCount}
+          onReviewLinkClick={handleReviewLinkClick}
           area={property?.area}
-          furnishTypes={property?.furnishType}
+          bhkConfig={property?.bhkConfig}
+          furnishType={property?.furnishType}
         />
 
         <Separator />
@@ -305,22 +402,49 @@ const PropertyPage = () => {
 
         <Separator />
 
-        {/* <div className="flex flex-col gap-6">
-          <div className="text-xl font-medium">
-            Similar nearby houses for sale
+        <div ref={reviewsRef} id="reviews-section" className="flex flex-col gap-6">
+          <div className="text-xl font-medium">Reviews and Ratings</div>
+          <div className="flex flex-col gap-4">
+            {reviews.map((review) => (
+              <div key={review._id} className="border p-4 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <Star key={i} size={16} className="text-yellow-500 fill-current" />
+                  ))}
+                </div>
+                <div className="mt-2">{review.review}</div>
+                <div className="text-sm text-gray-500">- {review.userId.firstName} {review.userId.lastName}</div>
+              </div>
+            ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <PropertyCard />
-            <PropertyCard />
-            <PropertyCard />
-            <PropertyCard />
-          </div>
-          <div className="flex justify-center">
-            <div className="py-[11px] px-[14px] text-white bg-black rounded-lg cursor-pointer text-sm">
-              View More
+          <div className="flex flex-col gap-4 mt-4">
+            <textarea
+              value={newReview}
+              onChange={(e) => setNewReview(e.target.value)}
+              placeholder="Leave a review..."
+              className="border p-2 rounded-lg focus:border-[#1D4CBE] focus:ring-[#1D4CBE] focus:ring-2"
+              style={{ borderColor: '#1D4CBE', outline: 'none' }}
+            />
+            <div className="flex items-center gap-2">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={24}
+                  className={`cursor-pointer ${newRating > i ? "text-yellow-500 fill-current" : "text-gray-300"}`}
+                  onClick={() => setNewRating(i + 1)}
+                />
+              ))}
             </div>
+            <button
+              onClick={submitReview}
+              className="bg-[#1D4CBE] text-white py-2 px-4 rounded-lg"
+            >
+              Submit Review
+            </button>
           </div>
-        </div> */}
+        </div>
+
+        <Separator />
 
         <div className="flex gap-2 text-xs underline justify-center items-center cursor-pointer mt-4">
           <Flag size={14} /> Report this listing
@@ -362,6 +486,12 @@ const PropertyPage = () => {
                 address={property?.address}
                 propertyStatus={property?.propertyStatus}
                 propertySubType={property?.propertySubType}
+                averageRating={averageRating}
+                reviewCount={reviewCount}
+                onReviewLinkClick={handleReviewLinkClick}
+                area={property?.area}
+                bhkConfig={property?.bhkConfig}
+                furnishType={property?.furnishType}
               />
 
               <Separator />
@@ -445,6 +575,50 @@ const PropertyPage = () => {
                 {property.coordinates && (
                   <PropertyPageMap coordinates={property?.coordinates} />
                 )}
+              </div>
+
+              <Separator />
+
+              <div ref={reviewsRef} id="reviews-section" className="flex flex-col gap-6">
+                <div className="text-xl font-medium">Reviews and Ratings</div>
+                <div className="flex flex-col gap-4">
+                  {reviews.map((review) => (
+                    <div key={review._id} className="border p-4 rounded-lg shadow-sm">
+                      <div className="flex items-center gap-2">
+                        {[...Array(review.rating)].map((_, i) => (
+                          <Star key={i} size={16} className="text-yellow-500 fill-current" />
+                        ))}
+                      </div>
+                      <div className="mt-2">{review.review}</div>
+                      <div className="text-sm text-gray-500">- {review.userId.firstName} {review.userId.lastName}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-4 mt-4">
+                  <textarea
+                    value={newReview}
+                    onChange={(e) => setNewReview(e.target.value)}
+                    placeholder="Leave a review..."
+                    className="border p-2 rounded-lg focus:border-[#1D4CBE] focus:ring-[#1D4CBE] focus:ring-2"
+                    style={{ borderColor: '#1D4CBE', outline: 'none' }}
+                  />
+                  <div className="flex items-center gap-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={24}
+                        className={`cursor-pointer ${newRating > i ? "text-yellow-500 fill-current" : "text-gray-300"}`}
+                        onClick={() => setNewRating(i + 1)}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={submitReview}
+                    className="bg-[#1D4CBE] text-white py-2 px-4 rounded-lg"
+                  >
+                    Submit Review
+                  </button>
+                </div>
               </div>
 
               <Separator />

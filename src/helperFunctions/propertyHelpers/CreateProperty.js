@@ -31,6 +31,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
     if (!propertyForm.coordinates.longitude) missingFields.push('coordinates.longitude');
     if (!propertyForm.images) missingFields.push('images');
     if (!propertyForm.description) missingFields.push('description');
+    if (!propertyForm.bhkConfig) missingFields.push('bhkConfig');
 
     if (missingFields.length > 0) {
       dispatch(toggleError(true));
@@ -90,6 +91,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
           longitude: propertyForm.coordinates.longitude,
         },
         images: propertyForm.images,
+        bhkConfig: propertyForm.bhkConfig,
       }
     );
 

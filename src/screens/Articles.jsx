@@ -21,7 +21,7 @@ const Articles = () => {
   const [loadingProperties, setLoadingProperties] = useState(true);
 
   useEffect(() => {
-    document.title = "Articles | Gharsetu";
+    document.title = "Gharsetu | Articles";
 
     // Fetch articles
     fetch(`${backend_url}/api/v1/articles`)

@@ -44,6 +44,7 @@ const PostPropertyBottomBar = () => {
 
 
   const saveProperty = async () => {
+    console.log("Property Info:", propertyForm);
     const res = await savePropertyHelper({ propertyForm, dispatch, user, toggleError });
 
     if (res.data.success) {
