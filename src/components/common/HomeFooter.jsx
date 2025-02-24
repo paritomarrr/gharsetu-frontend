@@ -19,9 +19,11 @@ const HomeFooter = () => {
           </div>
 
           <div className='flex justify-center mt-12'>
-            <div className='border border-gray-500 hover:border-white cursor-pointer w-fit p-3 md:p-4 rounded-full'>
-              <MoveRight className='text-gray-500 hover:text-white' />
-            </div>
+            <Link to='/properties/buy'>
+              <div className='border border-gray-500 hover:border-white cursor-pointer w-fit p-3 md:p-4 rounded-full'>
+                <MoveRight className='text-gray-500 hover:text-white' />
+              </div>
+            </Link>
           </div>
         </div>
       </div>
