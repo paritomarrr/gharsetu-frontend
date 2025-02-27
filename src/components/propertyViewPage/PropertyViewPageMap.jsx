@@ -248,6 +248,22 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
         console.error("Error adding marker for property:", error);
       }
     });
+
+    // Fit map to the bounding box of all properties
+    if (propertiesToShow.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+
+      propertiesToShow.forEach((property) => {
+        const { coordinates } = property;
+        if (coordinates?.longitude && coordinates?.latitude) {
+          bounds.extend([coordinates.longitude, coordinates.latitude]);
+        }
+      });
+
+      mapRef.current.fitBounds(bounds, {
+        padding: 20,
+      });
+    }
   }, [propertiesToShow]);
 
   return (
