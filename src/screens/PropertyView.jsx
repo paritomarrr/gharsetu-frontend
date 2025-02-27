@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
 import axios from "axios";
 import OptionsBar from "../components/propertyViewPage/OptionsBar";
@@ -182,6 +182,37 @@ const PropertyView = () => {
     document.removeEventListener("touchend", handleSheetMouseUp);
   };
 
+  const [drawnShape, setDrawnShape] = useState(null);
+
+  const handleDrawCreate = useCallback((e) => {
+    const { features } = e;
+    if (features.length > 0) {
+      setDrawnShape(features[0]);
+    }
+  }, []);
+
+  const handleDrawDelete = useCallback(() => {
+    setDrawnShape(null);
+  }, []);
+
+  useEffect(() => {
+    if (drawnShape) {
+      const fetchPropertiesByShape = async (shape) => {
+        try {
+          const res = await axios.post(`${backend_url}/api/v1/properties/filteredPropertiesByShape`, {
+            shape,
+            mode,
+          });
+          setPropertiesToShow(res.data.properties);
+        } catch (error) {
+          console.error('Error fetching properties by shape:', error);
+        }
+      };
+
+      fetchPropertiesByShape(drawnShape);
+    }
+  }, [drawnShape, mode]);
+
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col">
       <OptionsBar mode={mode} />
@@ -189,7 +220,7 @@ const PropertyView = () => {
       {/* Mobile View (Bottom Sheet) - visible on small screens */}
       <div className="block md:hidden relative flex-1">
         <div className="absolute inset-0 z-0">
-          <PropertyViewPageMap propertiesToShow={propertiesToShow} />
+          <PropertyViewPageMap propertiesToShow={propertiesToShow} onDrawCreate={handleDrawCreate} onDrawDelete={handleDrawDelete} />
         </div>
 
         <div
@@ -305,7 +336,7 @@ const PropertyView = () => {
         />
 
         <div className="absolute right-0 top-0 bottom-0" style={{ width: `${100 - splitPosition}%` }}>
-          <PropertyViewPageMap propertiesToShow={propertiesToShow} />
+          <PropertyViewPageMap propertiesToShow={propertiesToShow} onDrawCreate={handleDrawCreate} onDrawDelete={handleDrawDelete} />
         </div>
       </div>
     </div>

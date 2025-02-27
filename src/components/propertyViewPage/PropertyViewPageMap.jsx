@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
-const PropertyViewPageMap = ({ propertiesToShow = [] }) => {
+const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
@@ -25,7 +27,7 @@ const PropertyViewPageMap = ({ propertiesToShow = [] }) => {
     mapRef.current = map;
 
     // Add navigation controls
-    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     // Add 3D building layer if the style supports it
     map.on("load", () => {
@@ -171,6 +173,18 @@ const PropertyViewPageMap = ({ propertiesToShow = [] }) => {
       map.fitBounds(bounds, { padding: 50 });
     }
 
+    const draw = new MapboxDraw({
+      displayControlsDefault: false,
+      controls: {
+        polygon: true,
+        trash: true
+      }
+    });
+    map.addControl(draw, 'top-right');
+
+    map.on('draw.create', onDrawCreate);
+    map.on('draw.delete', onDrawDelete);
+
     return () => {
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
@@ -179,8 +193,13 @@ const PropertyViewPageMap = ({ propertiesToShow = [] }) => {
         mapRef.current.remove();
         mapRef.current = null;
       }
+
+      if (mapRef.current) {
+        mapRef.current.off('draw.create', onDrawCreate);
+        mapRef.current.off('draw.delete', onDrawDelete);
+      }
     };
-  }, [propertiesToShow]);
+  }, [propertiesToShow, onDrawCreate, onDrawDelete]);
 
   return (
     <div
