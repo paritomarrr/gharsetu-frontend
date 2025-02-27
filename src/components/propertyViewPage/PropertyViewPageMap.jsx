@@ -73,6 +73,92 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
       }
     });
 
+    const draw = new MapboxDraw({
+      displayControlsDefault: false,
+      controls: {
+        polygon: true,
+        trash: true
+      },
+      userProperties: true,
+      styles: [
+        // Active (being drawn)
+        {
+          "id": "gl-draw-polygon-fill",
+          "type": "fill",
+          "filter": ["all", ["==", "active", "true"], ["==", "$type", "Polygon"]],
+          "paint": {
+            "fill-color": "#D20C0C",
+            "fill-outline-color": "#D20C0C",
+            "fill-opacity": 0.1
+          }
+        },
+        {
+          "id": "gl-draw-polygon-stroke-active",
+          "type": "line",
+          "filter": ["all", ["==", "active", "true"], ["==", "$type", "Polygon"]],
+          "layout": {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          "paint": {
+            "line-color": "#D20C0C",
+            "line-dasharray": [0.2, 2],
+            "line-width": 2
+          }
+        },
+        // Inactive (already drawn)
+        {
+          "id": "gl-draw-polygon-fill-inactive",
+          "type": "fill",
+          "filter": ["all", ["==", "active", "false"], ["==", "$type", "Polygon"]],
+          "paint": {
+            "fill-color": "#3bb2d0",
+            "fill-outline-color": "#3bb2d0",
+            "fill-opacity": 0.1
+          }
+        },
+        {
+          "id": "gl-draw-polygon-stroke-inactive",
+          "type": "line",
+          "filter": ["all", ["==", "active", "false"], ["==", "$type", "Polygon"]],
+          "layout": {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          "paint": {
+            "line-color": "#3bb2d0",
+            "line-width": 2
+          }
+        }
+      ]
+    });
+
+    map.addControl(draw, 'top-right');
+
+    map.on('draw.create', (e) => onDrawCreate(e.features));
+    map.on('draw.delete', onDrawDelete);
+
+    return () => {
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current = [];
+
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+
+      if (mapRef.current) {
+        mapRef.current.off('draw.create', onDrawCreate);
+        mapRef.current.off('draw.delete', onDrawDelete);
+      }
+    };
+  }, [onDrawCreate, onDrawDelete]);
+
+  useEffect(() => {
+    // Clear existing markers
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+
     // Add property markers
     propertiesToShow.forEach((property) => {
       try {
@@ -125,7 +211,7 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
 
         const marker = new mapboxgl.Marker(el)
           .setLngLat([coordinates.longitude, coordinates.latitude])
-          .addTo(map);
+          .addTo(mapRef.current);
 
         const popup = new mapboxgl.Popup({
           offset: 25,
@@ -163,43 +249,22 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
       }
     });
 
-    if (markersRef.current.length > 0) {
+    // Fit map to the bounding box of all properties
+    if (propertiesToShow.length > 0) {
       const bounds = new mapboxgl.LngLatBounds();
+
       propertiesToShow.forEach((property) => {
-        if (property?.coordinates?.latitude && property?.coordinates?.longitude) {
-          bounds.extend([property.coordinates.longitude, property.coordinates.latitude]);
+        const { coordinates } = property;
+        if (coordinates?.longitude && coordinates?.latitude) {
+          bounds.extend([coordinates.longitude, coordinates.latitude]);
         }
       });
-      map.fitBounds(bounds, { padding: 50 });
+
+      mapRef.current.fitBounds(bounds, {
+        padding: 20,
+      });
     }
-
-    const draw = new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        trash: true
-      }
-    });
-    map.addControl(draw, 'top-right');
-
-    map.on('draw.create', onDrawCreate);
-    map.on('draw.delete', onDrawDelete);
-
-    return () => {
-      markersRef.current.forEach((marker) => marker.remove());
-      markersRef.current = [];
-
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-
-      if (mapRef.current) {
-        mapRef.current.off('draw.create', onDrawCreate);
-        mapRef.current.off('draw.delete', onDrawDelete);
-      }
-    };
-  }, [propertiesToShow, onDrawCreate, onDrawDelete]);
+  }, [propertiesToShow]);
 
   return (
     <div
