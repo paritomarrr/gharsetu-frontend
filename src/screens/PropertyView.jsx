@@ -4,7 +4,10 @@ import axios from "axios";
 import OptionsBar from "../components/propertyViewPage/OptionsBar";
 import PropertyViewPageMap from "../components/propertyViewPage/PropertyViewPageMap";
 import PropertyCard from "../components/common/PropertyCard";
-import { filterProperties, validatePriceRange } from "../helperFunctions/filterProperties";
+import {
+  filterProperties,
+  validatePriceRange,
+} from "../helperFunctions/filterProperties";
 import { backend_url } from "../config";
 
 const PropertyView = () => {
@@ -12,9 +15,9 @@ const PropertyView = () => {
   const [propertiesToShow, setPropertiesToShow] = useState([]);
   const [searchParams] = useSearchParams();
 
-  const search = searchParams.get('search');
-  const minPrice = searchParams.get('minPrice');
-  const maxPrice = searchParams.get('maxPrice');
+  const search = searchParams.get("search");
+  const minPrice = searchParams.get("minPrice");
+  const maxPrice = searchParams.get("maxPrice");
 
   const [currentPage, setCurrentPage] = useState(1);
   const propertiesPerPage = 6;
@@ -54,17 +57,20 @@ const PropertyView = () => {
 
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
-      const [locality, city, state] = searchTerms.split(' ');
+      const [locality, city, state] = searchTerms.split(" ");
       try {
-        const res = await axios.post(`${backend_url}/api/v1/properties/filteredProperties`, {
-          locality,
-          city,
-          state,
-          mode,
-        });
+        const res = await axios.post(
+          `${backend_url}/api/v1/properties/filteredProperties`,
+          {
+            locality,
+            city,
+            state,
+            mode,
+          }
+        );
         setPropertiesToShow(res.data.properties);
       } catch (error) {
-        console.error('Error fetching properties by search:', error);
+        console.error("Error fetching properties by search:", error);
       }
     };
 
@@ -75,7 +81,7 @@ const PropertyView = () => {
           {
             mode,
             minPrice: minPrice ? Number(minPrice) : undefined,
-            maxPrice: maxPrice ? Number(maxPrice) : undefined
+            maxPrice: maxPrice ? Number(maxPrice) : undefined,
           }
         );
         setPropertiesToShow(res.data.properties);
@@ -86,8 +92,13 @@ const PropertyView = () => {
 
     const applyPriceFilter = async () => {
       if (propertiesToShow) {
-        const { minPrice: validatedMin, maxPrice: validatedMax } = validatePriceRange(minPrice, maxPrice);
-        const filteredProps = filterProperties(propertiesToShow, validatedMin, validatedMax);
+        const { minPrice: validatedMin, maxPrice: validatedMax } =
+          validatePriceRange(minPrice, maxPrice);
+        const filteredProps = filterProperties(
+          propertiesToShow,
+          validatedMin,
+          validatedMax
+        );
         setPropertiesToShow(filteredProps);
       }
     };
@@ -108,10 +119,12 @@ const PropertyView = () => {
     }
   }, [currentPage]);
 
-  const cityName = search?.split(' ')[1] || "Ghaziabad";
+  const cityName = search?.split(" ")[1] || "Ghaziabad";
 
   useEffect(() => {
-    document.title = `${mode === "rent" ? "Rent" : "Buy"} Properties in ${cityName} | Gharsetu`;
+    document.title = `${
+      mode === "rent" ? "Rent" : "Buy"
+    } Properties in ${cityName} | Gharsetu`;
   }, [mode, cityName]);
 
   // For the desktop resizing logic
@@ -121,14 +134,15 @@ const PropertyView = () => {
   const handleMouseDown = (e) => {
     e.preventDefault();
     setIsResizing(true);
-    document.body.style.cursor = 'col-resize';
+    document.body.style.cursor = "col-resize";
   };
 
   const handleMouseMove = (e) => {
     if (!isResizing) return;
     const container = e.currentTarget;
     const containerRect = container.getBoundingClientRect();
-    const newPosition = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+    const newPosition =
+      ((e.clientX - containerRect.left) / containerRect.width) * 100;
     setSplitPosition(Math.min(Math.max(newPosition, 30), 70));
   };
 
@@ -136,15 +150,15 @@ const PropertyView = () => {
     if (isResizing) {
       const handleMouseUp = () => {
         setIsResizing(false);
-        document.body.style.cursor = 'default';
+        document.body.style.cursor = "default";
       };
 
-      window.addEventListener('mouseup', handleMouseUp);
-      window.addEventListener('mouseleave', handleMouseUp);
+      window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener("mouseleave", handleMouseUp);
 
       return () => {
-        window.removeEventListener('mouseup', handleMouseUp);
-        window.removeEventListener('mouseleave', handleMouseUp);
+        window.removeEventListener("mouseup", handleMouseUp);
+        window.removeEventListener("mouseleave", handleMouseUp);
       };
     }
   }, [isResizing]);
@@ -161,7 +175,9 @@ const PropertyView = () => {
     startHeight.current = sheetHeight;
     document.addEventListener("mousemove", handleSheetMouseMove);
     document.addEventListener("mouseup", handleSheetMouseUp);
-    document.addEventListener("touchmove", handleSheetMouseMove, { passive: false });
+    document.addEventListener("touchmove", handleSheetMouseMove, {
+      passive: false,
+    });
     document.addEventListener("touchend", handleSheetMouseUp);
   };
 
@@ -170,7 +186,7 @@ const PropertyView = () => {
     const clientY = e.clientY || e.touches?.[0]?.clientY;
     const diff = startY.current - clientY;
     let newHeight = startHeight.current + diff;
-    newHeight = Math.max(150, Math.min(newHeight, window.innerHeight - 100)); 
+    newHeight = Math.max(150, Math.min(newHeight, window.innerHeight - 100));
     setSheetHeight(newHeight);
   };
 
@@ -184,28 +200,48 @@ const PropertyView = () => {
 
   const [drawnShape, setDrawnShape] = useState(null);
 
-  const handleDrawCreate = useCallback((e) => {
-    const { features } = e;
+  const handleDrawCreate = useCallback((features) => {
     if (features.length > 0) {
-      setDrawnShape(features[0]);
+      const shape = features[0];
+      console.log("Drawn shape:", shape); // Debugging log
+      setDrawnShape(shape);
     }
   }, []);
 
   const handleDrawDelete = useCallback(() => {
-    setDrawnShape(null);
-  }, []);
+    setDrawnShape(null); // Clear the drawn shape
+
+    const fetchAllProperties = async () => {
+      try {
+        const res = await axios.post(
+          `${backend_url}/api/v1/properties/getAllProperties`,
+          {
+            mode,
+          }
+        );
+        setPropertiesToShow(res.data.properties); // Reset property list
+      } catch (error) {
+        console.error("Error fetching all properties:", error);
+      }
+    };
+
+    fetchAllProperties(); // Fetch all properties when deleting shape
+  }, [mode]);
 
   useEffect(() => {
     if (drawnShape) {
       const fetchPropertiesByShape = async (shape) => {
         try {
-          const res = await axios.post(`${backend_url}/api/v1/properties/filteredPropertiesByShape`, {
-            shape,
-            mode,
-          });
+          const res = await axios.post(
+            `${backend_url}/api/v1/properties/filteredPropertiesByShape`,
+            {
+              shape,
+              mode,
+            }
+          );
           setPropertiesToShow(res.data.properties);
         } catch (error) {
-          console.error('Error fetching properties by shape:', error);
+          console.error("Error fetching properties by shape:", error);
         }
       };
 
@@ -220,7 +256,11 @@ const PropertyView = () => {
       {/* Mobile View (Bottom Sheet) - visible on small screens */}
       <div className="block md:hidden relative flex-1">
         <div className="absolute inset-0 z-0">
-          <PropertyViewPageMap propertiesToShow={propertiesToShow} onDrawCreate={handleDrawCreate} onDrawDelete={handleDrawDelete} />
+          <PropertyViewPageMap
+            propertiesToShow={propertiesToShow}
+            onDrawCreate={handleDrawCreate}
+            onDrawDelete={handleDrawDelete}
+          />
         </div>
 
         <div
@@ -229,7 +269,7 @@ const PropertyView = () => {
             bottom: 0,
             height: `${sheetHeight}px`,
             transition: isDragging.current ? "none" : "height 0.2s ease",
-            touchAction: "none"
+            touchAction: "none",
           }}
         >
           <div
@@ -244,7 +284,10 @@ const PropertyView = () => {
             </div>
           </div>
 
-          <div className="h-full overflow-y-auto px-4 pb-4" ref={propertyListRef}>
+          <div
+            className="h-full overflow-y-auto px-4 pb-4"
+            ref={propertyListRef}
+          >
             {paginatedProperties.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
                 {paginatedProperties.map((property) => (
@@ -252,7 +295,9 @@ const PropertyView = () => {
                 ))}
               </div>
             ) : (
-              <div className="py-4 text-center text-gray-600">No Properties Found</div>
+              <div className="py-4 text-center text-gray-600">
+                No Properties Found
+              </div>
             )}
             <div className="flex justify-center items-center mt-4 space-x-4">
               <button
@@ -262,7 +307,9 @@ const PropertyView = () => {
               >
                 Previous
               </button>
-              <span className="text-sm font-medium">{currentPage}/{totalPages}</span>
+              <span className="text-sm font-medium">
+                {currentPage}/{totalPages}
+              </span>
               <button
                 className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
                 onClick={handleNextPage}
@@ -276,30 +323,49 @@ const PropertyView = () => {
       </div>
 
       {/* Desktop View (Original Side-by-Side) - visible on md+ screens */}
-      <div className="hidden md:block relative flex-1" onMouseMove={handleMouseMove}>
+      <div
+        className="hidden md:block relative flex-1"
+        onMouseMove={handleMouseMove}
+      >
         <div
           className="px-6 py-3 flex flex-col gap-3 overflow-hidden"
-          style={{ width: `${splitPosition}%`, position: 'absolute', left: 0, top: 0, bottom: 0 }}
+          style={{
+            width: `${splitPosition}%`,
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+          }}
         >
           <div className="text-[#6B7280] font-light text-sm">
             {propertiesToShow.length} Properties found for{" "}
             <span className="font-bold text-black">
               {mode === "rent" ? "Rent" : "Sale"}
             </span>{" "}
-            in <span className="font-bold text-black">
-              {cityName}
-            </span>
+            in <span className="font-bold text-black">{cityName}</span>
             {(minPrice || maxPrice) && (
               <span className="font-light">
-                {" "}with price range{" "}
-                {minPrice && <span className="font-bold text-black">₹{Number(minPrice).toLocaleString()}</span>}
+                {" "}
+                with price range{" "}
+                {minPrice && (
+                  <span className="font-bold text-black">
+                    ₹{Number(minPrice).toLocaleString()}
+                  </span>
+                )}
                 {minPrice && maxPrice && " - "}
-                {maxPrice && <span className="font-bold text-black">₹{Number(maxPrice).toLocaleString()}</span>}
+                {maxPrice && (
+                  <span className="font-bold text-black">
+                    ₹{Number(maxPrice).toLocaleString()}
+                  </span>
+                )}
               </span>
             )}
           </div>
           <div className="w-full h-[1px] bg-[#d6d9df]" />
-          <div className="h-[calc(100vh-200px)] overflow-y-auto" ref={propertyListRef}>
+          <div
+            className="h-[calc(100vh-200px)] overflow-y-auto"
+            ref={propertyListRef}
+          >
             {paginatedProperties.length > 0 ? (
               <div className="grid grid-cols-2 gap-9 py-3">
                 {paginatedProperties.map((property) => (
@@ -317,7 +383,9 @@ const PropertyView = () => {
               >
                 Previous
               </button>
-              <span className="text-sm font-medium">{currentPage}/{totalPages}</span>
+              <span className="text-sm font-medium">
+                {currentPage}/{totalPages}
+              </span>
               <button
                 className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
                 onClick={handleNextPage}
@@ -335,8 +403,15 @@ const PropertyView = () => {
           onMouseDown={handleMouseDown}
         />
 
-        <div className="absolute right-0 top-0 bottom-0" style={{ width: `${100 - splitPosition}%` }}>
-          <PropertyViewPageMap propertiesToShow={propertiesToShow} onDrawCreate={handleDrawCreate} onDrawDelete={handleDrawDelete} />
+        <div
+          className="absolute right-0 top-0 bottom-0"
+          style={{ width: `${100 - splitPosition}%` }}
+        >
+          <PropertyViewPageMap
+            propertiesToShow={propertiesToShow}
+            onDrawCreate={handleDrawCreate}
+            onDrawDelete={handleDrawDelete}
+          />
         </div>
       </div>
     </div>
