@@ -643,7 +643,7 @@ const PropertyPage = () => {
               </div> */}
             </div>
 
-            <div className="w-1/3 flex flex-col gap-[21px]">
+            <div className="w-1/3 flex flex-col gap-[21px] sticky top-5 h-fit">
               <div className="p-[21px] rounded-lg border-[1px] border-[#E5E7EB] flex gap-[14px] flex-col shadow-lg">
                 <div className="text-3xl font-medium">
                   ₹{convertPriceToWords(property?.askedPrice)}
