@@ -25,6 +25,7 @@ import AllImagesGallery from "../components/propertyPage/AllImagesGallery";
 import { ImageGallerySkeleton } from '../components/common/Skeleton';
 import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
+import ArticleCard from "../components/articles/ArticleCard";
 
 const PropertyPage = () => {
   const { user } = useContext(UserContext);
@@ -45,6 +46,8 @@ const PropertyPage = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
   const reviewsRef = useRef(null);
+  const [relatedArticles, setRelatedArticles] = useState([]);
+  const [nearbyProperties, setNearbyProperties] = useState([]);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -121,6 +124,56 @@ const PropertyPage = () => {
       document.title = `5 BHK ${property.propertySubType} for ${propertyType === "Rent" ? "Rent" : "Sale"} in ${locality}, ${city} | Gharsetu`;
     }
   }, [property, propertyType]);
+
+useEffect(() => {
+  // Fetch articles
+  const fetchRelatedArticles = async () => {
+    try {
+      const res = await axios.get(`${backend_url}/api/v1/articles`);
+      if (res.data.success) {
+        const articles = res.data.articles;
+        const shuffled = articles.sort(() => 0.5 - Math.random());
+        const selectedArticles = shuffled.slice(0, 4);
+        setRelatedArticles(selectedArticles);
+      }
+    } catch (error) {
+      console.error("Error fetching articles:", error.response || error);
+    }
+  };
+
+  // Fetch nearby properties
+  const fetchNearbyProperties = async () => {
+    try {
+      // Check if coordinates exist and are valid before making the request
+      if (!property.coordinates || !property.coordinates.longitude || !property.coordinates.latitude) {
+        console.log("Missing or invalid coordinates:", property.coordinates);
+        return;
+      }
+      
+      console.log("Fetching nearby properties with coordinates:", property.coordinates);
+      
+      const res = await axios.post(`${backend_url}/api/v1/properties/nearbyProperties`, {
+        coordinates: {
+          longitude: property.coordinates.longitude,
+          latitude: property.coordinates.latitude
+        }
+      });
+      
+      console.log("Nearby properties response:", res.data);
+      
+      if (res.data.success) {
+        setNearbyProperties(res.data.properties);
+      }
+    } catch (error) {
+      console.error("Error fetching nearby properties:", error.response || error);
+    }
+  };
+
+  fetchRelatedArticles();
+  if (propertyId && property.coordinates) {
+    fetchNearbyProperties();
+  }
+}, [propertyId, property.coordinates]);
 
   const generateWhatsAppLink = (phoneNumber) => {
     const propertyAddress = property?.address || "the listed property";
@@ -619,6 +672,38 @@ const PropertyPage = () => {
                     Submit Review
                   </button>
                 </div>
+              </div>
+
+              <Separator />
+
+              <div className="flex flex-col gap-6">
+                <div className="text-xl font-medium">Nearby Properties</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {nearbyProperties.map((nearbyProperty) => (
+                    <PropertyCard key={nearbyProperty._id} property={nearbyProperty} />
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="flex flex-col gap-6">
+                <div className="text-xl font-medium">Related Articles</div>
+                <div className="flex flex-col gap-4">
+                  {relatedArticles.map((article) => (
+                    <ArticleCard
+                      key={article.slug}
+                      slug={article.slug}
+                      title={article.title}
+                      excerpt={article.excerpt}
+                      image={article.image}
+                      tags={article.tags}
+                    />
+                  ))}
+                </div>
+                <a href="/articles" className="text-[#1D4CBE] underline text-center">
+                  View More
+                </a>
               </div>
 
               <Separator />
