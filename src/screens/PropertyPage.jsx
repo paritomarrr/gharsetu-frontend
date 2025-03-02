@@ -156,13 +156,16 @@ useEffect(() => {
         coordinates: {
           longitude: property.coordinates.longitude,
           latitude: property.coordinates.latitude
-        }
+        },
+        propertyId: property._id // Send the current property ID
       });
       
       console.log("Nearby properties response:", res.data);
       
       if (res.data.success) {
         setNearbyProperties(res.data.properties);
+      } else {
+        console.log("Failed to fetch nearby properties:", res.data.message);
       }
     } catch (error) {
       console.error("Error fetching nearby properties:", error.response || error);
@@ -499,6 +502,42 @@ useEffect(() => {
 
         <Separator />
 
+        <div className="flex flex-col gap-6">
+          <div className="text-xl font-medium">Nearby Properties</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {nearbyProperties.length === 0 ? (
+              <div>No nearby properties found.</div>
+            ) : (
+              nearbyProperties.map((nearbyProperty) => (
+                <PropertyCard key={nearbyProperty._id} property={nearbyProperty} />
+              ))
+            )}
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="flex flex-col gap-6">
+          <div className="text-xl font-medium">Related Articles</div>
+          <div className="grid grid-cols-1 gap-4">
+            {relatedArticles.map((article) => (
+              <ArticleCard
+                key={article.slug}
+                slug={article.slug}
+                title={article.title}
+                excerpt={article.excerpt}
+                image={article.image}
+                tags={article.tags}
+              />
+            ))}
+          </div>
+          <a href="/articles" className="text-[#1D4CBE] underline text-center">
+            View More
+          </a>
+        </div>
+
+        <Separator />
+
         <div className="flex gap-2 text-xs underline justify-center items-center cursor-pointer mt-4">
           <Flag size={14} /> Report this listing
         </div>
@@ -679,9 +718,13 @@ useEffect(() => {
               <div className="flex flex-col gap-6">
                 <div className="text-xl font-medium">Nearby Properties</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {nearbyProperties.map((nearbyProperty) => (
-                    <PropertyCard key={nearbyProperty._id} property={nearbyProperty} />
-                  ))}
+                  {nearbyProperties.length === 0 ? (
+                    <div className="text-center text-gray-500">No nearby properties found.</div>
+                  ) : (
+                    nearbyProperties.map((nearbyProperty) => (
+                      <PropertyCard key={nearbyProperty._id} property={nearbyProperty} />
+                    ))
+                  )}
                 </div>
               </div>
 
