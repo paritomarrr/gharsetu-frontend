@@ -56,15 +56,16 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
     };
 
     const handleSelectSuggestion = async (suggestion) => {
+        const coordinates = await getCoordinates(suggestion.name + ',' + suggestion.place_formatted);
 
-        const coordinates = await getCoordinates(suggestion.name+','+suggestion.place_formatted);
-
+        const city = suggestion.context.place ? suggestion.context.place.name : '';
+        const state = suggestion.context.region ? suggestion.context.region.name : '';
 
         dispatch(updatePropertyForm({
             address: {
                 locality: suggestion.name,
-                city: suggestion.context.place.name,
-                state: suggestion.context.region.name,
+                city: city,
+                state: state,
             },
             coordinates: {
                 latitude: coordinates[1],
@@ -74,7 +75,7 @@ const LocalityDropDown = ({ propertyForm, handleAddressChange, setLatitude, setL
         setLatitude(coordinates[1]);
         setLongitude(coordinates[0]);
         setSearchValue(suggestion.name);
-        setShowDropdown(false)
+        setShowDropdown(false);
     }
 
     return (
