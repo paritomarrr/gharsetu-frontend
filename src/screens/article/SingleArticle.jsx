@@ -12,7 +12,8 @@ import {
   Flex,
   Image,
   Divider,
-  Icon
+  Icon,
+  Skeleton
 } from "@chakra-ui/react";
 import {
   FaComment,
@@ -105,7 +106,16 @@ const SingleArticle = () => {
     }
   }, [article]);
 
-  if (!article) return <Box py={10} textAlign="center">Loading...</Box>;
+  if (!article) {
+    return (
+      <Box py={10} textAlign="center">
+        <Skeleton height="40px" mb={4} />
+        <Skeleton height="20px" mb={4} />
+        <Skeleton height="20px" mb={4} />
+        <Skeleton height="20px" mb={4} />
+      </Box>
+    );
+  }
 
   const {
     title,

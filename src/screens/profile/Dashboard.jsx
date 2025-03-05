@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import StatBox from "../../components/profile/StatBox";
-import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem, Skeleton, SkeletonText } from "@chakra-ui/react";
 import { SlidersHorizontal } from "lucide-react";
 import DashboardTable from "../../components/profile/DashboardTable";
 import { getUserProperties } from "../../helperFunctions/profileHelpers/getUserProperties";
@@ -50,8 +50,19 @@ const Dashboard = () => {
   }, [user]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col gap-[26px]">
+        <Skeleton height="40px" width="300px" mb={4} />
+        <div className="flex gap-5">
+          <Skeleton height="100px" width="200px" />
+          <Skeleton height="100px" width="200px" />
+          <Skeleton height="100px" width="200px" />
+          <Skeleton height="100px" width="200px" />
+        </div>
+      </div>
+    );
   }
+
   return (
     <div className="flex flex-col gap-[26px]">
       <div className="text-3xl font-bold"> Welcome, {user?.firstName || "User"}</div>
@@ -94,8 +105,7 @@ const Dashboard = () => {
               <MenuList className="text-sm">
                 <MenuItem>Last 7 Days</MenuItem>
                 <MenuItem>Last 30 Days</MenuItem>
-                <MenuItem>All Time</MenuItem>
-              </MenuList>
+                <MenuItem>All Time</MenuList>
             </Menu>
           </div>
         </div>
