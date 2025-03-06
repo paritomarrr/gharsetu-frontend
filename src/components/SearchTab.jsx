@@ -14,6 +14,7 @@ const SearchTab = () => {
   });
   const [propertyType, setPropertyType] = useState('buy');
   const [propertyTypeDropdown, setPropertyTypeDropdown] = useState(false);
+  const [locationError, setLocationError] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null); // Create a reference for the dropdown
 
@@ -35,6 +36,12 @@ const SearchTab = () => {
   }, []);
 
   const handleNavigation = () => {
+    if (!searchLocation) {
+      setLocationError(true);
+      return;
+    }
+    setLocationError(false);
+
     const searchComponents = [
       searchLocation.localities?.[0]?.replace(/\s+/g, ''),
       searchLocation.city?.replace(/\s+/g, ''),
@@ -67,6 +74,7 @@ const SearchTab = () => {
       {/* Location Section */}
       <div className="flex flex-col">
         <LocationDropDown setSearchLocation={setSearchLocation} searchLocation={searchLocation} />
+        {locationError && <div className="text-red-500 text-xs mt-1">Please select a location.</div>}
       </div>
 
       {/* Divider for large screens */}
