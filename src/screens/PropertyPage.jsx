@@ -25,6 +25,7 @@ import AllImagesGallery from "../components/propertyPage/AllImagesGallery";
 import { ImageGallerySkeleton } from '../components/common/Skeleton';
 import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
+import ArticleCard from "../components/articles/ArticleCard";
 
 const PropertyPage = () => {
   const { user } = useContext(UserContext);
@@ -45,6 +46,8 @@ const PropertyPage = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
   const reviewsRef = useRef(null);
+  const [relatedArticles, setRelatedArticles] = useState([]);
+  const [nearbyProperties, setNearbyProperties] = useState([]);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -121,6 +124,59 @@ const PropertyPage = () => {
       document.title = `5 BHK ${property.propertySubType} for ${propertyType === "Rent" ? "Rent" : "Sale"} in ${locality}, ${city} | Gharsetu`;
     }
   }, [property, propertyType]);
+
+useEffect(() => {
+  // Fetch articles
+  const fetchRelatedArticles = async () => {
+    try {
+      const res = await axios.get(`${backend_url}/api/v1/articles`);
+      if (res.data.success) {
+        const articles = res.data.articles;
+        const shuffled = articles.sort(() => 0.5 - Math.random());
+        const selectedArticles = shuffled.slice(0, 4);
+        setRelatedArticles(selectedArticles);
+      }
+    } catch (error) {
+      console.error("Error fetching articles:", error.response || error);
+    }
+  };
+
+  // Fetch nearby properties
+  const fetchNearbyProperties = async () => {
+    try {
+      // Check if coordinates exist and are valid before making the request
+      if (!property.coordinates || !property.coordinates.longitude || !property.coordinates.latitude) {
+        console.log("Missing or invalid coordinates:", property.coordinates);
+        return;
+      }
+      
+      console.log("Fetching nearby properties with coordinates:", property.coordinates);
+      
+      const res = await axios.post(`${backend_url}/api/v1/properties/nearbyProperties`, {
+        coordinates: {
+          longitude: property.coordinates.longitude,
+          latitude: property.coordinates.latitude
+        },
+        propertyId: property._id // Send the current property ID
+      });
+      
+      console.log("Nearby properties response:", res.data);
+      
+      if (res.data.success) {
+        setNearbyProperties(res.data.properties);
+      } else {
+        console.log("Failed to fetch nearby properties:", res.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching nearby properties:", error.response || error);
+    }
+  };
+
+  fetchRelatedArticles();
+  if (propertyId && property.coordinates) {
+    fetchNearbyProperties();
+  }
+}, [propertyId, property.coordinates]);
 
   const generateWhatsAppLink = (phoneNumber) => {
     const propertyAddress = property?.address || "the listed property";
@@ -446,6 +502,42 @@ const PropertyPage = () => {
 
         <Separator />
 
+        <div className="flex flex-col gap-6">
+          <div className="text-xl font-medium">Nearby Properties</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {nearbyProperties.length === 0 ? (
+              <div>No nearby properties found.</div>
+            ) : (
+              nearbyProperties.map((nearbyProperty) => (
+                <PropertyCard key={nearbyProperty._id} property={nearbyProperty} />
+              ))
+            )}
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="flex flex-col gap-6">
+          <div className="text-xl font-medium">Related Articles</div>
+          <div className="grid grid-cols-1 gap-4">
+            {relatedArticles.map((article) => (
+              <ArticleCard
+                key={article.slug}
+                slug={article.slug}
+                title={article.title}
+                excerpt={article.excerpt}
+                image={article.image}
+                tags={article.tags}
+              />
+            ))}
+          </div>
+          <a href="/articles" className="text-[#1D4CBE] underline text-center">
+            View More
+          </a>
+        </div>
+
+        <Separator />
+
         <div className="flex gap-2 text-xs underline justify-center items-center cursor-pointer mt-4">
           <Flag size={14} /> Report this listing
         </div>
@@ -623,6 +715,42 @@ const PropertyPage = () => {
 
               <Separator />
 
+              <div className="flex flex-col gap-6">
+                <div className="text-xl font-medium">Nearby Properties</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {nearbyProperties.length === 0 ? (
+                    <div className="text-center text-gray-500">No nearby properties found.</div>
+                  ) : (
+                    nearbyProperties.map((nearbyProperty) => (
+                      <PropertyCard key={nearbyProperty._id} property={nearbyProperty} />
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="flex flex-col gap-6">
+                <div className="text-xl font-medium">Related Articles</div>
+                <div className="flex flex-col gap-4">
+                  {relatedArticles.map((article) => (
+                    <ArticleCard
+                      key={article.slug}
+                      slug={article.slug}
+                      title={article.title}
+                      excerpt={article.excerpt}
+                      image={article.image}
+                      tags={article.tags}
+                    />
+                  ))}
+                </div>
+                <a href="/articles" className="text-[#1D4CBE] underline text-center">
+                  View More
+                </a>
+              </div>
+
+              <Separator />
+
               {/* <div className="flex flex-col gap-6">
                 <div className="text-xl font-medium">
                   Similar nearby houses for sale{" "}
@@ -643,7 +771,7 @@ const PropertyPage = () => {
               </div> */}
             </div>
 
-            <div className="w-1/3 flex flex-col gap-[21px]">
+            <div className="w-1/3 flex flex-col gap-[21px] sticky top-5 h-fit">
               <div className="p-[21px] rounded-lg border-[1px] border-[#E5E7EB] flex gap-[14px] flex-col shadow-lg">
                 <div className="text-3xl font-medium">
                   ₹{convertPriceToWords(property?.askedPrice)}

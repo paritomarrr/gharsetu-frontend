@@ -55,7 +55,6 @@ const Navbar = () => {
         </div>
 
         <div className='flex gap-4 items-center z-100'>
-          <Bell size={20} />
           <ProfileDropDown user={user} setLoginModalOpen={setLoginModalOpen} loginModalOpen={loginModalOpen} />
         </div>
       </div>

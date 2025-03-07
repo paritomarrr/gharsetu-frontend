@@ -9,6 +9,8 @@ import {
   validatePriceRange,
 } from "../helperFunctions/filterProperties";
 import { backend_url } from "../config";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const PropertyView = () => {
   const { mode } = useParams();
@@ -55,6 +57,8 @@ const PropertyView = () => {
     setCurrentPage(1); // Reset page number when mode changes
   }, [mode]);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
       const [locality, city, state] = searchTerms.split(" ");
@@ -69,8 +73,10 @@ const PropertyView = () => {
           }
         );
         setPropertiesToShow(res.data.properties);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching properties by search:", error);
+        setLoading(false);
       }
     };
 
@@ -85,8 +91,10 @@ const PropertyView = () => {
           }
         );
         setPropertiesToShow(res.data.properties);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching all properties:", error);
+        setLoading(false);
       }
     };
 
@@ -100,9 +108,11 @@ const PropertyView = () => {
           validatedMax
         );
         setPropertiesToShow(filteredProps);
+        setLoading(false);
       }
     };
 
+    setLoading(true);
     if (search) {
       fetchPropertiesBySearch(search);
     } else if (minPrice || maxPrice) {
@@ -288,36 +298,44 @@ const PropertyView = () => {
             className="h-full overflow-y-auto px-4 pb-4"
             ref={propertyListRef}
           >
-            {paginatedProperties.length > 0 ? (
+            {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
-                {paginatedProperties.map((property) => (
-                  <PropertyCard key={property._id} property={property} />
+                {Array.from({ length: propertiesPerPage }).map((_, index) => (
+                  <Skeleton key={index} height={200} />
                 ))}
               </div>
+            ) : paginatedProperties.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
+                  {paginatedProperties.map((property) => (
+                    <PropertyCard key={property._id} property={property} />
+                  ))}
+                </div>
+                <div className="flex justify-center items-center mt-4 space-x-4">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm font-medium">
+                    {currentPage}/{totalPages}
+                  </span>
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
             ) : (
               <div className="py-4 text-center text-gray-600">
                 No Properties Found
               </div>
             )}
-            <div className="flex justify-center items-center mt-4 space-x-4">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              <span className="text-sm font-medium">
-                {currentPage}/{totalPages}
-              </span>
-              <button
-                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -366,34 +384,42 @@ const PropertyView = () => {
             className="h-[calc(100vh-200px)] overflow-y-auto"
             ref={propertyListRef}
           >
-            {paginatedProperties.length > 0 ? (
+            {loading ? (
               <div className="grid grid-cols-2 gap-9 py-3">
-                {paginatedProperties.map((property) => (
-                  <PropertyCard key={property._id} property={property} />
+                {Array.from({ length: propertiesPerPage }).map((_, index) => (
+                  <Skeleton key={index} height={200} />
                 ))}
               </div>
+            ) : paginatedProperties.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 gap-9 py-3">
+                  {paginatedProperties.map((property) => (
+                    <PropertyCard key={property._id} property={property} />
+                  ))}
+                </div>
+                <div className="flex justify-center items-center mt-4 space-x-4">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm font-medium">
+                    {currentPage}/{totalPages}
+                  </span>
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
             ) : (
               <div>No Properties Found</div>
             )}
-            <div className="flex justify-center items-center mt-4 space-x-4">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              <span className="text-sm font-medium">
-                {currentPage}/{totalPages}
-              </span>
-              <button
-                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
           </div>
         </div>
 

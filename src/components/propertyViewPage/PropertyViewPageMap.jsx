@@ -217,7 +217,10 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
           offset: 25,
           maxWidth: "300px",
         }).setHTML(`
-          <div style="font-family: system-ui, -apple-system, sans-serif;">
+          <div 
+            style="font-family: system-ui, -apple-system, sans-serif; cursor: pointer;"
+            onclick="window.location.href='/property/${property._id}'"
+          >
             ${property.images?.[0]?.cloudinaryUrl ? `
               <img 
                 src="${property.images[0].cloudinaryUrl}" 
