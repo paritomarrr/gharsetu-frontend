@@ -21,6 +21,7 @@ const OptionsBar = ({ mode }) => {
   const [selectedMode, setSelectedMode] = useState("buy");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [reset, setReset] = useState(false);
 
   const search = searchParams.get('search');
   const [searchQuery, setSearchQuery] = useState(search ? search : '');
@@ -55,6 +56,8 @@ const OptionsBar = ({ mode }) => {
     setSelectedAmenities([]);
     setBuiltUpArea("");
     setSelectedBedBath([]);
+    setReset(true);
+    setTimeout(() => setReset(false), 0); // Reset the state back to false
   };
 
   // Open a given filter in the modal for mobile
@@ -141,22 +144,24 @@ const OptionsBar = ({ mode }) => {
       {/* Desktop Filters (Only show on md+ screens) */}
       <div className="hidden md:flex gap-3 items-center">
         {/* Price Range Filter (Desktop) */}
-        <PriceRange />
+        <PriceRange reset={reset} />
 
         {/* No. of Bedrooms (Desktop) */}
         <Menu>
           <MenuButton>
             <div className="flex border border-gray-300 py-2 rounded-md px-2 items-center text-sm">
-              <span className="whitespace-nowrap">No. of Bedrooms</span>
+              <span className="whitespace-nowrap">
+                {selectedBedBath.length > 0 ? selectedBedBath.join(', ') : 'No. of Bedrooms'}
+              </span>
               <ChevronDown size={20} />
             </div>
           </MenuButton>
           <MenuList className="text-sm">
-            <MenuItem>1 BHK</MenuItem>
-            <MenuItem>2 BHK</MenuItem>
-            <MenuItem>3 BHK</MenuItem>
-            <MenuItem>4 BHK</MenuItem>
-            <MenuItem>5+ BHK</MenuItem>
+            <MenuItem onClick={() => toggleCheckbox('1 BHK', selectedBedBath, setSelectedBedBath)}>1 BHK</MenuItem>
+            <MenuItem onClick={() => toggleCheckbox('2 BHK', selectedBedBath, setSelectedBedBath)}>2 BHK</MenuItem>
+            <MenuItem onClick={() => toggleCheckbox('3 BHK', selectedBedBath, setSelectedBedBath)}>3 BHK</MenuItem>
+            <MenuItem onClick={() => toggleCheckbox('4 BHK', selectedBedBath, setSelectedBedBath)}>4 BHK</MenuItem>
+            <MenuItem onClick={() => toggleCheckbox('5+ BHK', selectedBedBath, setSelectedBedBath)}>5+ BHK</MenuItem>
           </MenuList>
         </Menu>
 
@@ -164,16 +169,18 @@ const OptionsBar = ({ mode }) => {
         <Menu>
           <MenuButton>
             <div className="flex border border-gray-300 py-2 rounded-md px-2 items-center text-sm">
-              <span className="whitespace-nowrap">Property Age</span>
+              <span className="whitespace-nowrap">
+                {selectedPropertyAge || 'Property Age'}
+              </span>
               <ChevronDown size={20} />
             </div>
           </MenuButton>
           <MenuList className="text-sm">
-            <MenuItem>Newly Constructed</MenuItem>
-            <MenuItem>Coming Soon</MenuItem>
-            <MenuItem>3+ Years</MenuItem>
-            <MenuItem>5+ Years</MenuItem>
-            <MenuItem>10+ Years</MenuItem>
+            <MenuItem onClick={() => setSelectedPropertyAge('Newly Constructed')}>Newly Constructed</MenuItem>
+            <MenuItem onClick={() => setSelectedPropertyAge('Coming Soon')}>Coming Soon</MenuItem>
+            <MenuItem onClick={() => setSelectedPropertyAge('3+ Years')}>3+ Years</MenuItem>
+            <MenuItem onClick={() => setSelectedPropertyAge('5+ Years')}>5+ Years</MenuItem>
+            <MenuItem onClick={() => setSelectedPropertyAge('10+ Years')}>10+ Years</MenuItem>
           </MenuList>
         </Menu>
 
@@ -181,14 +188,16 @@ const OptionsBar = ({ mode }) => {
         <Menu>
           <MenuButton>
             <div className="flex border border-gray-300 py-2 rounded-md px-2 items-center text-sm">
-              <span className="whitespace-nowrap">Posted By</span>
+              <span className="whitespace-nowrap">
+                {selectedPropertyTypes.length > 0 ? selectedPropertyTypes.join(', ') : 'Posted By'}
+              </span>
               <ChevronDown size={20} />
             </div>
           </MenuButton>
           <MenuList className="text-sm">
-            <MenuItem>Owner</MenuItem>
-            <MenuItem>Builder</MenuItem>
-            <MenuItem>Dealer</MenuItem>
+            <MenuItem onClick={() => toggleCheckbox('Owner', selectedPropertyTypes, setSelectedPropertyTypes)}>Owner</MenuItem>
+            <MenuItem onClick={() => toggleCheckbox('Builder', selectedPropertyTypes, setSelectedPropertyTypes)}>Builder</MenuItem>
+            <MenuItem onClick={() => toggleCheckbox('Dealer', selectedPropertyTypes, setSelectedPropertyTypes)}>Dealer</MenuItem>
           </MenuList>
         </Menu>
 
