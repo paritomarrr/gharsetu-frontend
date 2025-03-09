@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Search, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { backend_url } from '../../config';
 
 const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [searchFocused, setSearchFocused] = useState(false);
     const [searchResults, setSearchResults] = useState({
         locations: [],
@@ -12,6 +12,7 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         count: 0
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [searchParams] = useSearchParams(); // Add this line to get current search parameters
 
     useEffect(() => {
         const dropdownFetch = async () => {
@@ -47,7 +48,8 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         ].filter(Boolean);
         
         const searchString = searchComponents.join('+');
-        navigate(`/properties/${selectedMode}?search=${searchString}`);
+        const currentParams = Object.fromEntries(searchParams); // Get current search parameters
+        navigate(`/properties/${selectedMode}?search=${searchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
       };
 
     const renderLocationItem = (location) => {

@@ -43,8 +43,8 @@ const OptionsBar = ({ mode }) => {
   }, [mode]);
 
   const handleSearch = () => {
-    // Update URL or global state as needed
-    navigate(`/properties/${selectedMode}?search=${searchQuery}`);
+    const currentParams = Object.fromEntries(searchParams); // Get current search parameters
+    navigate(`/properties/${selectedMode}?search=${searchQuery}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
   };
 
   const clearFilters = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { backend_url } from '../../config';
 
 const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
@@ -13,6 +13,7 @@ const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
         count: 0,
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [searchParams] = useSearchParams(); // Add this line to get current search parameters
 
     useEffect(() => {
         const dropdownFetch = async () => {
@@ -42,14 +43,15 @@ const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
 
     const handleNavigation = (location) => {
         const searchComponents = [
-          location.localities?.[0]?.replace(/\s+/g, ''),
-          location.city?.replace(/\s+/g, ''),
-          location.state?.replace(/\s+/g, '')
+            location.localities?.[0]?.replace(/\s+/g, ''),
+            location.city?.replace(/\s+/g, ''),
+            location.state?.replace(/\s+/g, '')
         ].filter(Boolean);
-        
+
         const searchString = searchComponents.join('+');
-        navigate(`/properties/buy?search=${searchString}`);
-      };
+        const currentParams = Object.fromEntries(searchParams); // Get current search parameters
+        navigate(`/properties/buy?search=${searchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+    };
 
     const renderLocationItem = (location) => {
         const locality = location.localities[0] || '';
