@@ -66,10 +66,6 @@ const PropertyView = () => {
       const city = searchParts[1]?.trim() || "";
       const state = searchParts[2]?.trim() || "";
   
-      console.log("🔍 Extracted Locality:", locality);
-      console.log("🏙 Extracted City:", city);
-      console.log("🗺 Extracted State:", state);
-  
       try {
         const res = await axios.post(
           `${backend_url}/api/v1/properties/filteredProperties`,
@@ -100,7 +96,6 @@ const PropertyView = () => {
             maxPrice: maxPrice ? Number(maxPrice) : undefined,
           }
         );
-        console.log("✅ All Properties API Response:", res.data); // Debugging line
         setPropertiesToShow(res.data.properties);
         setLoading(false);
       } catch (error) {
@@ -118,7 +113,6 @@ const PropertyView = () => {
           validatedMin,
           validatedMax
         );
-        console.log("🏠 Filtered Properties:", filteredProps); // Debugging line
         setPropertiesToShow(filteredProps);
         setLoading(false);
       }
@@ -142,7 +136,6 @@ const PropertyView = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    console.log("🏠 Properties to Show:", propertiesToShow); // Debugging line
   }, [propertiesToShow]);
 
   const cityName = search ? search.split(",")[1]?.trim() : "Ghaziabad";

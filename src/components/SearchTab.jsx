@@ -49,7 +49,6 @@ const SearchTab = () => {
     // Ensure correct formatting and preserve spaces
     const searchString = encodeURIComponent(`${locality}, ${city}, ${state}`.trim());
 
-    console.log("Final Search Query:", searchString); // Debugging line
     navigate(`/properties/${propertyType}?search=${searchString}&minPrice=${budget.min}&maxPrice=${budget.max}`);
   };
 

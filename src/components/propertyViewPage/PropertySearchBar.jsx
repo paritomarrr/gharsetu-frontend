@@ -26,9 +26,7 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                 const response = await fetch(
                     `${backend_url}/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
                 );
-                console.log("Search Query Sent:", searchQuery); // Debugging line
                 const data = await response.json();
-                console.log("Search API Response:", data); // Debugging line
     
                 if (data.success && data.locations.length > 0) {
                     setSearchResults(data);
@@ -58,9 +56,6 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         // Encode for URL
         const encodedSearchString = encodeURIComponent(searchString);
         const currentParams = Object.fromEntries(searchParams);
-    
-        console.log("Corrected Search Query:", searchString);
-        console.log("Navigating to:", `/properties/${selectedMode}?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
     
         navigate(`/properties/${selectedMode}?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
     };
@@ -126,7 +121,6 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                     )}
                 </div>
             )}
-            {console.log("Search Results Shown:", searchResults)} {/* Debugging line */}
         </div>
     );
 };

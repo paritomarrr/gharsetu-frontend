@@ -13,8 +13,6 @@ const PropertyCard = ({property}) => {
   const formattedCity = city.replace(/\s+/g, '-');
   const formattedLocation = location.replace(/\s+/g, '-');
 
-  console.log("Property Data:", property); // Debugging line
-
   return (
     <Link to={`/property/properties-for-${property?.availableFor}-in-${formattedLocation}-${formattedCity}-${property?._id}`} className="flex gap-[10px] flex-col cursor-pointer">
       <div className='relative'>

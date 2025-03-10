@@ -44,7 +44,6 @@ const OptionsBar = ({ mode }) => {
 
   const handleSearch = () => {
     const currentParams = Object.fromEntries(searchParams);
-    console.log("Search Parameters:", currentParams); // Debugging line
     navigate(`/properties/${selectedMode}?search=${encodeURIComponent(searchQuery)}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
 };
 

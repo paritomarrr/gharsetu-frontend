@@ -53,9 +53,6 @@ const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
         const encodedSearchString = encodeURIComponent(searchString);
         const currentParams = Object.fromEntries(searchParams);
 
-        console.log("Corrected Search Query:", searchString);
-        console.log("Navigating to:", `/properties/buy?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
-
         navigate(`/properties/buy?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
     };
 
