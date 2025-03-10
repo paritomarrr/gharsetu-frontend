@@ -11,7 +11,7 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import { minBudget, maxBudget } from '../../../utils/HardCodedData';
 
-const PriceRange = () => {
+const PriceRange = ({ reset }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [budget, setBudget] = useState({
         min: searchParams.get('minPrice') || '',
@@ -21,6 +21,13 @@ const PriceRange = () => {
         min: false,
         max: false
     });
+
+    useEffect(() => {
+        if (reset) {
+            setBudget({ min: '', max: '' });
+            setDropdownOpen({ min: false, max: false });
+        }
+    }, [reset]);
 
     const filteredMaxBudget = maxBudget.filter(option => {
         const minValue = parseFloat(budget.min) || 0;
@@ -55,6 +62,9 @@ const PriceRange = () => {
             minPrice: budget.min,
             maxPrice: budget.max
         });
+        setDropdownOpen({ min: false, max: false });
+        // Close the dropdown
+        document.body.click();
     };
 
     const handleInputFocus = (type) => {
@@ -77,11 +87,11 @@ const PriceRange = () => {
         <Menu closeOnSelect={false}>
             <MenuButton>
                 <div className="flex border-[1px] border-gray-300 py-2 rounded-md px-2 items-center text-sm">
-                    <span className="whitespace-nowrap"> Price Range </span>{" "}
+                    <span className="whitespace-nowrap">
+                        {budget.min && budget.max ? `₹${budget.min} - ₹${budget.max}` : 'Price Range'}
+                    </span>
                     <ChevronDown size={20} />
                 </div>
-                {/* {budget.min ? `₹${budget.min}` : 'Min'} - {budget.max ? `₹${budget.max}` : 'Max'} */}
-
             </MenuButton>
             <MenuList className="p-4 min-w-[300px]">
                 <div className="flex flex-col gap-4">

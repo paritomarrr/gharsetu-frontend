@@ -42,13 +42,12 @@ const SearchTab = () => {
     }
     setLocationError(false);
 
-    const searchComponents = [
-      searchLocation.localities?.[0]?.replace(/\s+/g, ''),
-      searchLocation.city?.replace(/\s+/g, ''),
-      searchLocation.state?.replace(/\s+/g, '')
-    ].filter(Boolean);
+    const locality = searchLocation.localities?.[0]?.trim() || "";
+    const city = searchLocation.city?.trim() || "";
+    const state = searchLocation.state?.trim() || "";
 
-    const searchString = searchComponents.join('+');
+    // Ensure correct formatting and preserve spaces
+    const searchString = encodeURIComponent(`${locality}, ${city}, ${state}`.trim());
 
     navigate(`/properties/${propertyType}?search=${searchString}&minPrice=${budget.min}&maxPrice=${budget.max}`);
   };
