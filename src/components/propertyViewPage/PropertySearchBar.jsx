@@ -20,14 +20,21 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                 setSearchResults({ locations: [], success: false, count: 0 });
                 return;
             }
-
+    
             setIsLoading(true);
             try {
                 const response = await fetch(
                     `${backend_url}/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
                 );
+                console.log("Search Query Sent:", searchQuery); // Debugging line
                 const data = await response.json();
-                setSearchResults(data);
+                console.log("Search API Response:", data); // Debugging line
+    
+                if (data.success && data.locations.length > 0) {
+                    setSearchResults(data);
+                } else {
+                    setSearchResults({ locations: [], success: false, count: 0 });
+                }
             } catch (error) {
                 console.error('Error fetching locations:', error);
                 setSearchResults({ locations: [], success: false, count: 0 });
@@ -35,23 +42,30 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                 setIsLoading(false);
             }
         };
-
+    
         const timeoutId = setTimeout(dropdownFetch, 300);
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
     
     const handleNavigation = (location) => {
-        const searchComponents = [
-          location.localities?.[0]?.replace(/\s+/g, ''),
-          location.city?.replace(/\s+/g, ''),
-          location.state?.replace(/\s+/g, '')
-        ].filter(Boolean);
-        
-        const searchString = searchComponents.join('+');
-        const currentParams = Object.fromEntries(searchParams); // Get current search parameters
-        navigate(`/properties/${selectedMode}?search=${searchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
-      };
-
+        let locality = location.localities?.[0]?.trim() || "";
+        let city = location.city?.trim() || "";
+        let state = location.state?.trim() || "";
+    
+        // Ensure correct spacing & formatting (avoid double spaces, misplaced commas)
+        let searchString = `${locality}, ${city}, ${state}`.replace(/\s+/g, ' ').trim();
+    
+        // Encode for URL
+        const encodedSearchString = encodeURIComponent(searchString);
+        const currentParams = Object.fromEntries(searchParams);
+    
+        console.log("Corrected Search Query:", searchString);
+        console.log("Navigating to:", `/properties/${selectedMode}?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+    
+        navigate(`/properties/${selectedMode}?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+    };
+    
+    
     const renderLocationItem = (location) => {
         const locality = location.localities[0] || '';
         const fullAddress = `${locality}, ${location.city}, ${location.state}`;
@@ -112,6 +126,7 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                     )}
                 </div>
             )}
+            {console.log("Search Results Shown:", searchResults)} {/* Debugging line */}
         </div>
     );
 };

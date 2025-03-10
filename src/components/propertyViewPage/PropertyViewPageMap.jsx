@@ -159,6 +159,8 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
+    console.log("Properties to Show:", propertiesToShow); // Debugging line
+
     // Add property markers
     propertiesToShow.forEach((property) => {
       try {

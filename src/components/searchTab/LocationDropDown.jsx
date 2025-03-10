@@ -42,15 +42,21 @@ const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
     }, [searchQuery]);
 
     const handleNavigation = (location) => {
-        const searchComponents = [
-            location.localities?.[0]?.replace(/\s+/g, ''),
-            location.city?.replace(/\s+/g, ''),
-            location.state?.replace(/\s+/g, '')
-        ].filter(Boolean);
+        let locality = location.localities?.[0]?.trim() || "";
+        let city = location.city?.trim() || "";
+        let state = location.state?.trim() || "";
 
-        const searchString = searchComponents.join('+');
-        const currentParams = Object.fromEntries(searchParams); // Get current search parameters
-        navigate(`/properties/buy?search=${searchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+        // Ensure correct spacing & formatting (avoid double spaces, misplaced commas)
+        let searchString = `${locality}, ${city}, ${state}`.replace(/\s+/g, ' ').trim();
+
+        // Encode for URL
+        const encodedSearchString = encodeURIComponent(searchString);
+        const currentParams = Object.fromEntries(searchParams);
+
+        console.log("Corrected Search Query:", searchString);
+        console.log("Navigating to:", `/properties/buy?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+
+        navigate(`/properties/buy?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
     };
 
     const renderLocationItem = (location) => {

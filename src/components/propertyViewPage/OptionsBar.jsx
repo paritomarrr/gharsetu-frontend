@@ -43,9 +43,10 @@ const OptionsBar = ({ mode }) => {
   }, [mode]);
 
   const handleSearch = () => {
-    const currentParams = Object.fromEntries(searchParams); // Get current search parameters
-    navigate(`/properties/${selectedMode}?search=${searchQuery}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
-  };
+    const currentParams = Object.fromEntries(searchParams);
+    console.log("Search Parameters:", currentParams); // Debugging line
+    navigate(`/properties/${selectedMode}?search=${encodeURIComponent(searchQuery)}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+};
 
   const clearFilters = () => {
     // Resetting all filters
