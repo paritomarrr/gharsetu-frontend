@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Search, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { backend_url } from '../../config';
 
 const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [searchFocused, setSearchFocused] = useState(false);
     const [searchResults, setSearchResults] = useState({
         locations: [],
@@ -12,6 +12,7 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         count: 0
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [searchParams] = useSearchParams(); // Add this line to get current search parameters
 
     useEffect(() => {
         const dropdownFetch = async () => {
@@ -19,14 +20,19 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                 setSearchResults({ locations: [], success: false, count: 0 });
                 return;
             }
-
+    
             setIsLoading(true);
             try {
                 const response = await fetch(
                     `${backend_url}/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
                 );
                 const data = await response.json();
-                setSearchResults(data);
+    
+                if (data.success && data.locations.length > 0) {
+                    setSearchResults(data);
+                } else {
+                    setSearchResults({ locations: [], success: false, count: 0 });
+                }
             } catch (error) {
                 console.error('Error fetching locations:', error);
                 setSearchResults({ locations: [], success: false, count: 0 });
@@ -34,22 +40,27 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                 setIsLoading(false);
             }
         };
-
+    
         const timeoutId = setTimeout(dropdownFetch, 300);
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
     
     const handleNavigation = (location) => {
-        const searchComponents = [
-          location.localities?.[0]?.replace(/\s+/g, ''),
-          location.city?.replace(/\s+/g, ''),
-          location.state?.replace(/\s+/g, '')
-        ].filter(Boolean);
-        
-        const searchString = searchComponents.join('+');
-        navigate(`/properties/${selectedMode}?search=${searchString}`);
-      };
-
+        let locality = location.localities?.[0]?.trim() || "";
+        let city = location.city?.trim() || "";
+        let state = location.state?.trim() || "";
+    
+        // Ensure correct spacing & formatting (avoid double spaces, misplaced commas)
+        let searchString = `${locality}, ${city}, ${state}`.replace(/\s+/g, ' ').trim();
+    
+        // Encode for URL
+        const encodedSearchString = encodeURIComponent(searchString);
+        const currentParams = Object.fromEntries(searchParams);
+    
+        navigate(`/properties/${selectedMode}?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+    };
+    
+    
     const renderLocationItem = (location) => {
         const locality = location.localities[0] || '';
         const fullAddress = `${locality}, ${location.city}, ${location.state}`;

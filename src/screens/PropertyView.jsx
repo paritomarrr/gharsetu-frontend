@@ -61,7 +61,11 @@ const PropertyView = () => {
 
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
-      const [locality, city, state] = searchTerms.split(" ");
+      const searchParts = searchTerms.split(",");
+      const locality = searchParts[0]?.trim() || "";
+      const city = searchParts[1]?.trim() || "";
+      const state = searchParts[2]?.trim() || "";
+  
       try {
         const res = await axios.post(
           `${backend_url}/api/v1/properties/filteredProperties`,
@@ -70,6 +74,8 @@ const PropertyView = () => {
             city,
             state,
             mode,
+            minPrice: minPrice ? Number(minPrice) : undefined,
+            maxPrice: maxPrice ? Number(maxPrice) : undefined,
           }
         );
         setPropertiesToShow(res.data.properties);
@@ -129,7 +135,10 @@ const PropertyView = () => {
     }
   }, [currentPage]);
 
-  const cityName = search?.split(" ")[1] || "Ghaziabad";
+  useEffect(() => {
+  }, [propertiesToShow]);
+
+  const cityName = search ? search.split(",")[1]?.trim() : "Ghaziabad";
 
   useEffect(() => {
     document.title = `${

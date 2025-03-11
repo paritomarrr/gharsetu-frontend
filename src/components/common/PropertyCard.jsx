@@ -8,12 +8,11 @@ import { convertPriceToWords } from '../../helperFunctions/basicHelpers';
 
 const PropertyCard = ({property}) => {
 
-  let location = property?.address?.locality;
-  let city = property?.address?.city;
+  let location = property?.address?.locality || '';
+  let city = property?.address?.city || '';
   const formattedCity = city.replace(/\s+/g, '-');
   const formattedLocation = location.replace(/\s+/g, '-');
 
-  console.log(property.address.city);
   return (
     <Link to={`/property/properties-for-${property?.availableFor}-in-${formattedLocation}-${formattedCity}-${property?._id}`} className="flex gap-[10px] flex-col cursor-pointer">
       <div className='relative'>
@@ -23,7 +22,7 @@ const PropertyCard = ({property}) => {
         </div>
         <img className="h-[250px] w-full rounded-lg z-0" src={property?.images[0]?.cloudinaryUrl || 
           "https://res.cloudinary.com/dzqgyl0wf/image/upload/v1729887606/wsaua8yjrxhll6bwrqag.png"
-        } alt='err' />
+        } alt='Property' />
       </div>
       <div className="">
         <div className="flex justify-between">
