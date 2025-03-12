@@ -29,6 +29,7 @@ const initialState = {
   flatFurnishings: [],
   societyAmenities: [],
   bhkConfig: '',
+  propertyAge:'',
   askedPrice: '',
   propertyStatus: '',
   coordinates: {

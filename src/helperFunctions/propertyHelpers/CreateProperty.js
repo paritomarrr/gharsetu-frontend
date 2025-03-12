@@ -32,6 +32,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
     if (!propertyForm.images) missingFields.push('images');
     if (!propertyForm.description) missingFields.push('description');
     if (!propertyForm.bhkConfig) missingFields.push('bhkConfig');
+    if (!propertyForm.propertyAge) missingFields.push('propertyAge');
 
     if (missingFields.length > 0) {
       dispatch(toggleError(true));
@@ -92,6 +93,7 @@ export const savePropertyHelper = async ({propertyForm, dispatch, user, toggleEr
         },
         images: propertyForm.images,
         bhkConfig: propertyForm.bhkConfig,
+        propertyAge: propertyForm.propertyAge,
       }
     );
 

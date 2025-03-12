@@ -53,7 +53,10 @@ const LocationDropDown = ({ setSearchLocation, searchLocation }) => {
         const encodedSearchString = encodeURIComponent(searchString);
         const currentParams = Object.fromEntries(searchParams);
 
-        navigate(`/properties/buy?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+        const minPriceParam = currentParams.minPrice ? `&minPrice=${currentParams.minPrice}` : '';
+        const maxPriceParam = currentParams.maxPrice ? `&maxPrice=${currentParams.maxPrice}` : '';
+
+        navigate(`/properties/buy?search=${encodedSearchString}${minPriceParam}${maxPriceParam}`);
     };
 
     const renderLocationItem = (location) => {

@@ -56,8 +56,10 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         // Encode for URL
         const encodedSearchString = encodeURIComponent(searchString);
         const currentParams = Object.fromEntries(searchParams);
-    
-        navigate(`/properties/${selectedMode}?search=${encodedSearchString}&minPrice=${currentParams.minPrice || ''}&maxPrice=${currentParams.maxPrice || ''}`);
+        const minPriceParam = currentParams.minPrice ? `&minPrice=${currentParams.minPrice}` : '';
+        const maxPriceParam = currentParams.maxPrice ? `&maxPrice=${currentParams.maxPrice}` : '';
+
+        navigate(`/properties/${selectedMode}?search=${encodedSearchString}${minPriceParam}${maxPriceParam}`);
     };
     
     

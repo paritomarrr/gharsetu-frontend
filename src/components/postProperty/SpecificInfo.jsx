@@ -75,6 +75,12 @@ const SpecificInfo = () => {
     }
   }, [images, dispatch]);
 
+  useEffect(() => {
+    if (propertyForm.propertyAge) {
+      dispatch(updatePropertyForm({ propertyAge: propertyForm.propertyAge }));
+    }
+  }, [propertyForm.propertyAge, dispatch]);
+
   const propertySubTypes = [
     "Apartment",
     "Independent Floor",
@@ -85,6 +91,7 @@ const SpecificInfo = () => {
   const furnishTypes = ["Fully furnished", "Semi-furnished", "Unfurnished"];
   const bhkOptions = ["1 BHK", "2 BHK", "3 BHK", "4 BHK", "4+ BHK"];
   const constructionTypes = ["Ready to Move", "Under Construction"];
+  const propertyAgeOptions = ["Newly constructed", "Coming soon", "3+ years", "5+ years", "10+ years"];
 
   const flatFurnishings = [
     { name: "Wi-Fi", icon: <Wifi size={18} />, value: "wifi" },
@@ -444,6 +451,37 @@ const SpecificInfo = () => {
             </VStack>
           </>
         )}
+
+        {/* Property Age */}
+        <VStack align="start" spacing={4}>
+          <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
+            Property Age:
+          </Text>
+          <HStack spacing={{ base: 4, md: 8 }} wrap="wrap">
+            {propertyAgeOptions.map((age) => (
+              <Button
+                key={age}
+                size="sm"
+                variant="outline"
+                fontWeight="semibold"
+                borderRadius="xl"
+                onClick={() =>
+                  dispatch(updatePropertyForm({ propertyAge: age }))
+                }
+                colorScheme={
+                  propertyForm.propertyAge === age ? "teal" : "gray"
+                }
+              >
+                {age}
+              </Button>
+            ))}
+          </HStack>
+          {propertyForm.showError && propertyForm.propertyAge === '' && (
+            <Text color="red.500" fontSize="sm">
+              Property age is required
+            </Text>
+          )}
+        </VStack>
 
         {/* Flat Furnishings */}
         <VStack align="start" spacing={4}>

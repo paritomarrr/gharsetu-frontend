@@ -57,11 +57,12 @@ const PriceRange = ({ reset }) => {
 
     const handleApplyFilter = () => {
         const currentParams = Object.fromEntries(searchParams);
-        setSearchParams({
+        const newParams = {
             ...currentParams,
-            minPrice: budget.min,
-            maxPrice: budget.max
-        });
+            ...(budget.min && { minPrice: budget.min }),
+            ...(budget.max && { maxPrice: budget.max })
+        };
+        setSearchParams(newParams);
         setDropdownOpen({ min: false, max: false });
         // Close the dropdown
         document.body.click();
