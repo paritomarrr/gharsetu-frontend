@@ -32,6 +32,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import AboutUs from "./components/aboutUs";
 import ContactUs from "./components/contactUs";
+import WriteArticle from "./screens/WriteArticle";
 
 // Google Analytics
 
@@ -71,6 +72,7 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-use" element={<TermsOfUse />} />
         <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/write-article" element={<WriteArticle />} />
         <Route path="/*" element={<Error />} />
 
         {/* Profile Routes */}
