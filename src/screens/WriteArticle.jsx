@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Box, Container, Input, Textarea, Button, FormControl, FormLabel, useToast, Heading, VStack, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { backend_url } from "../config";
+import { UserContext } from "../context/UserContext";
+import axios from "axios";
 
 const WriteArticle = () => {
   const [title, setTitle] = useState("");
@@ -14,34 +16,68 @@ const WriteArticle = () => {
   const [loading, setLoading] = useState(true);
   const toast = useToast();
   const navigate = useNavigate();
+  const { user, loading: userLoading } = useContext(UserContext);
 
   useEffect(() => {
     // Fetch user data to check if the user is an admin
     const fetchUserData = async () => {
-      try {
-        const response = await fetch(`${backend_url}/api/v1/users/currentUser`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ userId: "67b61a9ed027189cabaab960" }) // Replace with actual user ID
+      if (!user?._id) {
+        toast({
+          title: "Unauthorized",
+          description: "You are not authorized to view this page.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
         });
-        const data = await response.json();
+        navigate("/"); // Redirect to home if user is not logged in
+        return;
+      }
+      try {
+        const response = await axios.post(`${backend_url}/api/v1/auth/getUser`, {
+          token: localStorage.getItem("token"),
+        });
+        const data = response.data;
         if (data.success && data.user.isAdmin) {
           setIsAdmin(true);
         } else {
+          toast({
+            title: "Unauthorized",
+            description: "You are not authorized to view this page.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
           navigate("/"); // Redirect to home if not admin
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        toast({
+          title: "Error",
+          description: "An error occurred while fetching user data.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
         navigate("/"); // Redirect to home on error
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
-  }, [navigate]);
+    if (!userLoading) {
+      if (user) {
+        fetchUserData();
+      } else {
+        toast({
+          title: "Unauthorized",
+          description: "You are not authorized to view this page.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        navigate("/"); // Redirect to home if user is not logged in
+      }
+    }
+  }, [navigate, toast, user, userLoading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,7 +112,7 @@ const WriteArticle = () => {
     }
   };
 
-  if (loading) {
+  if (loading || userLoading) {
     return <Text>Loading...</Text>;
   }
 

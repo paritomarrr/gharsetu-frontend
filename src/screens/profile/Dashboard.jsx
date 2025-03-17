@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import StatBox from "../../components/profile/StatBox";
 import { Menu, MenuButton, MenuList, MenuItem, Skeleton, SkeletonText } from "@chakra-ui/react";
 import { SlidersHorizontal } from "lucide-react";
 import DashboardTable from "../../components/profile/DashboardTable";
 import { getUserProperties } from "../../helperFunctions/profileHelpers/getUserProperties";
-import { useContext } from "react";
 import { backend_url } from "../../config";
 import { UserContext } from "../../context/UserContext";
 
 const Dashboard = () => {
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [stats, setStats] = useState({
     totalListings: 0,
     totalImpressions: 0,
     totalViews: 0,
     totalGenerated: 0
-  })
-  const [loading, setLoading] = useState(true)
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -34,13 +33,12 @@ const Dashboard = () => {
           setStats(data.data);
         }
       } catch (error) {
-        console.error("Error fetching dashboard stats:", error)
+        console.error("Error fetching dashboard stats:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchStats()
-
+    };
+    fetchStats();
 
     const getUserProp = async () => {
       const res = await getUserProperties(user?._id);
@@ -86,20 +84,6 @@ const Dashboard = () => {
                 <div className="flex border-[1px] border-gray-300 py-2 rounded-md px-2 items-center text-sm gap-2">
                   <SlidersHorizontal size={14} />
                   <span className="whitespace-nowrap">Status</span>{" "}
-                </div>
-              </MenuButton>
-              <MenuList className="text-sm">
-                <MenuItem>Last 7 Days</MenuItem>
-                <MenuItem>Last 30 Days</MenuItem>
-                <MenuItem>All Time</MenuItem>
-              </MenuList>
-            </Menu>
-
-            <Menu>
-              <MenuButton>
-                <div className="flex border-[1px] border-gray-300 py-2 rounded-md px-2 items-center text-sm gap-2">
-                  <SlidersHorizontal size={14} />
-                  <span className="whitespace-nowrap">All Time</span>{" "}
                 </div>
               </MenuButton>
               <MenuList className="text-sm">

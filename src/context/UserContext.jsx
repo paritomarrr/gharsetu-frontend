@@ -1,14 +1,14 @@
 import axios from "axios";
 import { createContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import { backend_url } from "../config";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setuser] = useState(null);
-  const [formStep, setFormStep] = useState(0)
+  const [loading, setLoading] = useState(true);
+  const [formStep, setFormStep] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,19 +24,20 @@ export const UserProvider = ({ children }) => {
           console.error("Failed to fetch user:", error);
         }
       }
+      setLoading(false);
     };
     getUser();
   }, []);
 
   const logOut = () => {
     toast.success("Logged out successfully");
-    localStorage.removeItem("token"); 
-    setFormStep(0)
-    setuser(null); 
+    localStorage.removeItem("token");
+    setFormStep(0);
+    setuser(null);
   };
 
   return (
-    <UserContext.Provider value={{ user, setuser, logOut, formStep, setFormStep }}>
+    <UserContext.Provider value={{ user, setuser, logOut, formStep, setFormStep, loading }}>
       {children}
     </UserContext.Provider>
   );
