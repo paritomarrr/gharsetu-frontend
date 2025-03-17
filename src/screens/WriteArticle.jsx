@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Box, Container, Input, Textarea, Button, FormControl, FormLabel, useToast, Heading, VStack } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { Box, Container, Input, Textarea, Button, FormControl, FormLabel, useToast, Heading, VStack, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { backend_url } from "../config";
 
@@ -10,8 +10,38 @@ const WriteArticle = () => {
   const [image, setImage] = useState("");
   const [tags, setTags] = useState("");
   const [content, setContent] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
   const toast = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch user data to check if the user is an admin
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`${backend_url}/api/v1/users/currentUser`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ userId: "67b61a9ed027189cabaab960" }) // Replace with actual user ID
+        });
+        const data = await response.json();
+        if (data.success && data.user.isAdmin) {
+          setIsAdmin(true);
+        } else {
+          navigate("/"); // Redirect to home if not admin
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        navigate("/"); // Redirect to home on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +75,14 @@ const WriteArticle = () => {
       });
     }
   };
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (!isAdmin) {
+    return null; // Render nothing if not admin
+  }
 
   return (
     <Box>
