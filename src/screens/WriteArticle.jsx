@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Box, Container, Input, Textarea, Button, FormControl, FormLabel, useToast, Heading, VStack, Text } from "@chakra-ui/react";
+import { Box, Container, Input, Textarea, Button, FormControl, FormLabel, useToast, Heading, VStack, Text, SimpleGrid, Divider, HStack, Avatar, Tag, Image, Icon } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { backend_url } from "../config";
 import { UserContext } from "../context/UserContext";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import ChakraUIRenderer from "chakra-ui-markdown-renderer";
+import { FaShareAlt, FaBookmark } from "react-icons/fa";
+import { format } from 'date-fns';
 
 const WriteArticle = () => {
   const [title, setTitle] = useState("");
@@ -19,7 +23,7 @@ const WriteArticle = () => {
   const { user, loading: userLoading } = useContext(UserContext);
 
   useEffect(() => {
-    // Fetch user data to check if the user is an admin
+    document.title = "Gharsetu | Write Article";
     const fetchUserData = async () => {
       if (!user?._id) {
         toast({
@@ -29,7 +33,7 @@ const WriteArticle = () => {
           duration: 5000,
           isClosable: true,
         });
-        navigate("/"); // Redirect to home if user is not logged in
+        navigate("/");
         return;
       }
       try {
@@ -47,7 +51,7 @@ const WriteArticle = () => {
             duration: 5000,
             isClosable: true,
           });
-          navigate("/"); // Redirect to home if not admin
+          navigate("/"); 
         }
       } catch (error) {
         toast({
@@ -57,7 +61,7 @@ const WriteArticle = () => {
           duration: 5000,
           isClosable: true,
         });
-        navigate("/"); // Redirect to home on error
+        navigate("/");
       } finally {
         setLoading(false);
       }
@@ -74,7 +78,7 @@ const WriteArticle = () => {
           duration: 5000,
           isClosable: true,
         });
-        navigate("/"); // Redirect to home if user is not logged in
+        navigate("/");
       }
     }
   }, [navigate, toast, user, userLoading]);
@@ -117,46 +121,115 @@ const WriteArticle = () => {
   }
 
   if (!isAdmin) {
-    return null; // Render nothing if not admin
+    return null;
   }
+
+  const formattedDate = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  const hasPreviewContent = title || slug || excerpt || image || tags || content;
 
   return (
     <Box>
-      <Container maxW="container.md" py={6}>
-        <VStack spacing={6} align="stretch">
-          <Heading as="h1" size="xl" textAlign="center">
-            Write Article
-          </Heading>
-          <form onSubmit={handleSubmit}>
-            <FormControl id="title" mb={4}>
-              <FormLabel>Title</FormLabel>
-              <Input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-            </FormControl>
-            <FormControl id="slug" mb={4}>
-              <FormLabel>Slug</FormLabel>
-              <Input type="text" value={slug} onChange={(e) => setSlug(e.target.value)} required />
-            </FormControl>
-            <FormControl id="excerpt" mb={4}>
-              <FormLabel>Excerpt</FormLabel>
-              <Textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
-            </FormControl>
-            <FormControl id="image" mb={4}>
-              <FormLabel>Image URL</FormLabel>
-              <Input type="text" value={image} onChange={(e) => setImage(e.target.value)} />
-            </FormControl>
-            <FormControl id="tags" mb={4}>
-              <FormLabel>Tags (comma separated)</FormLabel>
-              <Input type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
-            </FormControl>
-            <FormControl id="content" mb={4}>
-              <FormLabel>Content</FormLabel>
-              <Textarea value={content} onChange={(e) => setContent(e.target.value)} required />
-            </FormControl>
-            <Button type="submit" colorScheme="blue" width="full">
-              Submit
-            </Button>
-          </form>
-        </VStack>
+      <Container maxW="container.xl" py={6}>
+        <Heading as="h1" size="xl" textAlign="center" mb={6}>
+          Write Article
+        </Heading>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
+          <Box p={4} borderWidth="1px" borderRadius="lg">
+            <form onSubmit={handleSubmit}>
+              <VStack spacing={4} align="stretch">
+                <FormControl id="title">
+                  <FormLabel>Title</FormLabel>
+                  <Input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                </FormControl>
+                <FormControl id="slug">
+                  <FormLabel>Slug</FormLabel>
+                  <Input type="text" value={slug} onChange={(e) => setSlug(e.target.value)} required />
+                </FormControl>
+                <FormControl id="excerpt">
+                  <FormLabel>Excerpt</FormLabel>
+                  <Textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
+                </FormControl>
+                <FormControl id="image">
+                  <FormLabel>Image URL</FormLabel>
+                  <Input type="text" value={image} onChange={(e) => setImage(e.target.value)} />
+                </FormControl>
+                <FormControl id="content">
+                  <FormLabel>Content</FormLabel>
+                  <Textarea value={content} onChange={(e) => setContent(e.target.value)} required />
+                </FormControl>
+                <FormControl id="tags">
+                  <FormLabel>Tags (comma separated)</FormLabel>
+                  <Input type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
+                </FormControl>
+                <Button type="submit" colorScheme="blue" width="full">
+                  Submit
+                </Button>
+              </VStack>
+            </form>
+          </Box>
+          {hasPreviewContent && (
+            <Box p={4} borderWidth="1px" borderRadius="lg">
+              <Heading as="h2" size="lg" mb={4}>
+                Preview
+              </Heading>
+              <Divider mb={4} />
+              <Box>
+                <Text fontSize="3xl" fontWeight="bold" mb={2}>
+                  {title}
+                </Text>
+                <HStack spacing={4} mb={4} color="gray.600">
+                  <HStack spacing={1}>
+                    <Icon as={FaShareAlt} />
+                    <Text fontSize="sm">Share</Text>
+                  </HStack>
+                  <HStack spacing={1}>
+                    <Icon as={FaBookmark} />
+                    <Text fontSize="sm">Save</Text>
+                  </HStack>
+                </HStack>
+                {image && (
+                  <Box mb={6}>
+                    <Image
+                      src={image}
+                      alt={title}
+                      borderRadius="md"
+                      w="full"
+                      h="auto"
+                    />
+                  </Box>
+                )}
+                <HStack mb={4}>
+                  <Avatar name="Author" src="" />
+                  <Box>
+                    <Text fontWeight="bold">Written by Gharsetu Team</Text>
+                    <Text fontSize="sm" color="gray.600">
+                      A few minutes read | {formattedDate}
+                    </Text>
+                  </Box>
+                </HStack>
+                <VStack align="start" spacing={4} mb={8}>
+                  <ReactMarkdown components={ChakraUIRenderer()}>
+                    {content}
+                  </ReactMarkdown>
+                </VStack>
+                {tags && (
+                  <HStack spacing={2} mb={3}>
+                    {tags.split(",").map((tag, index) => (
+                      <Tag key={index} colorScheme="blue">
+                        {tag}
+                      </Tag>
+                    ))}
+                  </HStack>
+                )}
+              </Box>
+            </Box>
+          )}
+        </SimpleGrid>
       </Container>
     </Box>
   );
