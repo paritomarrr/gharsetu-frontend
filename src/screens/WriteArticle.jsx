@@ -11,6 +11,9 @@ import { format } from 'date-fns';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
+import MdEditor from "react-markdown-editor-lite";
+import MarkdownIt from "markdown-it";
+import "react-markdown-editor-lite/lib/index.css";
 
 const WriteArticle = () => {
   const [title, setTitle] = useState("");
@@ -25,6 +28,7 @@ const WriteArticle = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const { user, loading: userLoading } = useContext(UserContext);
+  const mdParser = new MarkdownIt();
 
   useEffect(() => {
     document.title = "Gharsetu | Write Article";
@@ -164,7 +168,32 @@ const WriteArticle = () => {
                 </FormControl>
                 <FormControl id="content">
                   <FormLabel>Content</FormLabel>
-                  <Textarea value={content} onChange={(e) => setContent(e.target.value)} required />
+                  <MdEditor
+                    value={content}
+                    style={{ height: "400px" }}
+                    renderHTML={(text) => mdParser.render(text)}
+                    onChange={({ text }) => setContent(text)}
+                    config={{
+                      view: {
+                        menu: true,
+                        md: true, 
+                        html: false, 
+                      },
+                    }}
+                    plugins={[
+                      "font-bold",
+                      "font-italic", 
+                      "header",
+                      "list-unordered",
+                      "list-ordered",
+                      "block-quote",
+                      "link",
+                      "image",
+                      "table",
+                      "code",
+                      "code-block",
+                    ]}
+                  />
                 </FormControl>
                 <FormControl id="tags">
                   <FormLabel>Tags (comma separated)</FormLabel>
