@@ -8,6 +8,9 @@ import ReactMarkdown from "react-markdown";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { FaShareAlt, FaBookmark } from "react-icons/fa";
 import { format } from 'date-fns';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker-cssmodules.css";
 
 const WriteArticle = () => {
   const [title, setTitle] = useState("");
@@ -18,6 +21,7 @@ const WriteArticle = () => {
   const [content, setContent] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [scheduleDate, setScheduleDate] = useState(null);
   const toast = useToast();
   const navigate = useNavigate();
   const { user, loading: userLoading } = useContext(UserContext);
@@ -91,7 +95,7 @@ const WriteArticle = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, slug, excerpt, image, tags: tags.split(","), content }),
+      body: JSON.stringify({ title, slug, excerpt, image, tags: tags.split(","), content, scheduleDate }),
     });
 
     const data = await response.json();
@@ -139,7 +143,7 @@ const WriteArticle = () => {
           Write Article
         </Heading>
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
-          <Box p={4} borderWidth="1px" borderRadius="lg">
+          <Box p={4} borderWidth="1px" borderRadius="lg" position="sticky" top="6">
             <form onSubmit={handleSubmit}>
               <VStack spacing={4} align="stretch">
                 <FormControl id="title">
@@ -166,6 +170,18 @@ const WriteArticle = () => {
                   <FormLabel>Tags (comma separated)</FormLabel>
                   <Input type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
                 </FormControl>
+                <FormControl id="scheduleDate">
+                  <FormLabel>Schedule Date</FormLabel>
+                  <DatePicker
+                    selected={scheduleDate}
+                    onChange={(date) => setScheduleDate(date)}
+                    showTimeSelect
+                    timeIntervals={30}
+                    timeCaption="Time"
+                    dateFormat="MMMM d, yyyy h:mm aa"
+                    placeholderText="Select a date and time"
+                  />
+                </FormControl>
                 <Button type="submit" colorScheme="blue" width="full">
                   Submit
                 </Button>
@@ -173,7 +189,7 @@ const WriteArticle = () => {
             </form>
           </Box>
           {hasPreviewContent && (
-            <Box p={4} borderWidth="1px" borderRadius="lg">
+            <Box p={4} borderWidth="1px" borderRadius="lg" overflowY="auto" maxH="80vh">
               <Heading as="h2" size="lg" mb={4}>
                 Preview
               </Heading>
