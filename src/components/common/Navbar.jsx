@@ -36,7 +36,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className='px-4 md:px-20 py-4 border-b-[1px] flex justify-between items-center shadow-sm'>
+      <div className='px-2 md:px-20 py-2 md:py-4 border-b-[1px] flex justify-between items-center shadow-sm'>
         <Link to={'/'} className='flex items-center gap-2'>
           <MainIcon />
           <div className='font-MavenPro font-bold text-[30px]'> GharSetu </div>
