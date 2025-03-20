@@ -13,7 +13,9 @@ import {
   Image,
   Divider,
   Icon,
-  Skeleton
+  Skeleton,
+  Wrap,
+  WrapItem
 } from "@chakra-ui/react";
 import {
   FaComment,
@@ -136,14 +138,6 @@ const SingleArticle = () => {
   return (
     <Box>
       <Container maxW="container.md" py={6}>
-        {/* Tags */}
-        <HStack spacing={2} mb={3}>
-          {tags.map((tag, index) => (
-            <Tag key={index} colorScheme="blue">
-              {tag}
-            </Tag>
-          ))}
-        </HStack>
         {/* Title and Meta */}
         <Text fontSize="3xl" fontWeight="bold" mb={2}>
           {title}
@@ -203,6 +197,33 @@ const SingleArticle = () => {
             {content}
           </ReactMarkdown>
         </VStack>
+
+        {/* Subscribe to Whatsapp Channel */}
+        <Box textAlign="center" mb={4}>
+          <Text
+            as="a"
+            href="https://chat.whatsapp.com/EJOLE6fvgYj3QNrAmZm7S3"
+            target="_blank"
+            rel="noopener noreferrer"
+            color="#15528f"
+            textDecoration="underline"
+            fontSize="lg"
+            fontStyle="italic"
+          >
+            Subscribe to our Whatsapp Channel
+          </Text>
+        </Box>
+
+        {/* Tags */}
+        <Wrap spacing={2} mb={3} justify="center">
+          {tags.map((tag, index) => (
+            <WrapItem key={index}>
+              <Tag size={{ base: "sm", md: "md" }} colorScheme="blue">
+                {tag}
+              </Tag>
+            </WrapItem>
+          ))}
+        </Wrap>
 
         {/* Comments Section */}
         {/* <Box mb={8}>

@@ -8,6 +8,12 @@ import ReactMarkdown from "react-markdown";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { FaShareAlt, FaBookmark } from "react-icons/fa";
 import { format } from 'date-fns';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker-cssmodules.css";
+import MdEditor from "react-markdown-editor-lite";
+import MarkdownIt from "markdown-it";
+import "react-markdown-editor-lite/lib/index.css";
 
 const WriteArticle = () => {
   const [title, setTitle] = useState("");
@@ -18,9 +24,11 @@ const WriteArticle = () => {
   const [content, setContent] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [scheduleDate, setScheduleDate] = useState(null);
   const toast = useToast();
   const navigate = useNavigate();
   const { user, loading: userLoading } = useContext(UserContext);
+  const mdParser = new MarkdownIt();
 
   useEffect(() => {
     document.title = "Gharsetu | Write Article";
@@ -91,7 +99,7 @@ const WriteArticle = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, slug, excerpt, image, tags: tags.split(","), content }),
+      body: JSON.stringify({ title, slug, excerpt, image, tags: tags.split(","), content, scheduleDate }),
     });
 
     const data = await response.json();
@@ -139,7 +147,7 @@ const WriteArticle = () => {
           Write Article
         </Heading>
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
-          <Box p={4} borderWidth="1px" borderRadius="lg">
+          <Box p={4} borderWidth="1px" borderRadius="lg" position="sticky" top="6">
             <form onSubmit={handleSubmit}>
               <VStack spacing={4} align="stretch">
                 <FormControl id="title">
@@ -160,11 +168,48 @@ const WriteArticle = () => {
                 </FormControl>
                 <FormControl id="content">
                   <FormLabel>Content</FormLabel>
-                  <Textarea value={content} onChange={(e) => setContent(e.target.value)} required />
+                  <MdEditor
+                    value={content}
+                    style={{ height: "400px" }}
+                    renderHTML={(text) => mdParser.render(text)}
+                    onChange={({ text }) => setContent(text)}
+                    config={{
+                      view: {
+                        menu: true,
+                        md: true, 
+                        html: false, 
+                      },
+                    }}
+                    plugins={[
+                      "font-bold",
+                      "font-italic", 
+                      "header",
+                      "list-unordered",
+                      "list-ordered",
+                      "block-quote",
+                      "link",
+                      "image",
+                      "table",
+                      "code",
+                      "code-block",
+                    ]}
+                  />
                 </FormControl>
                 <FormControl id="tags">
                   <FormLabel>Tags (comma separated)</FormLabel>
                   <Input type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
+                </FormControl>
+                <FormControl id="scheduleDate">
+                  <FormLabel>Schedule Date</FormLabel>
+                  <DatePicker
+                    selected={scheduleDate}
+                    onChange={(date) => setScheduleDate(date)}
+                    showTimeSelect
+                    timeIntervals={30}
+                    timeCaption="Time"
+                    dateFormat="MMMM d, yyyy h:mm aa"
+                    placeholderText="Select a date and time"
+                  />
                 </FormControl>
                 <Button type="submit" colorScheme="blue" width="full">
                   Submit
@@ -173,7 +218,7 @@ const WriteArticle = () => {
             </form>
           </Box>
           {hasPreviewContent && (
-            <Box p={4} borderWidth="1px" borderRadius="lg">
+            <Box p={4} borderWidth="1px" borderRadius="lg" overflowY="auto" maxH="80vh">
               <Heading as="h2" size="lg" mb={4}>
                 Preview
               </Heading>
