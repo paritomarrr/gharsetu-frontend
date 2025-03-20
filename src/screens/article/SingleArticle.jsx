@@ -15,7 +15,8 @@ import {
   Icon,
   Skeleton,
   Wrap,
-  WrapItem
+  WrapItem,
+  useToast
 } from "@chakra-ui/react";
 import {
   FaComment,
@@ -89,6 +90,20 @@ const SingleArticle = () => {
   const [relatedArticles, setRelatedArticles] = useState([]);
   const [comments, setComments] = useState([]);
   const [randomArticles, setRandomArticles] = useState([]);
+  const toast = useToast();
+
+  const shareText = `Check out this article: ${window.location.href}`;
+
+  const handleShareClick = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      toast({
+        title: "Link copied to clipboard.",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    });
+  };
 
   useEffect(() => {
     fetch(`${backend_url}/api/v1/articles/${slug}`)
@@ -172,7 +187,9 @@ const SingleArticle = () => {
           </HStack> */}
           <HStack spacing={1}>
             <Icon as={FaShareAlt} />
-            <Text fontSize="sm">Share</Text>
+            <Text fontSize="sm" onClick={handleShareClick} cursor="pointer">
+              Share
+            </Text>
           </HStack>
           <HStack spacing={1}>
             <Icon as={FaBookmark} />
