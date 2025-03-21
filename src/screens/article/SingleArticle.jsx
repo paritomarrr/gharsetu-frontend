@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Container,
@@ -16,7 +16,9 @@ import {
   Skeleton,
   Wrap,
   WrapItem,
-  useToast
+  useToast,
+  Input,
+  Textarea
 } from "@chakra-ui/react";
 import {
   FaComment,
@@ -32,6 +34,8 @@ import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { useParams, Link } from "react-router-dom";
 import { backend_url } from "../../config";
 import { format } from 'date-fns';
+import { UserContext } from "../../context/UserContext";
+import axios from "axios";
 
 // Custom styles for Markdown
 const markdownTheme = {
@@ -86,10 +90,12 @@ const markdownTheme = {
 
 const SingleArticle = () => {
   const { slug } = useParams();
+  const { user } = useContext(UserContext);
   const [article, setArticle] = useState(null);
   const [relatedArticles, setRelatedArticles] = useState([]);
   const [comments, setComments] = useState([]);
   const [randomArticles, setRandomArticles] = useState([]);
+  const [commentText, setCommentText] = useState("");
   const toast = useToast();
 
   const shareText = `Check out this article: ${window.location.href}`;
@@ -105,6 +111,50 @@ const SingleArticle = () => {
     });
   };
 
+  const handleCommentSubmit = async () => {
+    if (!user) {
+      toast({
+        title: "User not found.",
+        description: "Please log in to add a comment.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (commentText) {
+      try {
+        const response = await axios.post(`${backend_url}/api/v1/articles/${slug}/comments`, {
+          userId: user._id,
+          text: commentText
+        });
+        setComments(response.data.comments);
+        setCommentText("");
+        toast({
+          title: "Comment added.",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+      } catch (error) {
+        toast({
+          title: "Failed to add comment.",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    } else {
+      toast({
+        title: "Please fill in the comment field.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
     fetch(`${backend_url}/api/v1/articles/${slug}`)
       .then((res) => res.json())
@@ -112,7 +162,7 @@ const SingleArticle = () => {
         if (data.success) {
           setArticle(data.article);
           setRelatedArticles(data.relatedArticles || []);
-          setComments(data.comments || []);
+          setComments(data.article.comments || []);
           window.scrollTo(0, 0); // Scroll to top
         }
       })
@@ -179,12 +229,6 @@ const SingleArticle = () => {
               {views ? `${views.toLocaleString()} Views` : "Views"}
             </Text>
           </HStack> */}
-          {/* <HStack spacing={1}>
-            <Icon as={FaComment} />
-            <Text fontSize="sm">
-              {commentsCount ? `${commentsCount} Comments` : "Comments"}
-            </Text>
-          </HStack> */}
           <HStack spacing={1}>
             <Icon as={FaShareAlt} />
             <Text fontSize="sm" onClick={handleShareClick} cursor="pointer">
@@ -192,8 +236,10 @@ const SingleArticle = () => {
             </Text>
           </HStack>
           <HStack spacing={1}>
-            <Icon as={FaBookmark} />
-            <Text fontSize="sm">Save</Text>
+            <Icon as={FaComment} />
+            <Text fontSize="sm" cursor="pointer" onClick={() => document.getElementById('comments-section').scrollIntoView()}>
+              Comments
+            </Text>
           </HStack>
         </HStack>
 
@@ -258,7 +304,7 @@ const SingleArticle = () => {
         </Wrap>
 
         {/* Comments Section */}
-        {/* <Box mb={8}>
+        <Box mb={8} id="comments-section">
           <Text fontWeight="bold" fontSize="lg" mb={4}>
             Comments
           </Text>
@@ -284,7 +330,17 @@ const SingleArticle = () => {
               </Box>
             ))}
           </VStack>
-        </Box> */}
+          <VStack spacing={4} mt={4}>
+            <Textarea
+              placeholder="Your Comment"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <Button colorScheme="blue" onClick={handleCommentSubmit}>
+              Add Comment
+            </Button>
+          </VStack>
+        </Box>
 
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
