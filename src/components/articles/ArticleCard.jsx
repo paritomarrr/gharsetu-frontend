@@ -6,54 +6,89 @@ import {
   Image, 
   Tag, 
   HStack, 
-  Icon 
+  Icon, 
+  useBreakpointValue 
 } from "@chakra-ui/react";
 import { FaHeart, FaRegComment, FaShareAlt, FaBookmark } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const ArticleCard = ({ slug, title, excerpt, image, tags }) => {
+  const showTags = useBreakpointValue({ base: false, md: true });
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
   return (
     <Box borderWidth="1px" borderRadius="md" overflow="hidden" p={4} mb={6}>
       {/* Tags */}
-      <HStack spacing={2} mb={2} wrap="wrap">
-        {tags.map((tag, index) => (
-          <Tag key={index} colorScheme="blue" mb={1}>
-            {tag}
-          </Tag>
-        ))}
-      </HStack>
+      {showTags && (
+        <HStack spacing={2} mb={2} wrap="wrap">
+          {tags.map((tag, index) => (
+            <Tag key={index} colorScheme="blue" mb={1}>
+              {tag}
+            </Tag>
+          ))}
+        </HStack>
+      )}
 
-      <Flex align="center" mb={4}>
-        {/* Article Image */}
-        <Link to={`/articles/${slug}`}>
-          <Image
-            src={image}
-            alt={title}
-            w="150px"
-            h="auto"
-            objectFit="cover"
-            borderRadius="md"
-            mr={8}
-            cursor="pointer"
-            display={["none", "block"]} // Hide image on mobile
-          />
-        </Link>
-
-        {/* Article Content */}
-        <Box className="pl-2">
+      {isMobile ? (
+        <>
+          {/* Article Image */}
           <Link to={`/articles/${slug}`}>
-            <Text fontSize="xl" fontWeight="semibold" mb={2} color="blue.600">
-              {title}
-            </Text>
+            <Image
+              src={image}
+              alt={title}
+              w="full"
+              h="auto"
+              objectFit="cover"
+              borderRadius="md"
+              mb={4}
+              cursor="pointer"
+            />
           </Link>
-          <Text fontSize="md" color="gray.600" noOfLines={3}>
-            {excerpt}
-          </Text>
-        </Box>
-      </Flex>
+
+          {/* Article Content */}
+          <Box>
+            <Link to={`/articles/${slug}`}>
+              <Text fontSize="xl" fontWeight="semibold" mb={2} color="blue.600">
+                {title}
+              </Text>
+            </Link>
+            <Text fontSize="md" color="gray.600" noOfLines={3}>
+              {excerpt}
+            </Text>
+          </Box>
+        </>
+      ) : (
+        <Flex align="center" mb={4}>
+          {/* Article Image */}
+          <Link to={`/articles/${slug}`}>
+            <Image
+              src={image}
+              alt={title}
+              w="150px"
+              h="auto"
+              objectFit="cover"
+              borderRadius="md"
+              mr={8}
+              cursor="pointer"
+            />
+          </Link>
+
+          {/* Article Content */}
+          <Box className="pl-2">
+            <Link to={`/articles/${slug}`}>
+              <Text fontSize="xl" fontWeight="semibold" mb={2} color="blue.600">
+                {title}
+              </Text>
+            </Link>
+            <Text fontSize="md" color="gray.600" noOfLines={3}>
+              {excerpt}
+            </Text>
+          </Box>
+        </Flex>
+      )}
 
       {/* Actions */}
-      <HStack spacing={4} color="gray.500">
+      <HStack spacing={4} color="gray.500" mt={4}>
         <HStack>
           <Icon as={FaHeart} />
           <Text fontSize="sm">Likes</Text>

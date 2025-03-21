@@ -15,7 +15,8 @@ import {
   Icon,
   Skeleton,
   Wrap,
-  WrapItem
+  WrapItem,
+  useToast
 } from "@chakra-ui/react";
 import {
   FaComment,
@@ -28,7 +29,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import LOGO from '../../../src/assets/logo.png';
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { backend_url } from "../../config";
 import { format } from 'date-fns';
 
@@ -88,6 +89,21 @@ const SingleArticle = () => {
   const [article, setArticle] = useState(null);
   const [relatedArticles, setRelatedArticles] = useState([]);
   const [comments, setComments] = useState([]);
+  const [randomArticles, setRandomArticles] = useState([]);
+  const toast = useToast();
+
+  const shareText = `Check out this article: ${window.location.href}`;
+
+  const handleShareClick = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      toast({
+        title: "Link copied to clipboard.",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    });
+  };
 
   useEffect(() => {
     fetch(`${backend_url}/api/v1/articles/${slug}`)
@@ -97,6 +113,7 @@ const SingleArticle = () => {
           setArticle(data.article);
           setRelatedArticles(data.relatedArticles || []);
           setComments(data.comments || []);
+          window.scrollTo(0, 0); // Scroll to top
         }
       })
       .catch(console.error);
@@ -107,6 +124,19 @@ const SingleArticle = () => {
       document.title = `${article.title} | Gharsetu`;
     }
   }, [article]);
+
+  useEffect(() => {
+    if (slug) {
+      fetch(`${backend_url}/api/v1/articles/random?excludeSlug=${slug}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setRandomArticles(data.articles);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [slug]);
 
   if (!article) {
     return (
@@ -157,7 +187,9 @@ const SingleArticle = () => {
           </HStack> */}
           <HStack spacing={1}>
             <Icon as={FaShareAlt} />
-            <Text fontSize="sm">Share</Text>
+            <Text fontSize="sm" onClick={handleShareClick} cursor="pointer">
+              Share
+            </Text>
           </HStack>
           <HStack spacing={1}>
             <Icon as={FaBookmark} />
@@ -284,6 +316,44 @@ const SingleArticle = () => {
             </SimpleGrid>
           </Box>
         )}
+
+        {/* Read More Articles */}
+        <Box mb={8} mt={12}>
+          <Text fontWeight="bold" fontSize="xl" mb={4} textAlign="center">
+            Read More Articles
+          </Text>
+          <SimpleGrid columns={[1, 2]} spacing={6} overflowX="scroll">
+            {randomArticles.map((article, index) => (
+              <Link key={index} to={`/articles/${article.slug}`}>
+                <Box
+                  borderWidth="1px"
+                  borderRadius="md"
+                  overflow="hidden"
+                  p={4}
+                  minW="350px"
+                  maxW="350px"
+                  h="100%"
+                >
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    borderRadius="md"
+                    mb={4}
+                    w="100%"
+                    h="200px"
+                    objectFit="cover"
+                  />
+                  <Text fontWeight="bold" noOfLines={2}>
+                    {article.title}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600" noOfLines={3}>
+                    {article.excerpt}
+                  </Text>
+                </Box>
+              </Link>
+            ))}
+          </SimpleGrid>
+        </Box>
       </Container>
     </Box>
   );
