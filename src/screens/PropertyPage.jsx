@@ -251,11 +251,23 @@ useEffect(() => {
       return;
     }
   
+    if (!newReview) {
+      toast({
+        title: "Review required",
+        description: "Please write a review before submitting.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      return;
+    }
+  
     try {
       const res = await axios.post(`${backend_url}/api/v1/properties/${property._id}/reviews`, {
         userId: user._id,
         review: newReview,
-        rating: newRating,
+        rating: newRating
       });
       if (res.data.success) {
         const newReviewWithUser = {
@@ -562,7 +574,7 @@ useEffect(() => {
               <div className={`text-sm font-semibold ${bookmarked ? 'text-white' : 'text-gray-800'}`}>
                 {bookmarked ? 'Bookmarked' : 'Save'}
               </div>
-            </div>
+            </div>{" "}
           </div>{" "}
           {isLoading ? (
             <ImageGallerySkeleton />
