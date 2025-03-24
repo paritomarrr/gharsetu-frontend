@@ -4,6 +4,7 @@ import axios from "axios";
 import OptionsBar from "../components/propertyViewPage/OptionsBar";
 import PropertyViewPageMap from "../components/propertyViewPage/PropertyViewPageMap";
 import PropertyCard from "../components/common/PropertyCard";
+import Footer from "../components/common/Footer";
 import {
   filterProperties,
   validatePriceRange,
@@ -24,6 +25,7 @@ const PropertyView = () => {
   const propertyListRef = useRef(null);
 
   const [loading, setLoading] = useState(true);
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
 
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
@@ -95,7 +97,24 @@ const PropertyView = () => {
   }, [search, mode, minPrice, maxPrice]);
 
   useEffect(() => {
-  }, [propertiesToShow]);
+    const handleScroll = () => {
+      if (propertyListRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = propertyListRef.current;
+        setIsFooterVisible(scrollTop + clientHeight >= scrollHeight - 10);
+      }
+    };
+
+    const propertyListElement = propertyListRef.current;
+    if (propertyListElement) {
+      propertyListElement.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (propertyListElement) {
+        propertyListElement.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
 
   const cityName = search ? search.split(",")[1]?.trim() : "Ghaziabad";
 
@@ -285,6 +304,7 @@ const PropertyView = () => {
                 No Properties Found
               </div>
             )}
+            <Footer />
           </div>
         </div>
       </div>
@@ -350,6 +370,9 @@ const PropertyView = () => {
             ) : (
               <div>No Properties Found</div>
             )}
+            <div className="mt-4">
+              <Footer />
+            </div>
           </div>
         </div>
 
