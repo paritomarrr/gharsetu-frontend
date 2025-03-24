@@ -21,41 +21,7 @@ const PropertyView = () => {
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const propertiesPerPage = 6;
-
-  const totalPages = Math.ceil(propertiesToShow.length / propertiesPerPage);
-
   const propertyListRef = useRef(null);
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-      window.scrollTo(0, 0);
-      if (propertyListRef.current) {
-        propertyListRef.current.scrollTop = 0;
-      }
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      window.scrollTo(0, 0);
-      if (propertyListRef.current) {
-        propertyListRef.current.scrollTop = 0;
-      }
-    }
-  };
-
-  const paginatedProperties = propertiesToShow.slice(
-    (currentPage - 1) * propertiesPerPage,
-    currentPage * propertiesPerPage
-  );
-
-  useEffect(() => {
-    setCurrentPage(1); // Reset page number when mode changes
-  }, [mode]);
 
   const [loading, setLoading] = useState(true);
 
@@ -127,13 +93,6 @@ const PropertyView = () => {
       fetchAllProperties();
     }
   }, [search, mode, minPrice, maxPrice]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    if (propertyListRef.current) {
-      propertyListRef.current.scrollTop = 0;
-    }
-  }, [currentPage]);
 
   useEffect(() => {
   }, [propertiesToShow]);
@@ -309,35 +268,16 @@ const PropertyView = () => {
           >
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
-                {Array.from({ length: propertiesPerPage }).map((_, index) => (
+                {Array.from({ length: 6 }).map((_, index) => (
                   <Skeleton key={index} height={200} />
                 ))}
               </div>
-            ) : paginatedProperties.length > 0 ? (
+            ) : propertiesToShow.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
-                  {paginatedProperties.map((property) => (
+                  {propertiesToShow.map((property) => (
                     <PropertyCard key={property._id} property={property} />
                   ))}
-                </div>
-                <div className="flex justify-center items-center mt-4 space-x-4">
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span className="text-sm font-medium">
-                    {currentPage}/{totalPages}
-                  </span>
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
                 </div>
               </>
             ) : (
@@ -395,35 +335,16 @@ const PropertyView = () => {
           >
             {loading ? (
               <div className="grid grid-cols-2 gap-9 py-3">
-                {Array.from({ length: propertiesPerPage }).map((_, index) => (
+                {Array.from({ length: 6 }).map((_, index) => (
                   <Skeleton key={index} height={200} />
                 ))}
               </div>
-            ) : paginatedProperties.length > 0 ? (
+            ) : propertiesToShow.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 gap-9 py-3">
-                  {paginatedProperties.map((property) => (
+                  {propertiesToShow.map((property) => (
                     <PropertyCard key={property._id} property={property} />
                   ))}
-                </div>
-                <div className="flex justify-center items-center mt-4 space-x-4">
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span className="text-sm font-medium">
-                    {currentPage}/{totalPages}
-                  </span>
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
                 </div>
               </>
             ) : (
