@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Container,
@@ -16,7 +16,9 @@ import {
   Skeleton,
   Wrap,
   WrapItem,
-  useToast
+  useToast,
+  Input,
+  Textarea,
 } from "@chakra-ui/react";
 import {
   FaComment,
@@ -27,45 +29,79 @@ import {
   FaEye,
 } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
-import LOGO from '../../../src/assets/logo.png';
+import LOGO from "../../../src/assets/logo.png";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { useParams, Link } from "react-router-dom";
 import { backend_url } from "../../config";
-import { format } from 'date-fns';
+import { format } from "date-fns";
+import { UserContext } from "../../context/UserContext";
+import axios from "axios";
 
 // Custom styles for Markdown
 const markdownTheme = {
   h1: (props) => {
     const { children } = props;
-    return <Text fontSize="2xl" fontWeight="bold" mb={4}>{children}</Text>;
+    return (
+      <Text fontSize="2xl" fontWeight="bold" mb={4}>
+        {children}
+      </Text>
+    );
   },
   h2: (props) => {
     const { children } = props;
-    return <Text fontSize="xl" fontWeight="semibold" mb={3}>{children}</Text>;
+    return (
+      <Text fontSize="xl" fontWeight="semibold" mb={3}>
+        {children}
+      </Text>
+    );
   },
   h3: (props) => {
     const { children } = props;
-    return <Text fontSize="lg" fontWeight="semibold" mb={2}>{children}</Text>;
+    return (
+      <Text fontSize="lg" fontWeight="semibold" mb={2}>
+        {children}
+      </Text>
+    );
   },
   p: (props) => {
     const { children } = props;
-    return <Text fontSize="md" lineHeight="1.4" mb={4}>{children}</Text>;
+    return (
+      <Text fontSize="md" lineHeight="1.4" mb={4}>
+        {children}
+      </Text>
+    );
   },
   strong: (props) => {
     const { children } = props;
-    return <Text as="strong" fontWeight="bold">{children}</Text>;
+    return (
+      <Text as="strong" fontWeight="bold">
+        {children}
+      </Text>
+    );
   },
   em: (props) => {
     const { children } = props;
-    return <Text as="em" fontStyle="italic">{children}</Text>;
+    return (
+      <Text as="em" fontStyle="italic">
+        {children}
+      </Text>
+    );
   },
   ul: (props) => {
     const { children } = props;
-    return <Box as="ul" pl={6} mb={2}>{children}</Box>;
+    return (
+      <Box as="ul" pl={6} mb={2}>
+        {children}
+      </Box>
+    );
   },
   li: (props) => {
     const { children } = props;
-    return <Box as="li" listStyleType="disc" mb={2}>{children}</Box>;
+    return (
+      <Box as="li" listStyleType="disc" mb={2}>
+        {children}
+      </Box>
+    );
   },
   a: (props) => {
     const { href, children } = props;
@@ -86,10 +122,12 @@ const markdownTheme = {
 
 const SingleArticle = () => {
   const { slug } = useParams();
+  const { user } = useContext(UserContext);
   const [article, setArticle] = useState(null);
   const [relatedArticles, setRelatedArticles] = useState([]);
   const [comments, setComments] = useState([]);
   const [randomArticles, setRandomArticles] = useState([]);
+  const [commentText, setCommentText] = useState("");
   const toast = useToast();
 
   const shareText = `Check out this article: ${window.location.href}`;
@@ -105,6 +143,53 @@ const SingleArticle = () => {
     });
   };
 
+  const handleCommentSubmit = async () => {
+    if (!user) {
+      toast({
+        title: "User not found.",
+        description: "Please log in to add a comment.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (commentText) {
+      try {
+        const response = await axios.post(
+          `${backend_url}/api/v1/articles/${slug}/comments`,
+          {
+            userId: user._id,
+            text: commentText,
+          }
+        );
+        setComments(response.data.comments);
+        setCommentText("");
+        toast({
+          title: "Comment added.",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+      } catch (error) {
+        toast({
+          title: "Failed to add comment.",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    } else {
+      toast({
+        title: "Please fill in the comment field.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
     fetch(`${backend_url}/api/v1/articles/${slug}`)
       .then((res) => res.json())
@@ -112,7 +197,7 @@ const SingleArticle = () => {
         if (data.success) {
           setArticle(data.article);
           setRelatedArticles(data.relatedArticles || []);
-          setComments(data.comments || []);
+          setComments(data.article.comments || []);
           window.scrollTo(0, 0); // Scroll to top
         }
       })
@@ -163,8 +248,8 @@ const SingleArticle = () => {
   } = article;
 
   const formattedDate = createdAt
-  ? format(new Date(createdAt), 'dd MMMM yyyy')
-  : '';
+    ? format(new Date(createdAt), "dd MMMM yyyy")
+    : "";
   return (
     <Box>
       <Container maxW="container.md" py={6}>
@@ -179,12 +264,6 @@ const SingleArticle = () => {
               {views ? `${views.toLocaleString()} Views` : "Views"}
             </Text>
           </HStack> */}
-          {/* <HStack spacing={1}>
-            <Icon as={FaComment} />
-            <Text fontSize="sm">
-              {commentsCount ? `${commentsCount} Comments` : "Comments"}
-            </Text>
-          </HStack> */}
           <HStack spacing={1}>
             <Icon as={FaShareAlt} />
             <Text fontSize="sm" onClick={handleShareClick} cursor="pointer">
@@ -192,8 +271,16 @@ const SingleArticle = () => {
             </Text>
           </HStack>
           <HStack spacing={1}>
-            <Icon as={FaBookmark} />
-            <Text fontSize="sm">Save</Text>
+            <Icon as={FaComment} />
+            <Text
+              fontSize="sm"
+              cursor="pointer"
+              onClick={() =>
+                document.getElementById("comments-section").scrollIntoView()
+              }
+            >
+              Comments
+            </Text>
           </HStack>
         </HStack>
 
@@ -258,19 +345,13 @@ const SingleArticle = () => {
         </Wrap>
 
         {/* Comments Section */}
-        {/* <Box mb={8}>
+        <Box mb={8} id="comments-section">
           <Text fontWeight="bold" fontSize="lg" mb={4}>
             Comments
           </Text>
           <VStack spacing={4}>
             {comments.map((comment, idx) => (
-              <Box
-                key={idx}
-                borderWidth="1px"
-                borderRadius="md"
-                p={4}
-                w="full"
-              >
+              <Box key={idx} borderWidth="1px" borderRadius="md" p={4} w="full">
                 <HStack>
                   <Avatar name={comment.name} size="sm" />
                   <Box>
@@ -284,77 +365,90 @@ const SingleArticle = () => {
               </Box>
             ))}
           </VStack>
-        </Box> */}
+          <VStack spacing={4} mt={4}>
+            <Textarea
+              placeholder="Your Comment"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <Button colorScheme="blue" onClick={handleCommentSubmit}>
+              Add Comment
+            </Button>
+          </VStack>
+        </Box>
+      </Container>
 
-        {/* Related Articles */}
-        {relatedArticles.length > 0 && (
-          <Box mb={8}>
-            <Text fontWeight="bold" fontSize="xl" mb={4}>
-              Related Articles
-            </Text>
-            <SimpleGrid columns={[1, 2]} spacing={6}>
-              {relatedArticles.map((ra, i) => (
-                <Box
-                  key={i}
-                  borderWidth="1px"
-                  borderRadius="md"
-                  overflow="hidden"
-                  p={4}
-                >
-                  <Image
-                    src={ra.image}
-                    alt={ra.title}
-                    borderRadius="md"
-                    mb={4}
-                  />
-                  <Text fontWeight="bold">{ra.title}</Text>
-                  <Text fontSize="sm" color="gray.600">
-                    {ra.excerpt}
-                  </Text>
-                </Box>
-              ))}
-            </SimpleGrid>
-          </Box>
-        )}
-
-        {/* Read More Articles */}
-        <Box mb={8} mt={12}>
-          <Text fontWeight="bold" fontSize="xl" mb={4} textAlign="center">
-            Read More Articles
+      {/* Related Articles */}
+      {relatedArticles.length > 0 && (
+        <Box mb={8}>
+          <Text fontWeight="bold" fontSize="xl" mb={4}>
+            Related Articles
           </Text>
-          <SimpleGrid columns={[1, 2]} spacing={6} overflowX="scroll">
-            {randomArticles.map((article, index) => (
-              <Link key={index} to={`/articles/${article.slug}`}>
-                <Box
-                  borderWidth="1px"
-                  borderRadius="md"
-                  overflow="hidden"
-                  p={4}
-                  minW="350px"
-                  maxW="350px"
-                  h="100%"
-                >
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    borderRadius="md"
-                    mb={4}
-                    w="100%"
-                    h="200px"
-                    objectFit="cover"
-                  />
-                  <Text fontWeight="bold" noOfLines={2}>
-                    {article.title}
-                  </Text>
-                  <Text fontSize="sm" color="gray.600" noOfLines={3}>
-                    {article.excerpt}
-                  </Text>
-                </Box>
-              </Link>
+          <SimpleGrid columns={[1, 2]} spacing={6}>
+            {relatedArticles.map((ra, i) => (
+              <Box
+                key={i}
+                borderWidth="1px"
+                borderRadius="md"
+                overflow="hidden"
+                p={4}
+              >
+                <Image src={ra.image} alt={ra.title} borderRadius="md" mb={4} />
+                <Text fontWeight="bold">{ra.title}</Text>
+                <Text fontSize="sm" color="gray.600">
+                  {ra.excerpt}
+                </Text>
+              </Box>
             ))}
           </SimpleGrid>
         </Box>
-      </Container>
+      )}
+      
+      <Divider my={4}/>
+
+      {/* Read More Articles */}
+      <Box width="100%" maxW="100vw" px={10} py={8} bg="white" my={4}> {/* Adjusted margin */}
+        <Text fontWeight="bold" fontSize="xl" mb={8} textAlign="center"> {/* Adjusted margin */}
+          Read More Articles
+        </Text>
+        <SimpleGrid
+          columns={{ base: 1, md: 2, lg: 4 }}
+          spacing={6}
+          width="100%"
+        >
+          {randomArticles.map((article, index) => (
+            <Link key={index} to={`/articles/${article.slug}`}>
+              <Box
+                borderWidth="1px"
+                borderRadius="md"
+                overflow="hidden"
+                p={4}
+                bg="white"
+                boxShadow="md"
+                minW="250px"
+                width="100%"
+                height="350px" // Set a fixed height for the card
+              >
+                <Image
+                  src={article.image}
+                  alt={article.title}
+                  borderRadius="md"
+                  mb={4}
+                  w="100%"
+                  h="200px"
+                  objectFit="cover"
+                />
+                <Text fontWeight="bold" noOfLines={2}>
+                  {article.title}
+                </Text>
+                <Text fontSize="sm" color="gray.600" noOfLines={3}>
+                  {article.excerpt}
+                </Text>
+              </Box>
+            </Link>
+          ))}
+        </SimpleGrid>
+      </Box>
     </Box>
   );
 };
