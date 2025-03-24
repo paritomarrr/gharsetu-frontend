@@ -319,7 +319,7 @@ const PropertyView = () => {
           style={{
             width: `${splitPosition}%`,
             position: "absolute",
-            left: 0,
+            right: 0,
             top: 0,
             bottom: 0,
           }}
@@ -378,12 +378,12 @@ const PropertyView = () => {
 
         <div
           className="hidden md:block w-1 bg-gray-200 hover:bg-gray-300 cursor-col-resize active:bg-gray-400 transition-colors absolute top-0 bottom-0"
-          style={{ left: `${splitPosition}%` }}
+          style={{ right: `${splitPosition}%` }}
           onMouseDown={handleMouseDown}
         />
 
         <div
-          className="absolute right-0 top-0 bottom-0"
+          className="absolute left-0 top-0 bottom-0"
           style={{ width: `${100 - splitPosition}%` }}
         >
           <PropertyViewPageMap
