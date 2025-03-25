@@ -17,11 +17,15 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     // Initialize map
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/streets-v11",
+      style: "mapbox://styles/mapbox/streets-v12",
       center: [77.279713, 28.639965], // Default to a central location
       zoom: 20,
-      pitch: 45,
-      bearing: -17.6,
+      pitch: 0,
+      bearing: 0,
+      maxBounds: [
+        [68.1766451354, 6.747139], // Southwest coordinates of India
+        [97.4025614766, 35.508700] // Northeast coordinates of India
+      ]
     });
 
     mapRef.current = map;
