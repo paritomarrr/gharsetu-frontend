@@ -204,7 +204,7 @@ const OptionsBar = ({ mode }) => {
         {/* Reset (Desktop) */}
         <div
           onClick={clearFilters}
-          className="text-sm border rounded-md border-red-300 px-4 font-semibold cursor-pointer text-red-600 flex items-center hover:bg-red-500 hover:text-white hover:duration-200"
+          className="text-sm border rounded-md border-red-300 px-2 py-2 font-semibold cursor-pointer text-red-600 flex items-center hover:bg-red-500 hover:text-white hover:duration-200"
         >
           Reset
         </div>

@@ -315,13 +315,15 @@ const PropertyView = () => {
         onMouseMove={handleMouseMove}
       >
         <div
-          className="px-6 py-3 flex flex-col gap-3 overflow-hidden"
+          className="px-6 py-3 flex flex-col gap-3 overflow-hidden shadow-lg"
           style={{
             width: `${splitPosition}%`,
             position: "absolute",
             right: 0,
             top: 0,
             bottom: 0,
+            zIndex: 10,
+            boxShadow: "-8px 0 15px -4px rgba(0, 0, 0, 0.4)", 
           }}
         >
           <div className="text-[#6B7280] font-light text-sm">
