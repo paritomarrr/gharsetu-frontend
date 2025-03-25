@@ -4,6 +4,7 @@ import axios from "axios";
 import OptionsBar from "../components/propertyViewPage/OptionsBar";
 import PropertyViewPageMap from "../components/propertyViewPage/PropertyViewPageMap";
 import PropertyCard from "../components/common/PropertyCard";
+import Footer from "../components/common/Footer";
 import {
   filterProperties,
   validatePriceRange,
@@ -21,43 +22,10 @@ const PropertyView = () => {
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const propertiesPerPage = 6;
-
-  const totalPages = Math.ceil(propertiesToShow.length / propertiesPerPage);
-
   const propertyListRef = useRef(null);
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-      window.scrollTo(0, 0);
-      if (propertyListRef.current) {
-        propertyListRef.current.scrollTop = 0;
-      }
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      window.scrollTo(0, 0);
-      if (propertyListRef.current) {
-        propertyListRef.current.scrollTop = 0;
-      }
-    }
-  };
-
-  const paginatedProperties = propertiesToShow.slice(
-    (currentPage - 1) * propertiesPerPage,
-    currentPage * propertiesPerPage
-  );
-
-  useEffect(() => {
-    setCurrentPage(1); // Reset page number when mode changes
-  }, [mode]);
-
   const [loading, setLoading] = useState(true);
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
 
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
@@ -129,14 +97,24 @@ const PropertyView = () => {
   }, [search, mode, minPrice, maxPrice]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    if (propertyListRef.current) {
-      propertyListRef.current.scrollTop = 0;
-    }
-  }, [currentPage]);
+    const handleScroll = () => {
+      if (propertyListRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = propertyListRef.current;
+        setIsFooterVisible(scrollTop + clientHeight >= scrollHeight - 10);
+      }
+    };
 
-  useEffect(() => {
-  }, [propertiesToShow]);
+    const propertyListElement = propertyListRef.current;
+    if (propertyListElement) {
+      propertyListElement.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (propertyListElement) {
+        propertyListElement.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
 
   const cityName = search ? search.split(",")[1]?.trim() : "Ghaziabad";
 
@@ -309,35 +287,16 @@ const PropertyView = () => {
           >
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
-                {Array.from({ length: propertiesPerPage }).map((_, index) => (
+                {Array.from({ length: 6 }).map((_, index) => (
                   <Skeleton key={index} height={200} />
                 ))}
               </div>
-            ) : paginatedProperties.length > 0 ? (
+            ) : propertiesToShow.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
-                  {paginatedProperties.map((property) => (
+                  {propertiesToShow.map((property) => (
                     <PropertyCard key={property._id} property={property} />
                   ))}
-                </div>
-                <div className="flex justify-center items-center mt-4 space-x-4">
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span className="text-sm font-medium">
-                    {currentPage}/{totalPages}
-                  </span>
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
                 </div>
               </>
             ) : (
@@ -345,6 +304,7 @@ const PropertyView = () => {
                 No Properties Found
               </div>
             )}
+            <Footer />
           </div>
         </div>
       </div>
@@ -359,7 +319,7 @@ const PropertyView = () => {
           style={{
             width: `${splitPosition}%`,
             position: "absolute",
-            left: 0,
+            right: 0,
             top: 0,
             bottom: 0,
           }}
@@ -395,51 +355,35 @@ const PropertyView = () => {
           >
             {loading ? (
               <div className="grid grid-cols-2 gap-9 py-3">
-                {Array.from({ length: propertiesPerPage }).map((_, index) => (
+                {Array.from({ length: 6 }).map((_, index) => (
                   <Skeleton key={index} height={200} />
                 ))}
               </div>
-            ) : paginatedProperties.length > 0 ? (
+            ) : propertiesToShow.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 gap-9 py-3">
-                  {paginatedProperties.map((property) => (
+                  {propertiesToShow.map((property) => (
                     <PropertyCard key={property._id} property={property} />
                   ))}
-                </div>
-                <div className="flex justify-center items-center mt-4 space-x-4">
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span className="text-sm font-medium">
-                    {currentPage}/{totalPages}
-                  </span>
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
                 </div>
               </>
             ) : (
               <div>No Properties Found</div>
             )}
+            <div className="mt-4">
+              <Footer />
+            </div>
           </div>
         </div>
 
         <div
           className="hidden md:block w-1 bg-gray-200 hover:bg-gray-300 cursor-col-resize active:bg-gray-400 transition-colors absolute top-0 bottom-0"
-          style={{ left: `${splitPosition}%` }}
+          style={{ right: `${splitPosition}%` }}
           onMouseDown={handleMouseDown}
         />
 
         <div
-          className="absolute right-0 top-0 bottom-0"
+          className="absolute left-0 top-0 bottom-0"
           style={{ width: `${100 - splitPosition}%` }}
         >
           <PropertyViewPageMap

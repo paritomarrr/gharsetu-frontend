@@ -95,7 +95,7 @@ function App() {
         <HomeFooter />
       ) : location.pathname.includes("/postProperty") ? (
         <PostPropertyBottomBar />
-      ) : (
+      ) : location.pathname.includes("/properties") ? null : (
         <Footer />
       )}
     </>
