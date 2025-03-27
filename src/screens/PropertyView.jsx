@@ -260,7 +260,7 @@ const PropertyView = () => {
 
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col">
-      <OptionsBar mode={mode} />
+      <OptionsBar mode={mode} onStateSelect={handleStateSelect} />
 
       {/* Mobile View (Bottom Sheet) - visible on small screens */}
       <div className="block md:hidden relative flex-1">

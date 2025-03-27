@@ -145,7 +145,6 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
 
     map.on("click", async (e) => {
       const { lng, lat } = e.lngLat;
-      console.log("Clicked coordinates:", { lng, lat });
 
       try {
         const response = await axios.get(
@@ -164,7 +163,6 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
 
         if (stateFeature) {
           const stateName = stateFeature.text;
-          console.log("State:", stateName);
 
           // Fetch state boundaries
           const boundaryResponse = await axios.get(

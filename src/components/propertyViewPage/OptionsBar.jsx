@@ -17,7 +17,7 @@ import { ChevronDown, Search, Sliders } from "lucide-react";
 import PropertySearchBar from "./PropertySearchBar";
 import PriceRange from "./optionBar/PriceRange";
 
-const OptionsBar = ({ mode }) => {
+const OptionsBar = ({ mode, onStateSelect }) => {
   const [selectedMode, setSelectedMode] = useState("buy");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -57,6 +57,9 @@ const OptionsBar = ({ mode }) => {
     setBuiltUpArea("");
     setSelectedBedBath([]);
     setReset(true);
+    if (onStateSelect) {
+      onStateSelect(null);
+    }
     setTimeout(() => setReset(false), 0); // Reset the state back to false
   };
 
