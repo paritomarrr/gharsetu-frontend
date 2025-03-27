@@ -36,6 +36,7 @@ import { backend_url } from "../../config";
 import { format } from "date-fns";
 import { UserContext } from "../../context/UserContext";
 import axios from "axios";
+import remarkGfm from "remark-gfm";
 
 // Custom styles for Markdown
 const markdownTheme = {
@@ -312,7 +313,7 @@ const SingleArticle = () => {
 
         {/* Article Content */}
         <VStack align="start" spacing={4} mb={8}>
-          <ReactMarkdown components={ChakraUIRenderer(markdownTheme)}>
+          <ReactMarkdown components={ChakraUIRenderer(markdownTheme)} remarkPlugins={[remarkGfm]}>
             {content}
           </ReactMarkdown>
         </VStack>
