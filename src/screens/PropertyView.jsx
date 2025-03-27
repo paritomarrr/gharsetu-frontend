@@ -26,6 +26,7 @@ const PropertyView = () => {
 
   const [loading, setLoading] = useState(true);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
+  const [selectedState, setSelectedState] = useState(null); // Track selected state
 
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
@@ -116,7 +117,7 @@ const PropertyView = () => {
     };
   }, []);
 
-  const cityName = search ? search.split(",")[1]?.trim() : "Ghaziabad";
+  const cityName = selectedState || (search ? search.split(",")[1]?.trim() : "Ghaziabad");
 
   useEffect(() => {
     document.title = `${
@@ -253,6 +254,7 @@ const PropertyView = () => {
         mode,
       });
       setPropertiesToShow(res.data.properties);
+      setSelectedState(stateName); // Update selected state
     } catch (error) {
       console.error("Error filtering properties by state:", error);
     }
