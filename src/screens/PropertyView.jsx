@@ -246,6 +246,18 @@ const PropertyView = () => {
     }
   }, [drawnShape, mode]);
 
+  const handleStateSelect = useCallback(async (stateName) => {
+    try {
+      const res = await axios.post(`${backend_url}/api/v1/properties/filteredProperties`, {
+        state: stateName,
+        mode,
+      });
+      setPropertiesToShow(res.data.properties);
+    } catch (error) {
+      console.error("Error filtering properties by state:", error);
+    }
+  }, [mode]);
+
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col">
       <OptionsBar mode={mode} />
@@ -257,6 +269,7 @@ const PropertyView = () => {
             propertiesToShow={propertiesToShow}
             onDrawCreate={handleDrawCreate}
             onDrawDelete={handleDrawDelete}
+            onStateSelect={handleStateSelect} // Pass the handler
           />
         </div>
 
@@ -392,6 +405,7 @@ const PropertyView = () => {
             propertiesToShow={propertiesToShow}
             onDrawCreate={handleDrawCreate}
             onDrawDelete={handleDrawDelete}
+            onStateSelect={handleStateSelect} // Pass the handler
           />
         </div>
       </div>
