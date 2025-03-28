@@ -26,6 +26,7 @@ const PropertyView = () => {
 
   const [loading, setLoading] = useState(true);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
+  const [selectedState, setSelectedState] = useState(null); // Track selected state
 
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
@@ -116,7 +117,7 @@ const PropertyView = () => {
     };
   }, []);
 
-  const cityName = search ? search.split(",")[1]?.trim() : "Ghaziabad";
+  const cityName = selectedState || (search ? search.split(",")[1]?.trim() : "Ghaziabad");
 
   useEffect(() => {
     document.title = `${
@@ -246,9 +247,22 @@ const PropertyView = () => {
     }
   }, [drawnShape, mode]);
 
+  const handleStateSelect = useCallback(async (stateName) => {
+    try {
+      const res = await axios.post(`${backend_url}/api/v1/properties/filteredProperties`, {
+        state: stateName,
+        mode,
+      });
+      setPropertiesToShow(res.data.properties);
+      setSelectedState(stateName); // Update selected state
+    } catch (error) {
+      console.error("Error filtering properties by state:", error);
+    }
+  }, [mode]);
+
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col">
-      <OptionsBar mode={mode} />
+      <OptionsBar mode={mode} onStateSelect={handleStateSelect} />
 
       {/* Mobile View (Bottom Sheet) - visible on small screens */}
       <div className="block md:hidden relative flex-1">
@@ -257,6 +271,7 @@ const PropertyView = () => {
             propertiesToShow={propertiesToShow}
             onDrawCreate={handleDrawCreate}
             onDrawDelete={handleDrawDelete}
+            onStateSelect={handleStateSelect} // Pass the handler
           />
         </div>
 
@@ -315,13 +330,15 @@ const PropertyView = () => {
         onMouseMove={handleMouseMove}
       >
         <div
-          className="px-6 py-3 flex flex-col gap-3 overflow-hidden"
+          className="px-6 py-3 flex flex-col gap-3 overflow-hidden shadow-lg"
           style={{
             width: `${splitPosition}%`,
             position: "absolute",
             right: 0,
             top: 0,
             bottom: 0,
+            zIndex: 10,
+            boxShadow: "-8px 0 15px -4px rgba(0, 0, 0, 0.4)", 
           }}
         >
           <div className="text-[#6B7280] font-light text-sm">
@@ -390,6 +407,7 @@ const PropertyView = () => {
             propertiesToShow={propertiesToShow}
             onDrawCreate={handleDrawCreate}
             onDrawDelete={handleDrawDelete}
+            onStateSelect={handleStateSelect} // Pass the handler
           />
         </div>
       </div>

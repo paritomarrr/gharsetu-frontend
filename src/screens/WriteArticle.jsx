@@ -14,6 +14,8 @@ import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
 import "react-markdown-editor-lite/lib/index.css";
+import markdownItTableOfContents from "markdown-it-table-of-contents"; // Replace require with import
+import remarkGfm from "remark-gfm"; // Import the plugin for GitHub Flavored Markdown (GFM)
 
 const WriteArticle = () => {
   const [title, setTitle] = useState("");
@@ -28,7 +30,7 @@ const WriteArticle = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const { user, loading: userLoading } = useContext(UserContext);
-  const mdParser = new MarkdownIt();
+  const mdParser = new MarkdownIt().use(markdownItTableOfContents); // Use the imported module
 
   useEffect(() => {
     document.title = "Gharsetu | Write Article";
@@ -258,7 +260,7 @@ const WriteArticle = () => {
                   </Box>
                 </HStack>
                 <VStack align="start" spacing={4} mb={8}>
-                  <ReactMarkdown components={ChakraUIRenderer()}>
+                  <ReactMarkdown components={ChakraUIRenderer()} remarkPlugins={[remarkGfm]}>
                     {content}
                   </ReactMarkdown>
                 </VStack>

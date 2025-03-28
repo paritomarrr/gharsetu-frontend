@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import axios from "axios";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
-const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete }) => {
+const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete, onStateSelect }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
@@ -17,11 +18,15 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     // Initialize map
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/streets-v11",
+      style: "mapbox://styles/mapbox/streets-v12",
       center: [77.279713, 28.639965], // Default to a central location
       zoom: 20,
-      pitch: 45,
-      bearing: -17.6,
+      pitch: 0,
+      bearing: 0,
+      maxBounds: [
+        [68.1766451354, 6.747139], // Southwest coordinates of India
+        [97.4025614766, 35.508700] // Northeast coordinates of India
+      ]
     });
 
     mapRef.current = map;
@@ -138,6 +143,66 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     map.on('draw.create', (e) => onDrawCreate(e.features));
     map.on('draw.delete', onDrawDelete);
 
+    map.on("click", async (e) => {
+      const { lng, lat } = e.lngLat;
+
+      try {
+        const response = await axios.get(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json`,
+          {
+            params: {
+              access_token: mapboxgl.accessToken,
+            },
+          }
+        );
+
+        const features = response.data.features;
+        const stateFeature = features.find((feature) =>
+          feature.place_type.includes("region")
+        );
+
+        if (stateFeature) {
+          const stateName = stateFeature.text;
+
+          // Fetch state boundaries
+          const boundaryResponse = await axios.get(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${stateName}.json`,
+            {
+              params: {
+                access_token: mapboxgl.accessToken,
+                types: "region",
+              },
+            }
+          );
+
+          const boundaryFeature = boundaryResponse.data.features[0];
+          if (boundaryFeature && boundaryFeature.bbox) {
+            const [minLng, minLat, maxLng, maxLat] = boundaryFeature.bbox;
+
+            // Fit map to the state boundary
+            map.fitBounds(
+              [
+                [minLng, minLat],
+                [maxLng, maxLat],
+              ],
+              { padding: 20 }
+            );
+
+            // Prevent property markers from overriding the state boundary zoom
+            map.once("moveend", () => {
+              console.log("Zoomed to state boundary:", stateName);
+            });
+          }
+
+          onStateSelect(stateName); // Pass the state name to the callback
+        } else {
+          console.warn("State not found for the clicked location.");
+        }
+      } catch (error) {
+        console.error("Error fetching state boundaries from Mapbox Geocoding API:", error);
+      }
+    });
+
     return () => {
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
@@ -152,7 +217,25 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
         mapRef.current.off('draw.delete', onDrawDelete);
       }
     };
-  }, [onDrawCreate, onDrawDelete]);
+  }, [onDrawCreate, onDrawDelete, onStateSelect]);
+
+  // Ensure property markers do not override state boundary zoom
+  useEffect(() => {
+    if (propertiesToShow.length > 0 && !mapRef.current.isMoving()) {
+      const bounds = new mapboxgl.LngLatBounds();
+
+      propertiesToShow.forEach((property) => {
+        const { coordinates } = property;
+        if (coordinates?.longitude && coordinates?.latitude) {
+          bounds.extend([coordinates.longitude, coordinates.latitude]);
+        }
+      });
+
+      mapRef.current.fitBounds(bounds, {
+        padding: 20,
+      });
+    }
+  }, [propertiesToShow]);
 
   useEffect(() => {
     // Clear existing markers
@@ -252,8 +335,8 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
       }
     });
 
-    // Fit map to the bounding box of all properties
-    if (propertiesToShow.length > 0) {
+    // Fit map to the bounding box of all properties only if onStateSelect is not active
+    if (propertiesToShow.length > 0 && !mapRef.current.isMoving()) {
       const bounds = new mapboxgl.LngLatBounds();
 
       propertiesToShow.forEach((property) => {
