@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import axios from "axios";
@@ -10,6 +10,7 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
+  const [isSatelliteView, setIsSatelliteView] = useState(false);
 
   useEffect(() => {
     mapboxgl.accessToken =
@@ -18,7 +19,9 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     // Initialize map
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/streets-v12",
+      style: isSatelliteView
+        ? "mapbox://styles/mapbox/satellite-streets-v12"
+        : "mapbox://styles/mapbox/streets-v12",
       center: [77.279713, 28.639965], // Default to a central location
       zoom: 20,
       pitch: 0,
@@ -217,7 +220,130 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
         mapRef.current.off('draw.delete', onDrawDelete);
       }
     };
-  }, [onDrawCreate, onDrawDelete, onStateSelect]);
+  }, [isSatelliteView, onDrawCreate, onDrawDelete, onStateSelect]);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      // Update the map style when toggling views
+      mapRef.current.setStyle(
+        isSatelliteView
+          ? "mapbox://styles/mapbox/satellite-v9"
+          : "mapbox://styles/mapbox/streets-v12"
+      );
+
+      // Reapply markers and other functionalities after style change
+      mapRef.current.once("styledata", () => {
+        // Re-add 3D buildings if applicable
+        const layers = mapRef.current.getStyle().layers;
+        const labelLayerId = layers?.find(
+          (layer) => layer.type === "symbol" && layer.layout["text-field"]
+        )?.id;
+
+        if (labelLayerId) {
+          mapRef.current.addLayer(
+            {
+              id: "add-3d-buildings",
+              source: "composite",
+              "source-layer": "building",
+              filter: ["==", "extrude", "true"],
+              type: "fill-extrusion",
+              minzoom: 15,
+              paint: {
+                "fill-extrusion-color": "#aaa",
+                "fill-extrusion-height": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  15,
+                  0,
+                  15.05,
+                  ["get", "height"],
+                ],
+                "fill-extrusion-base": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  15,
+                  0,
+                  15.05,
+                  ["get", "min_height"],
+                ],
+                "fill-extrusion-opacity": 0.6,
+              },
+            },
+            labelLayerId
+          );
+        }
+
+        // Clear existing markers
+        markersRef.current.forEach((marker) => marker.remove());
+        markersRef.current = [];
+
+        // Re-add property markers
+        propertiesToShow.forEach((property) => {
+          const { coordinates } = property;
+          if (coordinates?.longitude && coordinates?.latitude) {
+            const el = document.createElement("div");
+            el.className = "marker";
+
+            const formattedPrice = new Intl.NumberFormat("en-IN", {
+              style: "currency",
+              currency: "INR",
+              maximumFractionDigits: 0,
+              minimumFractionDigits: 0,
+            }).format(property.askedPrice || 0);
+
+            Object.assign(el.style, {
+              backgroundColor: "white",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "bold",
+              color: "#333",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minWidth: "60px",
+              textAlign: "center",
+              transition: "all 0.2s ease",
+              transform: "scale(1)",
+            });
+
+            el.textContent = formattedPrice;
+
+            el.addEventListener("mouseenter", () => {
+              el.style.backgroundColor = "#f0f0f0";
+            });
+
+            el.addEventListener("mouseleave", () => {
+              el.style.backgroundColor = "white";
+            });
+
+            const marker = new mapboxgl.Marker(el)
+              .setLngLat([coordinates.longitude, coordinates.latitude])
+              .addTo(mapRef.current);
+
+            markersRef.current.push(marker);
+          }
+        });
+
+        // Reapply zoom to property bounds if properties are available
+        if (propertiesToShow.length > 0) {
+          const bounds = new mapboxgl.LngLatBounds();
+          propertiesToShow.forEach((property) => {
+            const { coordinates } = property;
+            if (coordinates?.longitude && coordinates?.latitude) {
+              bounds.extend([coordinates.longitude, coordinates.latitude]);
+            }
+          });
+          mapRef.current.fitBounds(bounds, { padding: 20 });
+        }
+      });
+    }
+  }, [isSatelliteView, propertiesToShow]);
 
   // Ensure property markers do not override state boundary zoom
   useEffect(() => {
@@ -352,16 +478,44 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     }
   }, [propertiesToShow]);
 
+  const toggleMapStyle = () => {
+    setIsSatelliteView((prev) => !prev);
+  };
+
   return (
-    <div
-      ref={mapContainerRef}
-      style={{
-        height: "100%",
-        width: "100%",
-        borderRadius: "8px",
-        overflow: "hidden",
-      }}
-    />
+    <div style={{ position: "relative", height: "100%", width: "100%" }}>
+      <button
+        onClick={toggleMapStyle}
+        style={{
+          position: "absolute",
+          bottom: "30px",
+          right: "10px",
+          zIndex: 1,
+          padding: "8px 12px",
+          backgroundColor: "white",
+          color: "#000000",
+          border: "1px solid rgba(0, 0, 0, 0.2)",
+          borderRadius: "4px",
+          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+          cursor: "pointer",
+          fontSize: "14px",
+          fontWeight: "bold",
+          textAlign: "center",
+        }}
+        title={isSatelliteView ? "Switch to Street View" : "Switch to Satellite View"}
+      >
+        {isSatelliteView ? "Street View" : "Satellite View"}
+      </button>
+      <div
+        ref={mapContainerRef}
+        style={{
+          height: "100%",
+          width: "100%",
+          borderRadius: "8px",
+          overflow: "hidden",
+        }}
+      />
+    </div>
   );
 };
 
