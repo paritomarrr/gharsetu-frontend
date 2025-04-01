@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import axios from "axios";
+import { Button } from "reactstrap";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -10,7 +11,41 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
-  const [isSatelliteView, setIsSatelliteView] = useState(false);
+  const [mapType, setMapType] = useState("street"); // "street" or "satellite"
+  const [activeLayers, setActiveLayers] = useState({
+    flood: false,
+    fire: false,
+    wind: false,
+    air: false,
+    heat: false,
+  });
+  const [isOptionsVisible, setIsOptionsVisible] = useState(false);
+
+  const toggleOptions = () => setIsOptionsVisible((prev) => !prev);
+
+  const handleMapTypeChange = (type) => {
+    setMapType(type);
+    if (mapRef.current) {
+      mapRef.current.setStyle(
+        type === "satellite"
+          ? "mapbox://styles/mapbox/satellite-streets-v12"
+          : "mapbox://styles/mapbox/streets-v12"
+      );
+    }
+    setIsOptionsVisible(false); // Close options after selection
+  };
+
+  const toggleLayer = (layerId) => {
+    if (mapRef.current) {
+      const isLayerVisible = activeLayers[layerId];
+      if (isLayerVisible) {
+        mapRef.current.setLayoutProperty(layerId, "visibility", "none");
+      } else {
+        mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+      }
+      setActiveLayers((prev) => ({ ...prev, [layerId]: !isLayerVisible }));
+    }
+  };
 
   useEffect(() => {
     mapboxgl.accessToken =
@@ -19,7 +54,7 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     // Initialize map
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: isSatelliteView
+      style: mapType === "satellite"
         ? "mapbox://styles/mapbox/satellite-streets-v12"
         : "mapbox://styles/mapbox/streets-v12",
       center: [77.279713, 28.639965], // Default to a central location
@@ -79,6 +114,75 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
           labelLayerId
         );
       }
+
+      // Add climate risk layers
+      const climateRiskLayers = [
+        {
+          id: "flood-risk",
+          source: {
+            type: "raster",
+            tiles: ["https://example.com/flood-risk/{z}/{x}/{y}.png"],
+            tileSize: 256,
+          },
+          paint: {
+            "raster-opacity": 0.6,
+          },
+        },
+        {
+          id: "fire-risk",
+          source: {
+            type: "raster",
+            tiles: ["https://example.com/fire-risk/{z}/{x}/{y}.png"],
+            tileSize: 256,
+          },
+          paint: {
+            "raster-opacity": 0.6,
+          },
+        },
+        {
+          id: "wind-risk",
+          source: {
+            type: "raster",
+            tiles: ["https://example.com/wind-risk/{z}/{x}/{y}.png"],
+            tileSize: 256,
+          },
+          paint: {
+            "raster-opacity": 0.6,
+          },
+        },
+        {
+          id: "air-quality",
+          source: {
+            type: "raster",
+            tiles: ["https://example.com/air-quality/{z}/{x}/{y}.png"],
+            tileSize: 256,
+          },
+          paint: {
+            "raster-opacity": 0.6,
+          },
+        },
+        {
+          id: "heat-risk",
+          source: {
+            type: "raster",
+            tiles: ["https://example.com/heat-risk/{z}/{x}/{y}.png"],
+            tileSize: 256,
+          },
+          paint: {
+            "raster-opacity": 0.6,
+          },
+        },
+      ];
+
+      climateRiskLayers.forEach((layer) => {
+        map.addSource(layer.id, layer.source);
+        map.addLayer({
+          id: layer.id,
+          type: "raster",
+          source: layer.id,
+          paint: layer.paint,
+        });
+      });
     });
 
     const draw = new MapboxDraw({
@@ -220,13 +324,13 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
         mapRef.current.off('draw.delete', onDrawDelete);
       }
     };
-  }, [isSatelliteView, onDrawCreate, onDrawDelete, onStateSelect]);
+  }, [mapType, onDrawCreate, onDrawDelete, onStateSelect]);
 
   useEffect(() => {
     if (mapRef.current) {
       // Update the map style when toggling views
       mapRef.current.setStyle(
-        isSatelliteView
+        mapType === "satellite"
           ? "mapbox://styles/mapbox/satellite-v9"
           : "mapbox://styles/mapbox/streets-v12"
       );
@@ -343,7 +447,7 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
         }
       });
     }
-  }, [isSatelliteView, propertiesToShow]);
+  }, [mapType, propertiesToShow]);
 
   // Ensure property markers do not override state boundary zoom
   useEffect(() => {
@@ -478,34 +582,109 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     }
   }, [propertiesToShow]);
 
-  const toggleMapStyle = () => {
-    setIsSatelliteView((prev) => !prev);
-  };
-
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-      <button
-        onClick={toggleMapStyle}
+      <Button
+        onClick={toggleOptions}
         style={{
           position: "absolute",
           bottom: "30px",
           right: "10px",
-          zIndex: 1,
-          padding: "8px 12px",
+          zIndex: 2,
           backgroundColor: "white",
-          color: "#000000",
+          color: "black",
           border: "1px solid rgba(0, 0, 0, 0.2)",
           borderRadius: "4px",
-          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-          cursor: "pointer",
+          padding: "8px 12px",
           fontSize: "14px",
           fontWeight: "bold",
-          textAlign: "center",
+          cursor: "pointer",
+          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
         }}
-        title={isSatelliteView ? "Switch to Street View" : "Switch to Satellite View"}
       >
-        {isSatelliteView ? "Street View" : "Satellite View"}
-      </button>
+        Map
+      </Button>
+
+      {isOptionsVisible && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "70px",
+            right: "10px",
+            zIndex: 3,
+            backgroundColor: "white",
+            border: "1px solid rgba(0, 0, 0, 0.2)",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+            padding: "16px",
+            width: "280px",
+          }}
+        >
+          <h5 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "bold", textAlign: "center" }}>
+            Map Options
+          </h5>
+          <div style={{ marginBottom: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <label style={{ display: "flex", alignItems: "center", cursor: "pointer", fontSize: "14px" }}>
+                <input
+                  type="radio"
+                  name="mapType"
+                  value="street"
+                  checked={mapType === "street"}
+                  onChange={() => handleMapTypeChange("street")}
+                  style={{ marginRight: "10px" }}
+                />
+                Street View
+              </label>
+              <label style={{ display: "flex", alignItems: "center", cursor: "pointer", fontSize: "14px" }}>
+                <input
+                  type="radio"
+                  name="mapType"
+                  value="satellite"
+                  checked={mapType === "satellite"}
+                  onChange={() => handleMapTypeChange("satellite")}
+                  style={{ marginRight: "10px" }}
+                />
+                Satellite View
+              </label>
+            </div>
+          </div>
+          <div>
+            <h6 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "bold" }}>Climate Risks</h6>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+              {["None selected", "Flood", "Fire", "Wind", "Air", "Heat"].map((layer, index) => (
+                <label
+                  key={layer}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    width: index === 0 ? "100%" : "45%",
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="climateRisk"
+                    value={layer.toLowerCase()}
+                    checked={activeLayers[layer.toLowerCase()] || (layer === "None selected" && !Object.values(activeLayers).includes(true))}
+                    onChange={() => {
+                      const updatedLayers = Object.keys(activeLayers).reduce((acc, key) => {
+                        acc[key] = layer.toLowerCase() === key;
+                        return acc;
+                      }, {});
+                      setActiveLayers(updatedLayers);
+                    }}
+                    style={{ marginRight: "10px" }}
+                  />
+                  {layer}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         ref={mapContainerRef}
         style={{
