@@ -7,17 +7,24 @@ import { Button } from "reactstrap";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
-const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete, onStateSelect }) => {
+const OPENWEATHER_API_KEY = "cc2e2c1c547da37d8d5763d5e8d4fa29";
+
+const PropertyViewPageMap = ({
+  propertiesToShow = [],
+  onDrawCreate,
+  onDrawDelete,
+  onStateSelect,
+}) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
-  const [mapType, setMapType] = useState("street"); // "street" or "satellite"
+  const [mapType, setMapType] = useState("street");
   const [activeLayers, setActiveLayers] = useState({
-    flood: false,
-    fire: false,
+    temperature: false,
+    precipitation: false,
+    clouds: false,
     wind: false,
-    air: false,
-    heat: false,
+    pressure: false,
   });
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
 
@@ -26,24 +33,142 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
   const handleMapTypeChange = (type) => {
     setMapType(type);
     if (mapRef.current) {
-      mapRef.current.setStyle(
-        type === "satellite"
-          ? "mapbox://styles/mapbox/satellite-streets-v12"
-          : "mapbox://styles/mapbox/streets-v12"
-      );
+      // Wait for the map's style to load before setting a new style
+      if (mapRef.current.isStyleLoaded()) {
+        mapRef.current.setStyle(
+          type === "satellite"
+            ? "mapbox://styles/mapbox/satellite-streets-v12"
+            : "mapbox://styles/mapbox/streets-v12"
+        );
+      } else {
+        mapRef.current.once("style.load", () => {
+          mapRef.current.setStyle(
+            type === "satellite"
+              ? "mapbox://styles/mapbox/satellite-streets-v12"
+              : "mapbox://styles/mapbox/streets-v12"
+          );
+        });
+      }
     }
     setIsOptionsVisible(false); // Close options after selection
   };
 
+  const initializeClimateLayers = (map) => {
+    const layerConfig = {
+      temperature: {
+        source: {
+          type: "raster",
+          tiles: [
+            `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${OPENWEATHER_API_KEY}`,
+          ],
+          tileSize: 256,
+        },
+        paint: {
+          "raster-opacity": 0.6, // Adjust transparency
+        },
+      },
+      precipitation: {
+        source: {
+          type: "raster",
+          tiles: [
+            `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OPENWEATHER_API_KEY}`,
+          ],
+          tileSize: 256,
+        },
+        paint: {
+          "raster-opacity": 0.6, // Adjust transparency
+        },
+      },
+      clouds: {
+        source: {
+          type: "raster",
+          tiles: [
+            `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OPENWEATHER_API_KEY}`,
+          ],
+          tileSize: 256,
+        },
+        paint: {
+          "raster-opacity": 0.6, // Adjust transparency
+        },
+      },
+      wind: {
+        source: {
+          type: "raster",
+          tiles: [
+            `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${OPENWEATHER_API_KEY}`,
+          ],
+          tileSize: 256,
+        },
+        paint: {
+          "raster-opacity": 0.6, // Adjust transparency
+        },
+      },
+      pressure: {
+        source: {
+          type: "raster",
+          tiles: [
+            `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${OPENWEATHER_API_KEY}`,
+          ],
+          tileSize: 256,
+        },
+        paint: {
+          "raster-opacity": 0.6, // Adjust transparency
+        },
+      },
+    };
+
+    Object.entries(layerConfig).forEach(([layerId, config]) => {
+      if (!map.getSource(layerId)) {
+        map.addSource(layerId, config.source);
+      }
+      if (!map.getLayer(layerId)) {
+        map.addLayer({
+          id: layerId,
+          type: "raster",
+          source: layerId,
+          paint: config.paint,
+          layout: { visibility: "none" }, // Initially hidden
+        });
+      }
+    });
+  };
+
   const toggleLayer = (layerId) => {
     if (mapRef.current) {
-      const isLayerVisible = activeLayers[layerId];
-      if (isLayerVisible) {
-        mapRef.current.setLayoutProperty(layerId, "visibility", "none");
-      } else {
-        mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+      const layerMapping = {
+        temperature: "temperature",
+        precipitation: "precipitation",
+        clouds: "clouds",
+        wind: "wind",
+        pressure: "pressure",
+      };
+
+      const mappedLayerId = layerMapping[layerId];
+      if (!mappedLayerId) {
+        console.warn(`No mapping found for layerId: ${layerId}`);
+        return;
       }
-      setActiveLayers((prev) => ({ ...prev, [layerId]: !isLayerVisible }));
+
+      // Hide all layers
+      Object.keys(layerMapping).forEach((key) => {
+        const layer = layerMapping[key];
+        if (mapRef.current.getLayer(layer)) {
+          mapRef.current.setLayoutProperty(layer, "visibility", "none");
+        }
+      });
+
+      // Show the selected layer
+      if (mapRef.current.getLayer(mappedLayerId)) {
+        mapRef.current.setLayoutProperty(mappedLayerId, "visibility", "visible");
+      }
+
+      // Update active layers state
+      setActiveLayers((prev) =>
+        Object.keys(prev).reduce((acc, key) => {
+          acc[key] = key === layerId; // Only the selected layer is active
+          return acc;
+        }, {})
+      );
     }
   };
 
@@ -54,32 +179,36 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
     // Initialize map
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: mapType === "satellite"
-        ? "mapbox://styles/mapbox/satellite-streets-v12"
-        : "mapbox://styles/mapbox/streets-v12",
+      style:
+        mapType === "satellite"
+          ? "mapbox://styles/mapbox/satellite-streets-v12"
+          : "mapbox://styles/mapbox/streets-v12",
       center: [77.279713, 28.639965], // Default to a central location
       zoom: 20,
       pitch: 0,
       bearing: 0,
       maxBounds: [
         [68.1766451354, 6.747139], // Southwest coordinates of India
-        [97.4025614766, 35.508700] // Northeast coordinates of India
-      ]
+        [97.4025614766, 35.5087], // Northeast coordinates of India
+      ],
     });
 
     mapRef.current = map;
 
     // Add navigation controls
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-    // Add 3D building layer if the style supports it
     map.on("load", () => {
+      // Initialize climate layers
+      initializeClimateLayers(map);
+
+      // Add 3D building layer if the style supports it
       const layers = map.getStyle().layers;
       const labelLayerId = layers?.find(
         (layer) => layer.type === "symbol" && layer.layout["text-field"]
       )?.id;
 
-      if (labelLayerId) {
+      if (labelLayerId && !map.getLayer("add-3d-buildings")) {
         map.addLayer(
           {
             id: "add-3d-buildings",
@@ -114,141 +243,80 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
           labelLayerId
         );
       }
-
-      // Add climate risk layers
-      const climateRiskLayers = [
-        {
-          id: "flood-risk",
-          source: {
-            type: "raster",
-            tiles: ["https://example.com/flood-risk/{z}/{x}/{y}.png"],
-            tileSize: 256,
-          },
-          paint: {
-            "raster-opacity": 0.6,
-          },
-        },
-        {
-          id: "fire-risk",
-          source: {
-            type: "raster",
-            tiles: ["https://example.com/fire-risk/{z}/{x}/{y}.png"],
-            tileSize: 256,
-          },
-          paint: {
-            "raster-opacity": 0.6,
-          },
-        },
-        {
-          id: "wind-risk",
-          source: {
-            type: "raster",
-            tiles: ["https://example.com/wind-risk/{z}/{x}/{y}.png"],
-            tileSize: 256,
-          },
-          paint: {
-            "raster-opacity": 0.6,
-          },
-        },
-        {
-          id: "air-quality",
-          source: {
-            type: "raster",
-            tiles: ["https://example.com/air-quality/{z}/{x}/{y}.png"],
-            tileSize: 256,
-          },
-          paint: {
-            "raster-opacity": 0.6,
-          },
-        },
-        {
-          id: "heat-risk",
-          source: {
-            type: "raster",
-            tiles: ["https://example.com/heat-risk/{z}/{x}/{y}.png"],
-            tileSize: 256,
-          },
-          paint: {
-            "raster-opacity": 0.6,
-          },
-        },
-      ];
-
-      climateRiskLayers.forEach((layer) => {
-        map.addSource(layer.id, layer.source);
-        map.addLayer({
-          id: layer.id,
-          type: "raster",
-          source: layer.id,
-          paint: layer.paint,
-        });
-      });
     });
 
     const draw = new MapboxDraw({
       displayControlsDefault: false,
       controls: {
         polygon: true,
-        trash: true
+        trash: true,
       },
       userProperties: true,
       styles: [
         // Active (being drawn)
         {
-          "id": "gl-draw-polygon-fill",
-          "type": "fill",
-          "filter": ["all", ["==", "active", "true"], ["==", "$type", "Polygon"]],
-          "paint": {
+          id: "gl-draw-polygon-fill",
+          type: "fill",
+          filter: ["all", ["==", "active", "true"], ["==", "$type", "Polygon"]],
+          paint: {
             "fill-color": "#D20C0C",
             "fill-outline-color": "#D20C0C",
-            "fill-opacity": 0.1
-          }
+            "fill-opacity": 0.1,
+          },
         },
         {
-          "id": "gl-draw-polygon-stroke-active",
-          "type": "line",
-          "filter": ["all", ["==", "active", "true"], ["==", "$type", "Polygon"]],
-          "layout": {
+          id: "gl-draw-polygon-stroke-active",
+          type: "line",
+          filter: ["all", ["==", "active", "true"], ["==", "$type", "Polygon"]],
+          layout: {
             "line-cap": "round",
-            "line-join": "round"
+            "line-join": "round",
           },
-          "paint": {
+          paint: {
             "line-color": "#D20C0C",
             "line-dasharray": [0.2, 2],
-            "line-width": 2
-          }
+            "line-width": 2,
+          },
         },
         // Inactive (already drawn)
         {
-          "id": "gl-draw-polygon-fill-inactive",
-          "type": "fill",
-          "filter": ["all", ["==", "active", "false"], ["==", "$type", "Polygon"]],
-          "paint": {
+          id: "gl-draw-polygon-fill-inactive",
+          type: "fill",
+          filter: [
+            "all",
+            ["==", "active", "false"],
+            ["==", "$type", "Polygon"],
+          ],
+          paint: {
             "fill-color": "#3bb2d0",
             "fill-outline-color": "#3bb2d0",
-            "fill-opacity": 0.1
-          }
+            "fill-opacity": 0.1,
+          },
         },
         {
-          "id": "gl-draw-polygon-stroke-inactive",
-          "type": "line",
-          "filter": ["all", ["==", "active", "false"], ["==", "$type", "Polygon"]],
-          "layout": {
+          id: "gl-draw-polygon-stroke-inactive",
+          type: "line",
+          filter: [
+            "all",
+            ["==", "active", "false"],
+            ["==", "$type", "Polygon"],
+          ],
+          layout: {
             "line-cap": "round",
-            "line-join": "round"
+            "line-join": "round",
           },
-          "paint": {
+          paint: {
             "line-color": "#3bb2d0",
-            "line-width": 2
-          }
-        }
-      ]
+            "line-width": 2,
+          },
+        },
+      ],
     });
 
-    map.addControl(draw, 'top-right');
+    map.addControl(draw, "top-right");
 
-    map.on('draw.create', (e) => onDrawCreate(e.features));
-    map.on('draw.delete', onDrawDelete);
+    map.on("draw.create", (e) => onDrawCreate(e.features));
+    map.on("draw.delete", onDrawDelete);
 
     map.on("click", async (e) => {
       const { lng, lat } = e.lngLat;
@@ -306,7 +374,10 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
           console.warn("State not found for the clicked location.");
         }
       } catch (error) {
-        console.error("Error fetching state boundaries from Mapbox Geocoding API:", error);
+        console.error(
+          "Error fetching state boundaries from Mapbox Geocoding API:",
+          error
+        );
       }
     });
 
@@ -320,20 +391,30 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
       }
 
       if (mapRef.current) {
-        mapRef.current.off('draw.create', onDrawCreate);
-        mapRef.current.off('draw.delete', onDrawDelete);
+        mapRef.current.off("draw.create", onDrawCreate);
+        mapRef.current.off("draw.delete", onDrawDelete);
       }
     };
   }, [mapType, onDrawCreate, onDrawDelete, onStateSelect]);
 
   useEffect(() => {
     if (mapRef.current) {
-      // Update the map style when toggling views
-      mapRef.current.setStyle(
-        mapType === "satellite"
-          ? "mapbox://styles/mapbox/satellite-v9"
-          : "mapbox://styles/mapbox/streets-v12"
-      );
+      // Ensure the map's style is loaded before applying changes
+      if (mapRef.current.isStyleLoaded()) {
+        mapRef.current.setStyle(
+          mapType === "satellite"
+            ? "mapbox://styles/mapbox/satellite-v9"
+            : "mapbox://styles/mapbox/streets-v12"
+        );
+      } else {
+        mapRef.current.once("style.load", () => {
+          mapRef.current.setStyle(
+            mapType === "satellite"
+              ? "mapbox://styles/mapbox/satellite-v9"
+              : "mapbox://styles/mapbox/streets-v12"
+          );
+        });
+      }
 
       // Reapply markers and other functionalities after style change
       mapRef.current.once("styledata", () => {
@@ -343,7 +424,7 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
           (layer) => layer.type === "symbol" && layer.layout["text-field"]
         )?.id;
 
-        if (labelLayerId) {
+        if (labelLayerId && !mapRef.current.getLayer("add-3d-buildings")) {
           mapRef.current.addLayer(
             {
               id: "add-3d-buildings",
@@ -534,21 +615,32 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
             style="font-family: system-ui, -apple-system, sans-serif; cursor: pointer;"
             onclick="window.location.href='/property/${property._id}'"
           >
-            ${property.images?.[0]?.cloudinaryUrl ? `
+            ${
+              property.images?.[0]?.cloudinaryUrl
+                ? `
               <img 
                 src="${property.images[0].cloudinaryUrl}" 
                 alt="Property"
                 style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;"
               />
-            ` : ""}
+            `
+                : ""
+            }
             <div style="padding: 12px;">
               <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1a1a1a;">
-                ${property.propertySubType} in ${property.address?.locality || ""}
+                ${property.propertySubType} in ${
+          property.address?.locality || ""
+        }
               </h3>
               <div style="font-size: 14px; color: #666; margin-bottom: 4px;">
-                ${property.address?.buildingProjectSociety ? 
-                  `${property.address.buildingProjectSociety}, ` : ""}
-                ${property.address?.locality || ""}, ${property.address?.city || ""}
+                ${
+                  property.address?.buildingProjectSociety
+                    ? `${property.address.buildingProjectSociety}, `
+                    : ""
+                }
+                ${property.address?.locality || ""}, ${
+          property.address?.city || ""
+        }
               </div>
               <div style="font-size: 16px; font-weight: bold; color: #2563eb; margin: 8px 0;">
                 ${formattedPrice}
@@ -620,12 +712,28 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
             width: "280px",
           }}
         >
-          <h5 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "bold", textAlign: "center" }}>
+          <h5
+            style={{
+              marginBottom: "16px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
             Map Options
           </h5>
           <div style={{ marginBottom: "20px" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <label style={{ display: "flex", alignItems: "center", cursor: "pointer", fontSize: "14px" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                }}
+              >
                 <input
                   type="radio"
                   name="mapType"
@@ -636,7 +744,14 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
                 />
                 Street View
               </label>
-              <label style={{ display: "flex", alignItems: "center", cursor: "pointer", fontSize: "14px" }}>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                }}
+              >
                 <input
                   type="radio"
                   name="mapType"
@@ -650,9 +765,24 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
             </div>
           </div>
           <div>
-            <h6 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "bold" }}>Climate Risks</h6>
+            <h6
+              style={{
+                marginBottom: "12px",
+                fontSize: "14px",
+                fontWeight: "bold",
+              }}
+            >
+              Climate Layers
+            </h6>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-              {["None selected", "Flood", "Fire", "Wind", "Air", "Heat"].map((layer, index) => (
+              {[
+                "None selected",
+                "Temperature",
+                "Precipitation",
+                "Clouds",
+                "Wind",
+                "Pressure",
+              ].map((layer, index) => (
                 <label
                   key={layer}
                   style={{
@@ -665,15 +795,32 @@ const PropertyViewPageMap = ({ propertiesToShow = [], onDrawCreate, onDrawDelete
                 >
                   <input
                     type="radio"
-                    name="climateRisk"
+                    name="climateLayer"
                     value={layer.toLowerCase()}
-                    checked={activeLayers[layer.toLowerCase()] || (layer === "None selected" && !Object.values(activeLayers).includes(true))}
+                    checked={
+                      activeLayers[layer.toLowerCase()] ||
+                      (layer === "None selected" &&
+                        !Object.values(activeLayers).includes(true))
+                    }
                     onChange={() => {
-                      const updatedLayers = Object.keys(activeLayers).reduce((acc, key) => {
-                        acc[key] = layer.toLowerCase() === key;
-                        return acc;
-                      }, {});
-                      setActiveLayers(updatedLayers);
+                      if (layer === "None selected") {
+                        // Turn off all layers
+                        Object.keys(activeLayers).forEach((id) => {
+                          mapRef.current.setLayoutProperty(
+                            id,
+                            "visibility",
+                            "none"
+                          );
+                        });
+                        setActiveLayers((prev) =>
+                          Object.keys(prev).reduce(
+                            (acc, key) => ({ ...acc, [key]: false }),
+                            {}
+                          )
+                        );
+                      } else {
+                        toggleLayer(layer.toLowerCase());
+                      }
                     }}
                     style={{ marginRight: "10px" }}
                   />
