@@ -708,23 +708,33 @@ const PropertyViewPageMap = ({
             border: "1px solid rgba(0, 0, 0, 0.2)",
             borderRadius: "8px",
             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-            padding: "16px",
+            padding: "0 0 4px 0", 
+            margin: "0", 
             width: "280px",
           }}
         >
           <h5
             style={{
-              marginBottom: "16px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              textAlign: "center",
+              margin: 0,
+              fontSize: "14px",
+              fontWeight: "600",
+              textAlign: "left",
+              color: "#555",
+              backgroundColor: "#f8f8f8",
+              padding: "8px 12px",
+              borderRadius: "6px 6px 0 0",
             }}
           >
             Map Options
           </h5>
           <div style={{ marginBottom: "20px" }}>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+                padding: "8px 12px",
+              }}
             >
               <label
                 style={{
@@ -767,14 +777,24 @@ const PropertyViewPageMap = ({
           <div>
             <h6
               style={{
-                marginBottom: "12px",
+                margin: "4px 12px",
                 fontSize: "14px",
                 fontWeight: "bold",
+                textAlign: "left",
+                color: "#555",
+                padding: "0",
               }}
             >
-              Climate Layers
+              Climate Risks
             </h6>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "12px",
+                padding: "8px 12px", 
+              }}
+            >
               {[
                 "None selected",
                 "Temperature",
