@@ -65,7 +65,7 @@ const HomeFooter = () => {
             <div>About Cookies</div>
           </div> 
           <div className='text-[8px] md:text-[9px]'>
-            Copyright © 2024 Transparent. All rights reserved.
+            Copyright © 2025 Transparent. All rights reserved.
           </div>
           <div className='text-[9px] md:text-[9.5px] leading-4 md:leading-normal'>
             Making home-finding easy across India. GharSetu connects property buyers, sellers, and renters, simplifying your journey to finding the perfect home.
