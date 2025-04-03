@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import axios from "axios";
 import { Button } from "reactstrap";
+import { X } from "lucide-react";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -27,6 +28,8 @@ const PropertyViewPageMap = ({
     pressure: false,
   });
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
+  const [selectedState, setSelectedState] = useState(null);
+  const [shouldZoomOut, setShouldZoomOut] = useState(false); 
 
   const toggleOptions = () => setIsOptionsVisible((prev) => !prev);
 
@@ -170,6 +173,15 @@ const PropertyViewPageMap = ({
         }, {})
       );
     }
+  };
+
+  const handleRemoveBoundary = () => {
+    setSelectedState(null); 
+    onStateSelect(null); 
+
+    setTimeout(() => {
+      setShouldZoomOut(true); 
+    }, 100); 
   };
 
   useEffect(() => {
@@ -338,6 +350,7 @@ const PropertyViewPageMap = ({
 
         if (stateFeature) {
           const stateName = stateFeature.text;
+          setSelectedState(stateName); 
 
           // Fetch state boundaries
           const boundaryResponse = await axios.get(
@@ -530,23 +543,21 @@ const PropertyViewPageMap = ({
     }
   }, [mapType, propertiesToShow]);
 
-  // Ensure property markers do not override state boundary zoom
   useEffect(() => {
-    if (propertiesToShow.length > 0 && !mapRef.current.isMoving()) {
-      const bounds = new mapboxgl.LngLatBounds();
-
-      propertiesToShow.forEach((property) => {
-        const { coordinates } = property;
-        if (coordinates?.longitude && coordinates?.latitude) {
-          bounds.extend([coordinates.longitude, coordinates.latitude]);
-        }
-      });
-
-      mapRef.current.fitBounds(bounds, {
-        padding: 20,
-      });
+    if (shouldZoomOut && propertiesToShow.length > 0) {
+      if (mapRef.current) {
+        const bounds = new mapboxgl.LngLatBounds();
+        propertiesToShow.forEach((property) => {
+          const { coordinates } = property;
+          if (coordinates?.longitude && coordinates?.latitude) {
+            bounds.extend([coordinates.longitude, coordinates.latitude]);
+          }
+        });
+        mapRef.current.fitBounds(bounds, { padding: 20 });
+      }
+      setShouldZoomOut(false);
     }
-  }, [propertiesToShow]);
+  }, [shouldZoomOut, propertiesToShow]);
 
   useEffect(() => {
     // Clear existing markers
@@ -676,6 +687,44 @@ const PropertyViewPageMap = ({
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
+      {/* Selected State Tag */}
+      {selectedState && (
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "10px",
+            zIndex: 3,
+            backgroundColor: "white",
+            border: "1px solid rgba(0, 0, 0, 0.2)",
+            borderRadius: "4px",
+            padding: "8px 12px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          <span style={{ fontSize: "14px", fontWeight: "bold", color: "#333" }}>
+            {selectedState}
+          </span>
+          <button
+            onClick={handleRemoveBoundary}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <X size={16} color="#2563eb" />
+          </button>
+        </div>
+      )}
+
       <Button
         onClick={toggleOptions}
         style={{
@@ -708,8 +757,8 @@ const PropertyViewPageMap = ({
             border: "1px solid rgba(0, 0, 0, 0.2)",
             borderRadius: "8px",
             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-            padding: "0 0 4px 0", 
-            margin: "0", 
+            padding: "0 0 4px 0",
+            margin: "0",
             width: "280px",
           }}
         >
@@ -792,7 +841,7 @@ const PropertyViewPageMap = ({
                 display: "flex",
                 flexWrap: "wrap",
                 gap: "12px",
-                padding: "8px 12px", 
+                padding: "8px 12px",
               }}
             >
               {[
