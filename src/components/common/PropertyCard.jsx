@@ -16,10 +16,6 @@ const PropertyCard = ({property}) => {
   return (
     <Link to={`/property/properties-for-${property?.availableFor}-in-${formattedLocation}-${formattedCity}-${property?._id}`} className="flex gap-[10px] flex-col cursor-pointer">
       <div className='relative'>
-        <div className="absolute p-[14px] cursor-pointer flex justify-between w-full">
-          <div className='bg-white py-1 px-2 rounded-full text-xs'> Guest favourite </div>
-          <UnLiked />
-        </div>
         <img className="h-[250px] w-full rounded-lg z-0" src={property?.images[0]?.cloudinaryUrl || 
           "https://res.cloudinary.com/dzqgyl0wf/image/upload/v1729887606/wsaua8yjrxhll6bwrqag.png"
         } alt='Property' />

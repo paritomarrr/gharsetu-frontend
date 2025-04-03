@@ -53,7 +53,7 @@ const Footer = () => {
 
             <div className="pt-[21px] flex justify-between flex-col md:flex-row gap-5">
                 <div className="flex items-center text-xs">
-                    <Link to={'/'}> © 2024 Gharsetu, Inc </Link>
+                    <Link to={'/'}> © 2025 Gharsetu, Inc </Link>
                     <Dot />
                     <Link to={'/privacy-policy'} target="_blank">Privacy</Link>
                     <Dot />
