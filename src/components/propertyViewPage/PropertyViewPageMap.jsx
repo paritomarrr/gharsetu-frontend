@@ -231,15 +231,15 @@ const PropertyViewPageMap = ({
       backgroundColor: "white",
       border: "1px solid rgba(0, 0, 0, 0.2)",
       borderRadius: "50%",
-      width: "40px",
-      height: "40px",
+      width: "35px", 
+      height: "35px", 
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: "28px", 
+      fontSize: "24px", 
       fontWeight: "bold",
       cursor: "pointer",
-      marginBottom: "10px",
+      marginBottom: "8px", 
     });
     zoomInButton.onclick = () => map.zoomIn();
 
@@ -249,12 +249,12 @@ const PropertyViewPageMap = ({
       backgroundColor: "white",
       border: "1px solid rgba(0, 0, 0, 0.2)",
       borderRadius: "50%",
-      width: "40px",
-      height: "40px",
+      width: "35px", 
+      height: "35px",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: "28px",
+      fontSize: "24px", 
       fontWeight: "bold",
       cursor: "pointer",
     });
@@ -262,7 +262,7 @@ const PropertyViewPageMap = ({
 
     const customControls = document.createElement("div");
     customControls.style.position = "absolute";
-    customControls.style.bottom = "50px";
+    customControls.style.bottom = "100px"; 
     customControls.style.right = "10px";
     customControls.style.display = "flex";
     customControls.style.flexDirection = "column";
