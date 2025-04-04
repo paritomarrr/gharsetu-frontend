@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import axios from "axios";
 import { Button } from "reactstrap";
-import { X } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -224,62 +224,58 @@ const PropertyViewPageMap = ({
 
     mapRef.current = map;
 
-    // Add navigation controls
-    map.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-    map.on("load", () => {
-      // Initialize climate layers
-      initializeClimateLayers(map);
-
-      // Add 3D building layer if the style supports it
-      const layers = map.getStyle().layers;
-      const labelLayerId = layers?.find(
-        (layer) => layer.type === "symbol" && layer.layout["text-field"]
-      )?.id;
-
-      if (labelLayerId && !map.getLayer("add-3d-buildings")) {
-        map.addLayer(
-          {
-            id: "add-3d-buildings",
-            source: "composite",
-            "source-layer": "building",
-            filter: ["==", "extrude", "true"],
-            type: "fill-extrusion",
-            minzoom: 15,
-            paint: {
-              "fill-extrusion-color": "#aaa",
-              "fill-extrusion-height": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                15,
-                0,
-                15.05,
-                ["get", "height"],
-              ],
-              "fill-extrusion-base": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                15,
-                0,
-                15.05,
-                ["get", "min_height"],
-              ],
-              "fill-extrusion-opacity": 0.6,
-            },
-          },
-          labelLayerId
-        );
-      }
+    // Custom zoom controls
+    const zoomInButton = document.createElement("button");
+    zoomInButton.innerHTML = "+";
+    Object.assign(zoomInButton.style, {
+      backgroundColor: "white",
+      border: "1px solid rgba(0, 0, 0, 0.2)",
+      borderRadius: "50%",
+      width: "40px",
+      height: "40px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "28px", 
+      fontWeight: "bold",
+      cursor: "pointer",
+      marginBottom: "10px",
     });
+    zoomInButton.onclick = () => map.zoomIn();
+
+    const zoomOutButton = document.createElement("button");
+    zoomOutButton.innerHTML = "−";
+    Object.assign(zoomOutButton.style, {
+      backgroundColor: "white",
+      border: "1px solid rgba(0, 0, 0, 0.2)",
+      borderRadius: "50%",
+      width: "40px",
+      height: "40px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "28px",
+      fontWeight: "bold",
+      cursor: "pointer",
+    });
+    zoomOutButton.onclick = () => map.zoomOut();
+
+    const customControls = document.createElement("div");
+    customControls.style.position = "absolute";
+    customControls.style.bottom = "50px";
+    customControls.style.right = "10px";
+    customControls.style.display = "flex";
+    customControls.style.flexDirection = "column";
+    customControls.style.zIndex = "2";
+
+    customControls.appendChild(zoomInButton);
+    customControls.appendChild(zoomOutButton);
+
+    map.getContainer().appendChild(customControls);
 
     const draw = new MapboxDraw({
       displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        trash: true,
-      },
+      controls: {},
       userProperties: true,
       styles: [
         // Active (being drawn)
@@ -342,11 +338,55 @@ const PropertyViewPageMap = ({
       ],
     });
 
-    map.addControl(draw, "top-right");
+    // Add draw tools to the map
+    map.addControl(draw, "bottom-right");
+    mapRef.current.drawControl = draw; // Store reference for toggling controls
 
-    map.on("draw.modechange", (e) => {
-      const isDrawMode = e.mode === "draw_polygon" || e.mode === "simple_select";
-      setActiveMode(isDrawMode ? "draw" : "stateSelection");
+    map.on("load", () => {
+      // Initialize climate layers
+      initializeClimateLayers(map);
+
+      // Add 3D building layer if the style supports it
+      const layers = map.getStyle().layers;
+      const labelLayerId = layers?.find(
+        (layer) => layer.type === "symbol" && layer.layout["text-field"]
+      )?.id;
+
+      if (labelLayerId && !map.getLayer("add-3d-buildings")) {
+        map.addLayer(
+          {
+            id: "add-3d-buildings",
+            source: "composite",
+            "source-layer": "building",
+            filter: ["==", "extrude", "true"],
+            type: "fill-extrusion",
+            minzoom: 15,
+            paint: {
+              "fill-extrusion-color": "#aaa",
+              "fill-extrusion-height": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                15,
+                0,
+                15.05,
+                ["get", "height"],
+              ],
+              "fill-extrusion-base": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                15,
+                0,
+                15.05,
+                ["get", "min_height"],
+              ],
+              "fill-extrusion-opacity": 0.6,
+            },
+          },
+          labelLayerId
+        );
+      }
     });
 
     map.on("draw.create", (e) => onDrawCreate(e.features));
@@ -436,6 +476,22 @@ const PropertyViewPageMap = ({
       }
     };
   }, [mapType, onDrawCreate, onDrawDelete, onStateSelect, activeMode]);
+
+  useEffect(() => {
+    if (mapRef.current && mapRef.current.drawControl) {
+      // Update draw controls based on active mode
+      const drawControl = mapRef.current.drawControl;
+      if (activeMode === "draw") {
+        drawControl.options.controls = { polygon: true, trash: true };
+      } else {
+        drawControl.options.controls = {};
+      }
+
+      // Reinitialize the draw control to apply changes
+      mapRef.current.removeControl(drawControl);
+      mapRef.current.addControl(drawControl, "bottom-right");
+    }
+  }, [activeMode]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -733,32 +789,61 @@ const PropertyViewPageMap = ({
         </div>
       )}
 
-      <Button
-        onClick={toggleOptions}
+      {/* Buttons Container */}
+      <div
         style={{
           position: "absolute",
-          bottom: "30px",
+          top: "10px",
           right: "10px",
           zIndex: 2,
-          backgroundColor: "white",
-          color: "black",
-          border: "1px solid rgba(0, 0, 0, 0.2)",
-          borderRadius: "4px",
-          padding: "8px 12px",
-          fontSize: "14px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+          display: "flex",
+          gap: "10px",
         }}
       >
-        Map
-      </Button>
+        <Button
+          onClick={handleModeToggle}
+          style={{
+            backgroundColor: activeMode === "draw" ? "#2563eb" : "white",
+            color: activeMode === "draw" ? "white" : "black",
+            border: "1px solid rgba(0, 0, 0, 0.2)",
+            borderRadius: "4px",
+            padding: "8px 12px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          {activeMode === "draw" ? "Exit Draw Mode" : "Enter Draw Mode"}
+        </Button>
+
+        <Button
+          onClick={toggleOptions}
+          style={{
+            backgroundColor: "white",
+            color: "black",
+            border: "1px solid rgba(0, 0, 0, 0.2)",
+            borderRadius: "4px",
+            padding: "8px 12px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          Map Options
+          <ChevronDown size={16} />
+        </Button>
+      </div>
 
       {isOptionsVisible && (
         <div
           style={{
             position: "absolute",
-            bottom: "70px",
+            top: "50px",
             right: "10px",
             zIndex: 3,
             backgroundColor: "white",
@@ -908,27 +993,6 @@ const PropertyViewPageMap = ({
           </div>
         </div>
       )}
-
-      <Button
-        onClick={handleModeToggle}
-        style={{
-          position: "absolute",
-          bottom: "80px",
-          right: "10px",
-          zIndex: 2,
-          backgroundColor: activeMode === "draw" ? "#2563eb" : "white",
-          color: activeMode === "draw" ? "white" : "black",
-          border: "1px solid rgba(0, 0, 0, 0.2)",
-          borderRadius: "4px",
-          padding: "8px 12px",
-          fontSize: "14px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        {activeMode === "draw" ? "Exit Draw Mode" : "Enter Draw Mode"}
-      </Button>
 
       <div
         ref={mapContainerRef}
