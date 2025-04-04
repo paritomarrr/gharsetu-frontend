@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import axios from "axios";
 import { Button } from "reactstrap";
-import { X } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -29,7 +29,9 @@ const PropertyViewPageMap = ({
   });
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const [selectedState, setSelectedState] = useState(null);
-  const [shouldZoomOut, setShouldZoomOut] = useState(false); 
+  const [shouldZoomOut, setShouldZoomOut] = useState(false);
+  const [activeMode, setActiveMode] = useState("stateSelection");
+  const [markersLoaded, setMarkersLoaded] = useState(false);
 
   const toggleOptions = () => setIsOptionsVisible((prev) => !prev);
 
@@ -176,12 +178,27 @@ const PropertyViewPageMap = ({
   };
 
   const handleRemoveBoundary = () => {
-    setSelectedState(null); 
-    onStateSelect(null); 
+    setSelectedState(null);
+    onStateSelect(null);
 
     setTimeout(() => {
-      setShouldZoomOut(true); 
-    }, 100); 
+      setShouldZoomOut(true);
+    }, 100);
+  };
+
+  const handleModeToggle = () => {
+    const newMode = activeMode === "stateSelection" ? "draw" : "stateSelection";
+    setActiveMode(newMode);
+
+    if (mapRef.current) {
+      mapRef.current.fitBounds(
+        [
+          [68.1766451354, 6.747139], 
+          [97.4025614766, 35.5087],
+        ],
+        { padding: 20 }
+      );
+    }
   };
 
   useEffect(() => {
@@ -207,62 +224,58 @@ const PropertyViewPageMap = ({
 
     mapRef.current = map;
 
-    // Add navigation controls
-    map.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-    map.on("load", () => {
-      // Initialize climate layers
-      initializeClimateLayers(map);
-
-      // Add 3D building layer if the style supports it
-      const layers = map.getStyle().layers;
-      const labelLayerId = layers?.find(
-        (layer) => layer.type === "symbol" && layer.layout["text-field"]
-      )?.id;
-
-      if (labelLayerId && !map.getLayer("add-3d-buildings")) {
-        map.addLayer(
-          {
-            id: "add-3d-buildings",
-            source: "composite",
-            "source-layer": "building",
-            filter: ["==", "extrude", "true"],
-            type: "fill-extrusion",
-            minzoom: 15,
-            paint: {
-              "fill-extrusion-color": "#aaa",
-              "fill-extrusion-height": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                15,
-                0,
-                15.05,
-                ["get", "height"],
-              ],
-              "fill-extrusion-base": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                15,
-                0,
-                15.05,
-                ["get", "min_height"],
-              ],
-              "fill-extrusion-opacity": 0.6,
-            },
-          },
-          labelLayerId
-        );
-      }
+    // Custom zoom controls
+    const zoomInButton = document.createElement("button");
+    zoomInButton.innerHTML = "+";
+    Object.assign(zoomInButton.style, {
+      backgroundColor: "white",
+      border: "1px solid rgba(0, 0, 0, 0.2)",
+      borderRadius: "50%",
+      width: "35px", 
+      height: "35px", 
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "24px", 
+      fontWeight: "bold",
+      cursor: "pointer",
+      marginBottom: "8px", 
     });
+    zoomInButton.onclick = () => map.zoomIn();
+
+    const zoomOutButton = document.createElement("button");
+    zoomOutButton.innerHTML = "−";
+    Object.assign(zoomOutButton.style, {
+      backgroundColor: "white",
+      border: "1px solid rgba(0, 0, 0, 0.2)",
+      borderRadius: "50%",
+      width: "35px", 
+      height: "35px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "24px", 
+      fontWeight: "bold",
+      cursor: "pointer",
+    });
+    zoomOutButton.onclick = () => map.zoomOut();
+
+    const customControls = document.createElement("div");
+    customControls.style.position = "absolute";
+    customControls.style.bottom = "100px"; 
+    customControls.style.right = "10px";
+    customControls.style.display = "flex";
+    customControls.style.flexDirection = "column";
+    customControls.style.zIndex = "2";
+
+    customControls.appendChild(zoomInButton);
+    customControls.appendChild(zoomOutButton);
+
+    map.getContainer().appendChild(customControls);
 
     const draw = new MapboxDraw({
       displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        trash: true,
-      },
+      controls: {},
       userProperties: true,
       styles: [
         // Active (being drawn)
@@ -325,12 +338,65 @@ const PropertyViewPageMap = ({
       ],
     });
 
-    map.addControl(draw, "top-right");
+    // Add draw tools to the map
+    map.addControl(draw, "bottom-right");
+    mapRef.current.drawControl = draw; // Store reference for toggling controls
+
+    map.on("load", () => {
+      // Initialize climate layers
+      initializeClimateLayers(map);
+
+      // Add 3D building layer if the style supports it
+      const layers = map.getStyle().layers;
+      const labelLayerId = layers?.find(
+        (layer) => layer.type === "symbol" && layer.layout["text-field"]
+      )?.id;
+
+      if (labelLayerId && !map.getLayer("add-3d-buildings")) {
+        map.addLayer(
+          {
+            id: "add-3d-buildings",
+            source: "composite",
+            "source-layer": "building",
+            filter: ["==", "extrude", "true"],
+            type: "fill-extrusion",
+            minzoom: 15,
+            paint: {
+              "fill-extrusion-color": "#aaa",
+              "fill-extrusion-height": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                15,
+                0,
+                15.05,
+                ["get", "height"],
+              ],
+              "fill-extrusion-base": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                15,
+                0,
+                15.05,
+                ["get", "min_height"],
+              ],
+              "fill-extrusion-opacity": 0.6,
+            },
+          },
+          labelLayerId
+        );
+      }
+    });
 
     map.on("draw.create", (e) => onDrawCreate(e.features));
     map.on("draw.delete", onDrawDelete);
 
     map.on("click", async (e) => {
+      if (activeMode === "draw") {
+        return;
+      }
+
       const { lng, lat } = e.lngLat;
 
       try {
@@ -350,7 +416,7 @@ const PropertyViewPageMap = ({
 
         if (stateFeature) {
           const stateName = stateFeature.text;
-          setSelectedState(stateName); 
+          setSelectedState(stateName);
 
           // Fetch state boundaries
           const boundaryResponse = await axios.get(
@@ -376,10 +442,11 @@ const PropertyViewPageMap = ({
               { padding: 20 }
             );
 
-            // Prevent property markers from overriding the state boundary zoom
             map.once("moveend", () => {
               console.log("Zoomed to state boundary:", stateName);
             });
+          } else {
+            console.warn("No bounding box found for the selected state.");
           }
 
           onStateSelect(stateName); // Pass the state name to the callback
@@ -408,7 +475,23 @@ const PropertyViewPageMap = ({
         mapRef.current.off("draw.delete", onDrawDelete);
       }
     };
-  }, [mapType, onDrawCreate, onDrawDelete, onStateSelect]);
+  }, [mapType, onDrawCreate, onDrawDelete, onStateSelect, activeMode]);
+
+  useEffect(() => {
+    if (mapRef.current && mapRef.current.drawControl) {
+      // Update draw controls based on active mode
+      const drawControl = mapRef.current.drawControl;
+      if (activeMode === "draw") {
+        drawControl.options.controls = { polygon: true, trash: true };
+      } else {
+        drawControl.options.controls = {};
+      }
+
+      // Reinitialize the draw control to apply changes
+      mapRef.current.removeControl(drawControl);
+      mapRef.current.addControl(drawControl, "bottom-right");
+    }
+  }, [activeMode]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -544,6 +627,113 @@ const PropertyViewPageMap = ({
   }, [mapType, propertiesToShow]);
 
   useEffect(() => {
+    if (mapRef.current) {
+
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current = [];
+
+      if (propertiesToShow.length > 0) {
+        let loadedMarkers = 0;
+
+        propertiesToShow.forEach((property) => {
+          try {
+            const { coordinates } = property;
+
+            if (!coordinates?.latitude || !coordinates?.longitude) {
+              console.warn("Invalid coordinates for property:", property);
+              return;
+            }
+
+            const el = document.createElement("div");
+            el.className = "marker";
+
+            const formattedPrice = new Intl.NumberFormat("en-IN", {
+              style: "currency",
+              currency: "INR",
+              maximumFractionDigits: 0,
+              minimumFractionDigits: 0,
+            }).format(property.askedPrice || 0);
+
+            Object.assign(el.style, {
+              backgroundColor: "white",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "bold",
+              color: "#333",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minWidth: "60px",
+              textAlign: "center",
+              transition: "all 0.2s ease",
+              transform: "scale(1)",
+            });
+
+            el.textContent = formattedPrice;
+
+            el.addEventListener("mouseenter", () => {
+              el.style.backgroundColor = "#f0f0f0";
+            });
+
+            el.addEventListener("mouseleave", () => {
+              el.style.backgroundColor = "white";
+            });
+
+            const marker = new mapboxgl.Marker(el)
+              .setLngLat([coordinates.longitude, coordinates.latitude])
+              .addTo(mapRef.current);
+
+            markersRef.current.push(marker);
+
+            loadedMarkers += 1;
+
+            if (loadedMarkers === propertiesToShow.length) {
+              setMarkersLoaded(true);
+            }
+          } catch (error) {
+            console.error("Error adding marker for property:", error);
+          }
+        });
+      } else {
+        setMarkersLoaded(true);
+      }
+    }
+  }, [propertiesToShow, activeMode]);
+
+  useEffect(() => {
+    if (markersLoaded && mapRef.current) {
+      if (selectedState) {
+
+        console.log("Zooming to state level for:", selectedState);
+      } else if (propertiesToShow.length > 0) {
+        
+        const bounds = new mapboxgl.LngLatBounds();
+        propertiesToShow.forEach((property) => {
+          const { coordinates } = property;
+          if (coordinates?.longitude && coordinates?.latitude) {
+            bounds.extend([coordinates.longitude, coordinates.latitude]);
+          }
+        });
+        mapRef.current.fitBounds(bounds, { padding: 20 });
+      } else {
+       
+        mapRef.current.fitBounds(
+          [
+            [68.1766451354, 6.747139], 
+            [97.4025614766, 35.5087], 
+          ],
+          { padding: 20 }
+        );
+      }
+      setMarkersLoaded(false); 
+    }
+  }, [markersLoaded, selectedState, propertiesToShow]);
+
+  useEffect(() => {
     if (shouldZoomOut && propertiesToShow.length > 0) {
       if (mapRef.current) {
         const bounds = new mapboxgl.LngLatBounds();
@@ -558,132 +748,6 @@ const PropertyViewPageMap = ({
       setShouldZoomOut(false);
     }
   }, [shouldZoomOut, propertiesToShow]);
-
-  useEffect(() => {
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = [];
-
-    // Add property markers
-    propertiesToShow.forEach((property) => {
-      try {
-        const { coordinates } = property;
-
-        if (!coordinates?.latitude || !coordinates?.longitude) {
-          console.warn("Invalid coordinates for property:", property);
-          return;
-        }
-
-        // Create marker element
-        const el = document.createElement("div");
-        el.className = "marker";
-
-        const formattedPrice = new Intl.NumberFormat("en-IN", {
-          style: "currency",
-          currency: "INR",
-          maximumFractionDigits: 0,
-          minimumFractionDigits: 0,
-        }).format(property.askedPrice || 0);
-
-        Object.assign(el.style, {
-          backgroundColor: "white",
-          padding: "4px 8px",
-          borderRadius: "4px",
-          border: "1px solid #ccc",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          cursor: "pointer",
-          fontSize: "12px",
-          fontWeight: "bold",
-          color: "#333",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minWidth: "60px",
-          textAlign: "center",
-          transition: "all 0.2s ease",
-          transform: "scale(1)",
-        });
-
-        el.textContent = formattedPrice;
-
-        el.addEventListener("mouseenter", () => {
-          el.style.backgroundColor = "#f0f0f0";
-        });
-
-        el.addEventListener("mouseleave", () => {
-          el.style.backgroundColor = "white";
-        });
-
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat([coordinates.longitude, coordinates.latitude])
-          .addTo(mapRef.current);
-
-        const popup = new mapboxgl.Popup({
-          offset: 25,
-          maxWidth: "300px",
-        }).setHTML(`
-          <div 
-            style="font-family: system-ui, -apple-system, sans-serif; cursor: pointer;"
-            onclick="window.location.href='/property/${property._id}'"
-          >
-            ${
-              property.images?.[0]?.cloudinaryUrl
-                ? `
-              <img 
-                src="${property.images[0].cloudinaryUrl}" 
-                alt="Property"
-                style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;"
-              />
-            `
-                : ""
-            }
-            <div style="padding: 12px;">
-              <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1a1a1a;">
-                ${property.propertySubType} in ${
-          property.address?.locality || ""
-        }
-              </h3>
-              <div style="font-size: 14px; color: #666; margin-bottom: 4px;">
-                ${
-                  property.address?.buildingProjectSociety
-                    ? `${property.address.buildingProjectSociety}, `
-                    : ""
-                }
-                ${property.address?.locality || ""}, ${
-          property.address?.city || ""
-        }
-              </div>
-              <div style="font-size: 16px; font-weight: bold; color: #2563eb; margin: 8px 0;">
-                ${formattedPrice}
-              </div>
-            </div>
-          </div>
-        `);
-
-        marker.setPopup(popup);
-
-        markersRef.current.push(marker);
-      } catch (error) {
-        console.error("Error adding marker for property:", error);
-      }
-    });
-
-    // Fit map to the bounding box of all properties only if onStateSelect is not active
-    if (propertiesToShow.length > 0 && !mapRef.current.isMoving()) {
-      const bounds = new mapboxgl.LngLatBounds();
-
-      propertiesToShow.forEach((property) => {
-        const { coordinates } = property;
-        if (coordinates?.longitude && coordinates?.latitude) {
-          bounds.extend([coordinates.longitude, coordinates.latitude]);
-        }
-      });
-
-      mapRef.current.fitBounds(bounds, {
-        padding: 20,
-      });
-    }
-  }, [propertiesToShow]);
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
@@ -725,32 +789,61 @@ const PropertyViewPageMap = ({
         </div>
       )}
 
-      <Button
-        onClick={toggleOptions}
+      {/* Buttons Container */}
+      <div
         style={{
           position: "absolute",
-          bottom: "30px",
+          top: "10px",
           right: "10px",
           zIndex: 2,
-          backgroundColor: "white",
-          color: "black",
-          border: "1px solid rgba(0, 0, 0, 0.2)",
-          borderRadius: "4px",
-          padding: "8px 12px",
-          fontSize: "14px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+          display: "flex",
+          gap: "10px",
         }}
       >
-        Map
-      </Button>
+        <Button
+          onClick={handleModeToggle}
+          style={{
+            backgroundColor: activeMode === "draw" ? "#2563eb" : "white",
+            color: activeMode === "draw" ? "white" : "black",
+            border: "1px solid rgba(0, 0, 0, 0.2)",
+            borderRadius: "4px",
+            padding: "8px 12px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          {activeMode === "draw" ? "Exit Draw Mode" : "Enter Draw Mode"}
+        </Button>
+
+        <Button
+          onClick={toggleOptions}
+          style={{
+            backgroundColor: "white",
+            color: "black",
+            border: "1px solid rgba(0, 0, 0, 0.2)",
+            borderRadius: "4px",
+            padding: "8px 12px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          Map Options
+          <ChevronDown size={16} />
+        </Button>
+      </div>
 
       {isOptionsVisible && (
         <div
           style={{
             position: "absolute",
-            bottom: "70px",
+            top: "50px",
             right: "10px",
             zIndex: 3,
             backgroundColor: "white",
