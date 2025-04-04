@@ -38,22 +38,21 @@ const PropertyViewPageMap = ({
   const handleMapTypeChange = (type) => {
     setMapType(type);
     if (mapRef.current) {
-      // Wait for the map's style to load before setting a new style
-      if (mapRef.current.isStyleLoaded()) {
-        mapRef.current.setStyle(
-          type === "satellite"
-            ? "mapbox://styles/mapbox/satellite-streets-v12"
-            : "mapbox://styles/mapbox/streets-v12"
+      const newStyle =
+        type === "satellite"
+          ? "mapbox://styles/mapbox/satellite-streets-v12"
+          : "mapbox://styles/mapbox/streets-v12";
+
+      mapRef.current.setStyle(newStyle);
+      mapRef.current.once("styledata", () => {
+        mapRef.current.fitBounds(
+          [
+            [68.1766451354, 6.747139], 
+            [97.4025614766, 35.5087], 
+          ],
+          { padding: 20, animate: false }
         );
-      } else {
-        mapRef.current.once("style.load", () => {
-          mapRef.current.setStyle(
-            type === "satellite"
-              ? "mapbox://styles/mapbox/satellite-streets-v12"
-              : "mapbox://styles/mapbox/streets-v12"
-          );
-        });
-      }
+      });
     }
     setIsOptionsVisible(false); // Close options after selection
   };
@@ -181,23 +180,28 @@ const PropertyViewPageMap = ({
     setSelectedState(null);
     onStateSelect(null);
 
-    setTimeout(() => {
-      setShouldZoomOut(true);
-    }, 100);
+    if (mapRef.current) {
+      mapRef.current.fitBounds(
+        [
+          [68.1766451354, 6.747139], 
+          [97.4025614766, 35.5087], 
+        ],
+        { padding: 20, animate: false } 
+      );
+    }
   };
 
   const handleModeToggle = () => {
     const newMode = activeMode === "stateSelection" ? "draw" : "stateSelection";
     setActiveMode(newMode);
 
-    if (mapRef.current) {
-      mapRef.current.fitBounds(
-        [
-          [68.1766451354, 6.747139], 
-          [97.4025614766, 35.5087],
-        ],
-        { padding: 20 }
-      );
+    if (mapRef.current && mapRef.current.drawControl) {
+      const drawControl = mapRef.current.drawControl;
+
+      // Update draw controls without affecting the map's position or bounds
+      drawControl.options.controls = newMode === "draw" ? { polygon: true, trash: true } : {};
+      mapRef.current.removeControl(drawControl);
+      mapRef.current.addControl(drawControl, "bottom-right");
     }
   };
 
@@ -205,24 +209,31 @@ const PropertyViewPageMap = ({
     mapboxgl.accessToken =
       "pk.eyJ1IjoicGFyaXRvbWFyciIsImEiOiJjbTJ5Zmw1aXYwMDl3MmxzaG91bWRnNXgxIn0.ukF28kdk13Vf2y1EOKQFWg";
 
-    // Initialize map
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style:
         mapType === "satellite"
           ? "mapbox://styles/mapbox/satellite-streets-v12"
           : "mapbox://styles/mapbox/streets-v12",
-      center: [77.279713, 28.639965], // Default to a central location
-      zoom: 20,
-      pitch: 0,
-      bearing: 0,
       maxBounds: [
-        [68.1766451354, 6.747139], // Southwest coordinates of India
-        [97.4025614766, 35.5087], // Northeast coordinates of India
+        [68.1766451354, 6.747139], 
+        [97.4025614766, 35.5087], 
       ],
     });
 
     mapRef.current = map;
+
+    map.on("load", () => {
+
+      map.fitBounds(
+        [
+          [68.1766451354, 6.747139],
+          [97.4025614766, 35.5087], 
+        ],
+        { padding: 20, animate: false }
+      );
+      initializeClimateLayers(map);
+    });
 
     // Custom zoom controls
     const zoomInButton = document.createElement("button");
@@ -341,53 +352,6 @@ const PropertyViewPageMap = ({
     // Add draw tools to the map
     map.addControl(draw, "bottom-right");
     mapRef.current.drawControl = draw; // Store reference for toggling controls
-
-    map.on("load", () => {
-      // Initialize climate layers
-      initializeClimateLayers(map);
-
-      // Add 3D building layer if the style supports it
-      const layers = map.getStyle().layers;
-      const labelLayerId = layers?.find(
-        (layer) => layer.type === "symbol" && layer.layout["text-field"]
-      )?.id;
-
-      if (labelLayerId && !map.getLayer("add-3d-buildings")) {
-        map.addLayer(
-          {
-            id: "add-3d-buildings",
-            source: "composite",
-            "source-layer": "building",
-            filter: ["==", "extrude", "true"],
-            type: "fill-extrusion",
-            minzoom: 15,
-            paint: {
-              "fill-extrusion-color": "#aaa",
-              "fill-extrusion-height": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                15,
-                0,
-                15.05,
-                ["get", "height"],
-              ],
-              "fill-extrusion-base": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                15,
-                0,
-                15.05,
-                ["get", "min_height"],
-              ],
-              "fill-extrusion-opacity": 0.6,
-            },
-          },
-          labelLayerId
-        );
-      }
-    });
 
     map.on("draw.create", (e) => onDrawCreate(e.features));
     map.on("draw.delete", onDrawDelete);
@@ -610,25 +574,12 @@ const PropertyViewPageMap = ({
             markersRef.current.push(marker);
           }
         });
-
-        // Reapply zoom to property bounds if properties are available
-        if (propertiesToShow.length > 0) {
-          const bounds = new mapboxgl.LngLatBounds();
-          propertiesToShow.forEach((property) => {
-            const { coordinates } = property;
-            if (coordinates?.longitude && coordinates?.latitude) {
-              bounds.extend([coordinates.longitude, coordinates.latitude]);
-            }
-          });
-          mapRef.current.fitBounds(bounds, { padding: 20 });
-        }
       });
     }
   }, [mapType, propertiesToShow]);
 
   useEffect(() => {
     if (mapRef.current) {
-
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
 
@@ -707,31 +658,11 @@ const PropertyViewPageMap = ({
   useEffect(() => {
     if (markersLoaded && mapRef.current) {
       if (selectedState) {
-
         console.log("Zooming to state level for:", selectedState);
-      } else if (propertiesToShow.length > 0) {
-        
-        const bounds = new mapboxgl.LngLatBounds();
-        propertiesToShow.forEach((property) => {
-          const { coordinates } = property;
-          if (coordinates?.longitude && coordinates?.latitude) {
-            bounds.extend([coordinates.longitude, coordinates.latitude]);
-          }
-        });
-        mapRef.current.fitBounds(bounds, { padding: 20 });
-      } else {
-       
-        mapRef.current.fitBounds(
-          [
-            [68.1766451354, 6.747139], 
-            [97.4025614766, 35.5087], 
-          ],
-          { padding: 20 }
-        );
       }
-      setMarkersLoaded(false); 
+      setMarkersLoaded(false); // Remove zoom to properties' bounds
     }
-  }, [markersLoaded, selectedState, propertiesToShow]);
+  }, [markersLoaded, selectedState]);
 
   useEffect(() => {
     if (shouldZoomOut && propertiesToShow.length > 0) {
@@ -814,7 +745,7 @@ const PropertyViewPageMap = ({
             boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
           }}
         >
-          {activeMode === "draw" ? "Exit Draw Mode" : "Enter Draw Mode"}
+          {activeMode === "draw" ? "Exit" : "Draw"}
         </Button>
 
         <Button
