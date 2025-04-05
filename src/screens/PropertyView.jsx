@@ -117,7 +117,7 @@ const PropertyView = () => {
     };
   }, []);
 
-  const cityName = selectedState || (search ? search.split(",")[1]?.trim() : "Ghaziabad");
+  const cityName = selectedState || (search ? search.split(",")[1]?.trim() : "India");
 
   useEffect(() => {
     document.title = `${

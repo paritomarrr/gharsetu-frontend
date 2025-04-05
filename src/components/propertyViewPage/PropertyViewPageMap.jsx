@@ -680,6 +680,69 @@ const PropertyViewPageMap = ({
     }
   }, [shouldZoomOut, propertiesToShow]);
 
+  useEffect(() => {
+    let timeoutId;
+
+    if (activeMode === "draw") {
+      const drawInfoContainer = document.createElement("div");
+      drawInfoContainer.id = "draw-info-container";
+      Object.assign(drawInfoContainer.style, {
+        position: "absolute",
+        bottom: "15px",
+        left: "15px",
+        zIndex: 3,
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        border: "1px solid rgba(0, 0, 0, 0.2)",
+        borderRadius: "6px",
+        padding: "8px 10px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        fontSize: "12px",
+        fontWeight: "500",
+        color: "#333",
+        maxWidth: "250px",
+        lineHeight: "1.4",
+        fontFamily: "Arial, sans-serif",
+      });
+
+      const title = document.createElement("div");
+      title.textContent = "Drawing Help";
+      Object.assign(title.style, {
+        fontSize: "14px",
+        fontWeight: "bold",
+        marginBottom: "6px",
+        color: "#1d4ed8",
+        textAlign: "left",
+        paddingLeft: "10px",
+      });
+
+      const message = document.createElement("div");
+      message.innerHTML =
+        "<ul style='margin: 0; padding-left: 10px;'>" +
+        "<li>Click to add a point.</li>" +
+        "<li>Double-click to finish.</li>" +
+        "<li>Press <b>Esc</b> to cancel.</li>" +
+        "</ul>";
+
+      drawInfoContainer.appendChild(title);
+      drawInfoContainer.appendChild(message);
+
+      mapRef.current.getContainer().appendChild(drawInfoContainer);
+
+      timeoutId = setTimeout(() => {
+        drawInfoContainer.remove();
+      }, 5000);
+    } else {
+      const existingContainer = document.getElementById("draw-info-container");
+      if (existingContainer) {
+        existingContainer.remove();
+      }
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [activeMode]);
+
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
       {/* Selected State Tag */}
