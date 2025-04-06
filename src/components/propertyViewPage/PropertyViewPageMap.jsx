@@ -195,13 +195,19 @@ const PropertyViewPageMap = ({
     const newMode = activeMode === "stateSelection" ? "draw" : "stateSelection";
     setActiveMode(newMode);
 
-    if (mapRef.current && mapRef.current.drawControl) {
-      const drawControl = mapRef.current.drawControl;
+    if (newMode === "stateSelection") {
+        // Reset filtered properties to show all properties
+        setSelectedState(null);
+        onStateSelect(null);
+    }
 
-      // Update draw controls without affecting the map's position or bounds
-      drawControl.options.controls = newMode === "draw" ? { polygon: true, trash: true } : {};
-      mapRef.current.removeControl(drawControl);
-      mapRef.current.addControl(drawControl, "bottom-right");
+    if (mapRef.current && mapRef.current.drawControl) {
+        const drawControl = mapRef.current.drawControl;
+
+        // Update draw controls without affecting the map's position or bounds
+        drawControl.options.controls = newMode === "draw" ? { polygon: true, trash: true } : {};
+        mapRef.current.removeControl(drawControl);
+        mapRef.current.addControl(drawControl, "bottom-right");
     }
   };
 
