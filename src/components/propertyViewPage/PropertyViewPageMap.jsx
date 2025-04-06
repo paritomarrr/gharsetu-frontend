@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import axios from "axios";
 import { Button } from "reactstrap";
-import { X, ChevronDown } from "lucide-react";
+import { X, ChevronDown, Edit3, Trash2 } from "lucide-react"; // Import icons
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -32,6 +32,8 @@ const PropertyViewPageMap = ({
   const [shouldZoomOut, setShouldZoomOut] = useState(false);
   const [activeMode, setActiveMode] = useState("stateSelection");
   const [markersLoaded, setMarkersLoaded] = useState(false);
+
+  const isMobile = window.innerWidth <= 768; // Check if the device is mobile
 
   const toggleOptions = () => setIsOptionsVisible((prev) => !prev);
 
@@ -279,7 +281,7 @@ const PropertyViewPageMap = ({
 
     const customControls = document.createElement("div");
     customControls.style.position = "absolute";
-    customControls.style.bottom = "100px"; 
+    customControls.style.bottom = "40px"; 
     customControls.style.right = "10px";
     customControls.style.display = "flex";
     customControls.style.flexDirection = "column";
@@ -449,19 +451,91 @@ const PropertyViewPageMap = ({
 
   useEffect(() => {
     if (mapRef.current && mapRef.current.drawControl) {
-      // Update draw controls based on active mode
       const drawControl = mapRef.current.drawControl;
-      if (activeMode === "draw") {
+      if (activeMode === "draw" && isMobile) {
         drawControl.options.controls = { polygon: true, trash: true };
       } else {
         drawControl.options.controls = {};
       }
 
-      // Reinitialize the draw control to apply changes
       mapRef.current.removeControl(drawControl);
       mapRef.current.addControl(drawControl, "bottom-right");
     }
-  }, [activeMode]);
+  }, [activeMode, isMobile]);
+
+  const renderDrawTools = () => {
+    if (activeMode === "draw") {
+      return (
+        <div
+          style={{
+            position: "absolute",
+            top: "60px", // Added spacing from map options
+            right: "10px",
+            zIndex: 3,
+            display: "flex",
+            flexDirection: "column", // Arrange buttons in a single column
+            gap: "8px",
+          }}
+        >
+          <button
+            onClick={() => mapRef.current.drawControl.changeMode("draw_polygon")}
+            style={{
+              margin: "0",
+              padding: "8px",
+              cursor: "pointer",
+              backgroundColor: "#ffffff",
+              color: "#000000",
+              border: "none",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Edit3 size={16} color="#000000" />
+          </button>
+          <button
+            onClick={() => mapRef.current.drawControl.trash()}
+            style={{
+              margin: "0",
+              padding: "8px",
+              cursor: "pointer",
+              backgroundColor: "#ffffff", // White background
+              color: "#000000", // Black icon
+              border: "none", // Removed border color
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Trash2 size={16} color="#000000" />
+          </button>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (mapRef.current) {
+      const style =
+        mapType === "satellite"
+          ? "mapbox://styles/mapbox/satellite-streets-v12"
+          : "mapbox://styles/mapbox/streets-v12";
+
+      mapRef.current.setStyle(style);
+      mapRef.current.once("styledata", () => {
+        mapRef.current.fitBounds(
+          [
+            [68.1766451354, 6.747139],
+            [97.4025614766, 35.5087],
+          ],
+          { padding: 20, animate: false }
+        );
+      });
+    }
+  }, [mapType]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -469,14 +543,14 @@ const PropertyViewPageMap = ({
       if (mapRef.current.isStyleLoaded()) {
         mapRef.current.setStyle(
           mapType === "satellite"
-            ? "mapbox://styles/mapbox/satellite-v9"
+            ? "mapbox://styles/mapbox/satellite-streets-v12"
             : "mapbox://styles/mapbox/streets-v12"
         );
       } else {
         mapRef.current.once("style.load", () => {
           mapRef.current.setStyle(
             mapType === "satellite"
-              ? "mapbox://styles/mapbox/satellite-v9"
+              ? "mapbox://styles/mapbox/satellite-streets-v12"
               : "mapbox://styles/mapbox/streets-v12"
           );
         });
@@ -694,18 +768,17 @@ const PropertyViewPageMap = ({
       drawInfoContainer.id = "draw-info-container";
       Object.assign(drawInfoContainer.style, {
         position: "absolute",
-        bottom: "15px",
+        bottom: "40px",
         left: "15px",
         zIndex: 3,
         backgroundColor: "rgba(255, 255, 255, 0.95)",
         border: "1px solid rgba(0, 0, 0, 0.2)",
         borderRadius: "6px",
-        padding: "8px 10px",
+        padding: "6px 8px",
         boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
         fontSize: "12px",
         fontWeight: "500",
         color: "#333",
-        maxWidth: "250px",
         lineHeight: "1.4",
         fontFamily: "Arial, sans-serif",
       });
@@ -713,20 +786,18 @@ const PropertyViewPageMap = ({
       const title = document.createElement("div");
       title.textContent = "Drawing Help";
       Object.assign(title.style, {
-        fontSize: "14px",
+        fontSize: "13px", 
         fontWeight: "bold",
-        marginBottom: "6px",
+        marginBottom: "4px",
         color: "#1d4ed8",
         textAlign: "left",
-        paddingLeft: "10px",
       });
 
       const message = document.createElement("div");
       message.innerHTML =
-        "<ul style='margin: 0; padding-left: 10px;'>" +
+        "<ul style='margin: 0; padding-left: 0; list-style-position: inside;'>" +
         "<li>Click to add a point.</li>" +
         "<li>Double-click to finish.</li>" +
-        "<li>Press <b>Esc</b> to cancel.</li>" +
         "</ul>";
 
       drawInfoContainer.appendChild(title);
@@ -993,6 +1064,8 @@ const PropertyViewPageMap = ({
           </div>
         </div>
       )}
+
+      {renderDrawTools()}
 
       <div
         ref={mapContainerRef}
