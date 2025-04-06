@@ -485,7 +485,7 @@ const PropertyViewPageMap = ({
               cursor: "pointer",
               backgroundColor: "#ffffff",
               color: "#000000",
-              border: "none",
+              border: "1px solid rgba(0, 0, 0, 0.2)",
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
@@ -500,9 +500,9 @@ const PropertyViewPageMap = ({
               margin: "0",
               padding: "8px",
               cursor: "pointer",
-              backgroundColor: "#ffffff", // White background
-              color: "#000000", // Black icon
-              border: "none", // Removed border color
+              backgroundColor: "#ffffff",
+              color: "#000000",
+              border: "1px solid rgba(0, 0, 0, 0.2)",
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
@@ -872,23 +872,6 @@ const PropertyViewPageMap = ({
         }}
       >
         <Button
-          onClick={handleModeToggle}
-          style={{
-            backgroundColor: activeMode === "draw" ? "#2563eb" : "white",
-            color: activeMode === "draw" ? "white" : "black",
-            border: "1px solid rgba(0, 0, 0, 0.2)",
-            borderRadius: "4px",
-            padding: "8px 12px",
-            fontSize: "14px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          {activeMode === "draw" ? "Exit" : "Draw"}
-        </Button>
-
-        <Button
           onClick={toggleOptions}
           style={{
             backgroundColor: "white",
@@ -908,14 +891,31 @@ const PropertyViewPageMap = ({
           Map Options
           <ChevronDown size={16} />
         </Button>
+
+        <Button
+          onClick={handleModeToggle}
+          style={{
+            backgroundColor: activeMode === "draw" ? "#2563eb" : "white",
+            color: activeMode === "draw" ? "white" : "black",
+            border: "1px solid rgba(0, 0, 0, 0.2)",
+            borderRadius: "4px",
+            padding: "8px 12px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          {activeMode === "draw" ? "Exit" : "Draw"}
+        </Button>
       </div>
 
       {isOptionsVisible && (
         <div
           style={{
             position: "absolute",
-            top: "50px",
-            right: "10px",
+            top: "55px",
+            right: "60px",
             zIndex: 3,
             backgroundColor: "white",
             border: "1px solid rgba(0, 0, 0, 0.2)",
