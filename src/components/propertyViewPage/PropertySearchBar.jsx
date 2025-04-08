@@ -11,49 +11,97 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         success: false,
         count: 0
     });
+    const [localitySuggestions, setLocalitySuggestions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [searchParams] = useSearchParams(); // Add this line to get current search parameters
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
-        const dropdownFetch = async () => {
+        setSearchQuery('');
+        const currentParams = Object.fromEntries(searchParams);
+        const { search, ...remainingParams } = currentParams;
+        const newSearchParams = new URLSearchParams(remainingParams).toString();
+        navigate(`/properties/${selectedMode}?${newSearchParams}`);
+    }, []);
+
+    useEffect(() => {
+        const fetchProperties = async () => {
             if (!searchQuery.trim()) {
                 setSearchResults({ locations: [], success: false, count: 0 });
                 return;
             }
-    
+
             setIsLoading(true);
             try {
-                const response = await fetch(
+                const propertiesResponse = await fetch(
                     `${backend_url}/api/v1/properties/searchArea?searchQuery=${encodeURIComponent(searchQuery)}`
                 );
-                const data = await response.json();
-    
-                if (data.success && data.locations.length > 0) {
-                    setSearchResults(data);
+                const propertiesData = await propertiesResponse.json();
+
+                if (propertiesData.success) {
+                    setSearchResults({ locations: propertiesData.locations, success: true, count: propertiesData.locations.length });
                 } else {
                     setSearchResults({ locations: [], success: false, count: 0 });
                 }
             } catch (error) {
-                console.error('Error fetching locations:', error);
+                console.error('Error fetching properties:', error);
                 setSearchResults({ locations: [], success: false, count: 0 });
             } finally {
                 setIsLoading(false);
             }
         };
-    
-        const timeoutId = setTimeout(dropdownFetch, 300);
+
+        const timeoutId = setTimeout(fetchProperties, 300);
+
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
-    
+
+    useEffect(() => {
+        const fetchMainPlaceSuggestions = async () => {
+            if (!searchQuery.trim()) {
+                setLocalitySuggestions([]);
+                return;
+            }
+
+            setIsLoading(true);
+            try {
+                console.log('Fetching main place suggestions for:', searchQuery);
+                const response = await fetch(
+                    `${backend_url}/api/v1/localitySuggestions/suggestMainPlaces`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ query: searchQuery }),
+                    }
+                );
+
+                const data = await response.json();
+                console.log('Response from suggestMainPlaces API:', data);
+
+                if (data.success) {
+                    setLocalitySuggestions(data.response.suggestions);
+                } else {
+                    setLocalitySuggestions([]);
+                }
+            } catch (error) {
+                console.error('Error fetching main place suggestions:', error);
+                setLocalitySuggestions([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMainPlaceSuggestions();
+    }, [searchQuery]);
+
     const handleNavigation = (location) => {
-        let locality = location.localities?.[0]?.trim() || "";
-        let city = location.city?.trim() || "";
-        let state = location.state?.trim() || "";
-    
-        // Ensure correct spacing & formatting (avoid double spaces, misplaced commas)
-        let searchString = `${locality}, ${city}, ${state}`.replace(/\s+/g, ' ').trim();
-    
-        // Encode for URL
+        const locality = location.name || location.localities?.[0] || '';
+        const city = location.context?.place?.name || location.city || '';
+        const state = location.context?.region?.name || location.state || '';
+
+        const searchString = `${locality}, ${city}, ${state}`.replace(/\s+/g, ' ').trim();
+
         const encodedSearchString = encodeURIComponent(searchString);
         const currentParams = Object.fromEntries(searchParams);
         const minPriceParam = currentParams.minPrice ? `&minPrice=${currentParams.minPrice}` : '';
@@ -62,17 +110,18 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
         navigate(`/properties/${selectedMode}?search=${encodedSearchString}${minPriceParam}${maxPriceParam}`);
     };
     
-    
     const renderLocationItem = (location) => {
-        const locality = location.localities[0] || '';
-        const fullAddress = `${locality}, ${location.city}, ${location.state}`;
+        const locality = location.name || 'Unnamed Locality';
+        const city = location.context?.find(item => item.id.startsWith('place'))?.text || 'Unnamed City';
+        const state = location.context?.find(item => item.id.startsWith('region'))?.text || 'Unnamed State';
+        const fullAddress = `${locality}, ${city}, ${state}`.trim();
 
         return (
             <div
-                key={`${location.city}-${locality}`}
+                key={`${city}-${locality}`}
                 className="px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
                 onClick={() => {
-                    handleNavigation(location)
+                    handleNavigation(location);
                     setSearchQuery(locality);
                     setSearchFocused(false);
                 }}
@@ -84,7 +133,7 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                             {locality}
                         </div>
                         <div className="text-xs text-gray-500 mt-0.5">
-                            {location.city}, {location.state}
+                            {fullAddress}
                         </div>
                     </div>
                 </div>
@@ -112,11 +161,61 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                         <div className="px-4 py-3 text-center text-gray-500">
                             Loading...
                         </div>
-                    ) : searchResults.success && searchResults.locations.length > 0 ? (
+                    ) : searchResults.success && searchResults.locations.length > 0 && (
                         <div className="py-2">
-                            {searchResults.locations.map(renderLocationItem)}
+                            {searchResults.locations.map((location, index) => (
+                                <div
+                                    key={`property-${location.id || index}`}
+                                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                                    onClick={() => {
+                                        handleNavigation(location);
+                                        setSearchQuery(location.localities?.[0] || '');
+                                        setSearchFocused(false);
+                                    }}
+                                >
+                                    <div className="flex items-start">
+                                        <MapPin className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                                        <div className="ml-3">
+                                            <div className="text-sm font-medium text-gray-900">
+                                                {location.localities?.[0] || 'Unnamed Locality'}
+                                            </div>
+                                            <div className="text-xs text-gray-500 mt-0.5">
+                                                {`${location.city || 'Unnamed City'}, ${location.state || 'Unnamed State'}`}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ) : (
+                    )}
+                    {localitySuggestions.length > 0 && (
+                        <div className="py-2">
+                            {localitySuggestions.map((suggestion, index) => (
+                                <div
+                                    key={`suggestion-${suggestion.name || 'Unnamed'}-${index}`}
+                                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                                    onClick={() => {
+                                        handleNavigation(suggestion);
+                                        setSearchQuery(suggestion.name);
+                                        setSearchFocused(false);
+                                    }}
+                                >
+                                    <div className="flex items-start">
+                                        <MapPin className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                                        <div className="ml-3">
+                                            <div className="text-sm font-medium text-gray-900">
+                                                {suggestion.name || 'Unnamed Locality'}
+                                            </div>
+                                            <div className="text-xs text-gray-500 mt-0.5">
+                                                {suggestion.place_formatted || 'Unnamed City, Unnamed State'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {!isLoading && searchResults.locations.length === 0 && localitySuggestions.length === 0 && (
                         <div className="px-4 py-6 text-center text-gray-500">
                             Start typing to search for localities
                         </div>
