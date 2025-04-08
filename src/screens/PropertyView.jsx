@@ -316,7 +316,19 @@ const PropertyView = () => {
               </>
             ) : (
               <div className="py-4 text-center text-gray-600">
-                No Properties Found
+                <div className="flex flex-col items-center justify-center">
+                  <img
+                    src="/public/Error.png"
+                    alt="No Properties Found"
+                    className="w-auto h-24 mb-4 object-contain"
+                  />
+                  <p className="text-lg font-semibold text-gray-800">
+                    No Properties Found
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Try adjusting your search criteria or explore other options.
+                  </p>
+                </div>
               </div>
             )}
             <Footer />
@@ -385,7 +397,21 @@ const PropertyView = () => {
                 </div>
               </>
             ) : (
-              <div>No Properties Found</div>
+              <div className="py-4 text-center text-gray-600">
+                <div className="flex flex-col items-center justify-center">
+                  <img
+                    src="/public/Error.png"
+                    alt="No Properties Found"
+                    className="w-auto h-24 mb-4 object-contain"
+                  />
+                  <p className="text-lg font-semibold text-gray-800">
+                    No Properties Found
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Try adjusting your search criteria or explore other options.
+                  </p>
+                </div>
+              </div>
             )}
             <div className="mt-4">
               <Footer />
