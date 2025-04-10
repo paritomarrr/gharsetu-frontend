@@ -361,7 +361,31 @@ const PropertyViewPageMap = ({
     map.addControl(draw, "bottom-right");
     mapRef.current.drawControl = draw; // Store reference for toggling controls
 
-    map.on("draw.create", (e) => onDrawCreate(e.features));
+    map.on("draw.create", (e) => {
+      onDrawCreate(e.features);
+
+      if (e.features.length > 0) {
+        const feature = e.features[0];
+        const geometry = feature.geometry;
+
+        if (geometry.type === "Polygon" && geometry.coordinates.length > 0) {
+          const bounds = geometry.coordinates[0].reduce((bounds, coord) => {
+            return bounds.extend(coord);
+          }, new mapboxgl.LngLatBounds());
+          map.fitBounds(bounds, { padding: 20, animate: true });
+
+          // Force map to refresh
+          setTimeout(() => {
+            map.resize();
+          }, 100);
+        } else {
+          console.warn("Unsupported geometry type or empty coordinates.");
+        }
+      } else {
+        console.warn("No features found in draw event.");
+      }
+    });
+
     map.on("draw.delete", onDrawDelete);
 
     map.on("click", async (e) => {
