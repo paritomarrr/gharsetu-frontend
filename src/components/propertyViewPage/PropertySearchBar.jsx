@@ -64,7 +64,6 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
 
             setIsLoading(true);
             try {
-                console.log('Fetching main place suggestions for:', searchQuery);
                 const response = await fetch(
                     `${backend_url}/api/v1/localitySuggestions/suggestMainPlaces`,
                     {
@@ -77,7 +76,6 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                 );
 
                 const data = await response.json();
-                console.log('Response from suggestMainPlaces API:', data);
 
                 if (data.success) {
                     setLocalitySuggestions(data.response.suggestions);

@@ -27,6 +27,7 @@ const PropertyView = () => {
   const [loading, setLoading] = useState(true);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const [selectedState, setSelectedState] = useState(null); // Track selected state
+  const [nearbyProperties, setNearbyProperties] = useState([]);
 
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
@@ -260,6 +261,50 @@ const PropertyView = () => {
     }
   }, [mode]);
 
+  useEffect(() => {
+    const fetchNearbyProperties = async () => {
+      try {
+        if (!search) return;
+
+        const searchParts = search.split(",");
+        const city = searchParts[1]?.trim() || "";
+        const state = searchParts[2]?.trim() || "";
+
+        // Fetch latitude and longitude using OpenStreetMap Nominatim API
+        const locationRes = await axios.get("https://nominatim.openstreetmap.org/search", {
+          params: {
+            q: `${city}, ${state}`,
+            format: "json",
+            addressdetails: 1,
+            limit: 1,
+          },
+        });
+
+        if (!locationRes.data || locationRes.data.length === 0) {
+          console.error("Failed to fetch location coordinates: No results found.");
+          return;
+        }
+
+        const { lat: latitude, lon: longitude } = locationRes.data[0];
+
+        const res = await axios.post(`${backend_url}/api/v1/properties/nearbyProperties`, {
+          coordinates: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) },
+          mode: mode === "rent" ? "Rent" : "Sell",
+        });
+
+        if (res.data.success) {
+          setNearbyProperties(res.data.properties.filter(property => property.availableFor === (mode === "rent" ? "Rent" : "Sell")));
+        } else {
+          console.error("Failed to fetch nearby properties:", res.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching nearby properties:", error);
+      }
+    };
+
+    fetchNearbyProperties();
+  }, [search]);
+
   return (
     <div className="min-h-[calc(100vh-100px)] flex flex-col">
       <OptionsBar mode={mode} onStateSelect={handleStateSelect} />
@@ -272,12 +317,12 @@ const PropertyView = () => {
             onDrawCreate={handleDrawCreate}
             onDrawDelete={handleDrawDelete}
             onStateSelect={handleStateSelect} // Pass the handler
-          />
-        </div>
+            />
+          </div>
 
-        <div
-          className="absolute w-full bg-white rounded-t-3xl z-10 flex flex-col shadow-lg"
-          style={{
+          <div
+            className="absolute w-full bg-white rounded-t-3xl z-10 flex flex-col shadow-lg"
+            style={{
             bottom: 0,
             height: `${sheetHeight}px`,
             transition: isDragging.current ? "none" : "height 0.2s ease",
@@ -329,6 +374,24 @@ const PropertyView = () => {
                     Try adjusting your search criteria or explore other options.
                   </p>
                 </div>
+                {nearbyProperties.length > 0 && (
+                  <>
+                    <hr className="my-6 border-gray-300" />
+                    <div className="mt-6">
+                      <h2 className="text-xl font-medium mb-4">Nearby Properties</h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
+                        {nearbyProperties.map((property) => (
+                          <div key={property._id} className="flex flex-col">
+                            <PropertyCard property={property} />
+                            <p className="text-left text-sm text-gray-600 mt-2">
+                              {property.location}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
             <Footer />
@@ -411,6 +474,24 @@ const PropertyView = () => {
                     Try adjusting your search criteria or explore other options.
                   </p>
                 </div>
+                {nearbyProperties.length > 0 && (
+                  <>
+                    <hr className="my-6 border-gray-300" />
+                    <div className="mt-6">
+                      <h2 className="text-xl font-medium mb-4">Nearby Properties</h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3">
+                        {nearbyProperties.map((property) => (
+                          <div key={property._id} className="flex flex-col">
+                            <PropertyCard property={property} />
+                            <p className="text-left text-sm text-gray-600 mt-2">
+                              {property.location}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
             <div className="mt-4">
