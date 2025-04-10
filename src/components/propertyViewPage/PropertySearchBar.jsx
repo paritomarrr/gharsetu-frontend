@@ -50,9 +50,7 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
             }
         };
 
-        const timeoutId = setTimeout(fetchProperties, 300);
-
-        return () => clearTimeout(timeoutId);
+        fetchProperties();
     }, [searchQuery]);
 
     useEffect(() => {
@@ -62,7 +60,6 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
                 return;
             }
 
-            setIsLoading(true);
             try {
                 const response = await fetch(
                     `${backend_url}/api/v1/localitySuggestions/suggestMainPlaces`,
@@ -85,8 +82,6 @@ const PropertySearchBar = ({ searchQuery, setSearchQuery, selectedMode }) => {
             } catch (error) {
                 console.error('Error fetching main place suggestions:', error);
                 setLocalitySuggestions([]);
-            } finally {
-                setIsLoading(false);
             }
         };
 
