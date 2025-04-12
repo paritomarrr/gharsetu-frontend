@@ -374,7 +374,7 @@ const PropertyView = () => {
                     Try adjusting your search criteria or explore other options.
                   </p>
                 </div>
-                {nearbyProperties.length > 0 && (
+                {nearbyProperties.length > 0 && !search && (
                   <>
                     <hr className="my-6 border-gray-300" />
                     <div className="mt-6">
@@ -474,7 +474,7 @@ const PropertyView = () => {
                     Try adjusting your search criteria or explore other options.
                   </p>
                 </div>
-                {nearbyProperties.length > 0 && (
+                {nearbyProperties.length > 0 && !search && (
                   <>
                     <hr className="my-6 border-gray-300" />
                     <div className="mt-6">
