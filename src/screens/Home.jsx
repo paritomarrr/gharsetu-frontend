@@ -5,6 +5,7 @@ import SearchTab from "../components/SearchTab"
 import useUserAddress from "../helperFunctions/useUserAddress"
 import { Link } from "react-router-dom"
 import ArticleCarousel from "../components/ArticleCarousel"
+import TopAreas from "../components/TopAreas";
 
 const Home = () => {
   const { location, address, error } = useUserAddress();
@@ -23,6 +24,10 @@ const Home = () => {
       <div className="flex flex-col gap-4 md:gap-7">
         <h1 className="font-bold text-xl sm:text-2xl text-[#222]">Featured Real Estate Projects</h1>
         <FeatutedProperties />
+      </div>
+
+      <div className="flex flex-col gap-4 md:gap-7">
+        <TopAreas />
       </div>
 
       <div className="flex flex-col gap-4 md:gap-7">
