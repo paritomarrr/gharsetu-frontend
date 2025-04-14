@@ -28,6 +28,7 @@ const PropertyView = () => {
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const [selectedState, setSelectedState] = useState(null); // Track selected state
   const [nearbyProperties, setNearbyProperties] = useState([]);
+  const [drawnShape, setDrawnShape] = useState(null);
 
   useEffect(() => {
     const fetchPropertiesBySearch = async (searchTerms) => {
@@ -118,7 +119,7 @@ const PropertyView = () => {
     };
   }, []);
 
-  const cityName = selectedState || (search ? search.split(",")[1]?.trim() : "India");
+  const cityName = selectedState || (drawnShape ? "Drawn Area" : (search ? search.split(",")[1]?.trim() : "India"));
 
   useEffect(() => {
     document.title = `${
@@ -196,8 +197,6 @@ const PropertyView = () => {
     document.removeEventListener("touchmove", handleSheetMouseMove);
     document.removeEventListener("touchend", handleSheetMouseUp);
   };
-
-  const [drawnShape, setDrawnShape] = useState(null);
 
   const handleDrawCreate = useCallback((features) => {
     if (features.length > 0) {
