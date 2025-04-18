@@ -238,6 +238,33 @@ const PropertyView = () => {
             }
           );
           setPropertiesToShow(res.data.properties);
+
+          if (shape.geometry && shape.geometry.type === "Polygon") {
+            const coordinates = shape.geometry.coordinates[0];
+            const center = calculatePolygonCenter(coordinates);
+
+            const nearbyRes = await axios.post(
+              `${backend_url}/api/v1/properties/nearbyProperties`,
+              {
+                coordinates: {
+                  latitude: center[1],
+                  longitude: center[0],
+                },
+                mode: mode === "rent" ? "Rent" : "Sell",
+              }
+            );
+
+            if (nearbyRes.data.success) {
+              setNearbyProperties(
+                nearbyRes.data.properties.filter(
+                  (property) =>
+                    property.availableFor === (mode === "rent" ? "Rent" : "Sell")
+                )
+              );
+            } else {
+              console.error("Failed to fetch nearby properties:", nearbyRes.data.message);
+            }
+          }
         } catch (error) {
           console.error("Error fetching properties by shape:", error);
         }
@@ -246,6 +273,19 @@ const PropertyView = () => {
       fetchPropertiesByShape(drawnShape);
     }
   }, [drawnShape, mode]);
+
+  const calculatePolygonCenter = (coordinates) => {
+    let x = 0;
+    let y = 0;
+    const numPoints = coordinates.length;
+
+    coordinates.forEach(([longitude, latitude]) => {
+      x += longitude;
+      y += latitude;
+    });
+
+    return [x / numPoints, y / numPoints];
+  };
 
   const handleStateSelect = useCallback(async (stateName) => {
     try {
@@ -373,7 +413,7 @@ const PropertyView = () => {
                     Try adjusting your search criteria or explore other options.
                   </p>
                 </div>
-                {nearbyProperties.length > 0 && !search && (
+                {propertiesToShow.length === 0 && nearbyProperties.length > 0 && (
                   <>
                     <hr className="my-6 border-gray-300" />
                     <div className="mt-6">
@@ -473,7 +513,7 @@ const PropertyView = () => {
                     Try adjusting your search criteria or explore other options.
                   </p>
                 </div>
-                {nearbyProperties.length > 0 && !search && (
+                {propertiesToShow.length === 0 && nearbyProperties.length > 0 && (
                   <>
                     <hr className="my-6 border-gray-300" />
                     <div className="mt-6">
