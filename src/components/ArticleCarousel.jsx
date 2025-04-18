@@ -55,10 +55,10 @@ const ArticleCarousel = () => {
     return (
       <Box>
         <Text fontSize="2xl" fontWeight="bold" mb={4}>
-          News & Articles
+          Articles
         </Text>
         <Text fontSize="md" color="gray.600" mb={6}>
-          Read what's happening in Real Estate
+          Read the latest articles in Real Estate
         </Text>
         <Flex justify="space-between" gap={4}>
           {articles.map((article) => (
@@ -117,10 +117,10 @@ const ArticleCarousel = () => {
   return (
     <Box>
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
-        News & Articles
+        Articles
       </Text>
       <Text fontSize="md" color="gray.600" mb={6}>
-        Read what's happening in Real Estate
+        Read the latest articles in Real Estate
       </Text>
       <Flex alignItems="center" position="relative" overflow="hidden">
         <button

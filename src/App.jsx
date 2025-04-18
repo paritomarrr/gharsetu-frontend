@@ -33,6 +33,9 @@ import "slick-carousel/slick/slick-theme.css";
 import AboutUs from "./components/aboutUs";
 import ContactUs from "./components/contactUs";
 import WriteArticle from "./screens/WriteArticle";
+import News from "./screens/News";
+import SingleNews from "./screens/news/SingleNews";
+import WriteNews from "./screens/WriteNews";
 
 // Google Analytics
 
@@ -73,6 +76,9 @@ function App() {
         <Route path="/terms-of-use" element={<TermsOfUse />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/write-article" element={<WriteArticle />} />
+        <Route path="/news" element={<News />} />
+        <Route path="/news/:slug" element={<SingleNews />} />
+        <Route path="/write-news" element={<WriteNews />} />
         <Route path="/*" element={<Error />} />
 
         {/* Profile Routes */}
